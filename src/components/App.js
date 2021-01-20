@@ -2,13 +2,13 @@ import React, { useState, useEffect } from 'react';
 
 import firebase from "firebase/app";
 import "firebase/auth";
-import { FirebaseAuthProvider, FirebaseAuthConsumer } from "@react-firebase/auth";
 
 import axios from 'axios';
 import { BrowserRouter, Switch, Route, Redirect } from 'react-router-dom';
 
-import Start from './Start';
-import Login from './Login';
+import Login from './front/Login';
+import Loading from './layout/Loading';
+import Sections from './sections/Sections';
 
 import styled from 'styled-components';
 
@@ -16,21 +16,21 @@ const AppStyle = styled.div`
     font-family: Montserrat, sans-serif;
 `;
 
-const config = {
-    apiKey: "AIzaSyB5Zi-TCtek2d1rrxPCUykHc7hUGruY7aU",
-    projectId: "ti-broish",
-    databaseURL: "https://ti-broish.firebaseio.com",
-    authDomain: "ti-broish.firebaseapp.com",
-};
-
 export const AuthContext = React.createContext();
 
 export default props => {
 
-    const [userData, setUserData] = useState(null);
+    const [state, setState] = useState({user: null, loading: true});
 
     useEffect(() => {
-        firebase.auth().onAuthStateChanged(async user => {
+        firebase.initializeApp({
+            apiKey: "AIzaSyB5Zi-TCtek2d1rrxPCUykHc7hUGruY7aU",
+            authDomain: "ti-broish.firebaseapp.com",
+            databaseURL: "https://ti-broish.firebaseio.com",
+            projectId: "ti-broish",
+        });
+
+        firebase.app().auth().onAuthStateChanged(async user => {
             if (user) {
                 const idToken = await user.getIdToken();
 
@@ -38,7 +38,9 @@ export default props => {
                     headers: { 'Authorization': `Bearer ${idToken}` }
                 });
 
-                setUserData(res.data);
+                setState({user: res.data, loading: false});
+            } else {
+                setState({user: null, loading: false});
             }
         });
     }, []);
@@ -54,27 +56,20 @@ export default props => {
     return(
         <AppStyle>
         <BrowserRouter>
-            <FirebaseAuthProvider firebase={firebase} {...config}>
-                <FirebaseAuthConsumer>
-                {({ isSignedIn, user, providerId }) => {
-                    return(
-                        <AuthContext.Provider value={{isSignedIn, user, providerId, userData, logIn, logOut}}>
-                        {
-                            isSignedIn
-                            ?   <Switch>
-                                    <Route path='/' component={Start}/>
-                                    <Redirect to='/'/>
-                                </Switch>
-                            :   <Switch>
-                                    <Route path='/login' component={Login}/>
-                                    <Redirect to='/login'/>
-                                </Switch>
-                        }
-                        </AuthContext.Provider>
-                    );
-                }}
-                </FirebaseAuthConsumer>
-            </FirebaseAuthProvider>
+            <AuthContext.Provider value={{user: state.user, logIn, logOut}}>
+            {
+                state.loading
+                ? <Loading/>
+                :    <Switch>
+                        <Route path='/login'>
+                            {state.user? <Redirect to='/'/> : <Login/>}
+                        </Route>
+                        <Route path='/'>
+                            {!state.user? <Redirect to='/login'/> : <Sections/>}
+                        </Route>
+                    </Switch>
+            }
+            </AuthContext.Provider>
         </BrowserRouter>
         </AppStyle>
     );

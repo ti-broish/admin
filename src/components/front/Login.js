@@ -1,11 +1,13 @@
 import React, { useState, useContext } from 'react';
 
-import { AuthContext } from './App';
+import { AuthContext } from '../App';
+
+import { Fade } from 'react-reveal';
 
 import styled from 'styled-components';
 
 const Background = styled.div`
-    background-color: #eee;
+    //background-color: #eee;
     width: 100vw;
     height: 100vh;
     position: absolute;
@@ -16,12 +18,26 @@ const Background = styled.div`
 
 const LoginPanel = styled.div`
     background-color: white;
-    width: 600px;
+    width: 400px;
     margin: 0 auto;
-    margin-top: 10%;
-    padding: 20px 40px;
-    border: 1px solid #ddd;
-    border-radius: 5px;
+    margin-top: 20px;
+    padding: 20px 40px 0 40px;
+    //border: 1px solid #ddd;
+    //border-radius: 5px;
+
+    hr {
+        border: 1px solid #ddd;
+        border-top: none;
+        margin: 50px 0 20px 0;
+    }
+`;
+
+const Copyright = styled.div`
+    text-align: center;
+    margin-bottom: 30px;
+    font-size: 14px;
+    font-weight: bold;
+    color: #aaa;
 `;
 
 const LoginForm = styled.form`
@@ -46,19 +62,57 @@ const LoginFormInput = styled.input`
     border-bottom: 1px solid #aaa;
     padding: 7px;
     margin: 20px 0;
+    margin-bottom: 20px;
+
+    &:focus {
+        border-bottom: 2px solid #356ae6;
+        margin-bottom: 19px;
+    }
+
+    &:disabled {
+        color: #aaa;
+        border-bottom: 1px solid #aaa;
+    }
 `;
 
 const LoginFormSubmitButton = styled.input`
-    border: 1px solid #aaa;
-    background: #eee;
-    padding: 10px;
-    font-size: 24px;
+    background-color: #4892e1;
+    color: white;
+    border: none;
+    padding: 8px 13px;
+    font-size: 25px;
     cursor: pointer;
-    margin-bottom: 20px;
+    font-weight: bold;
+    border-radius: 5px;
+    border-bottom: 3px solid #2a68aa;
+    margin-top: 0px;
+    width: 100%;
+
+    &:hover {
+        background-color: #5da2ec;
+    }
+
+    &:active {
+        background-color: #1d5a9b;
+        border-bottom: none;
+        margin-top: 3px;
+    }
+    
+    &:disabled {
+        background-color: #aaa;
+        color: #666;
+        border-bottom-color: #666; 
+    }
 `;
 
 const ErrorMessage = styled.p`
     color: red;
+    margin: 0;
+`;
+
+const ErrorSection = styled.div`
+    height: 50px;
+    margin: 0;
 `;
 
 export default props => {
@@ -87,8 +141,12 @@ export default props => {
         <div>
             <Background/>
             <LoginPanel>
-                <h1>Вход в системата</h1>
-                {!message? null : <ErrorMessage>{message}</ErrorMessage>}
+                <div style={{width: '100%', padding: '20px 40px', boxSizing: 'border-box'}}>
+                    <img style={{width: '100%'}} src="/logo_horizontal.png"/>
+                </div>
+                <ErrorSection>
+                    {!message? null : <Fade left><ErrorMessage>{message}</ErrorMessage></Fade>}
+                </ErrorSection>
                 <LoginForm onSubmit={handleSubmit}>
                     <LoginFormLabel>Имейл</LoginFormLabel>
                     <LoginFormInput
@@ -112,6 +170,10 @@ export default props => {
                         disabled={loading}
                     />
                 </LoginForm>
+                <hr/>
+                <Copyright>
+                    „Демократична България - обединение“ © 2021
+                </Copyright>
             </LoginPanel>
         </div>
     )
