@@ -1,10 +1,11 @@
-import React from 'react';
+import React, { useContext } from 'react';
 
 import { Link } from 'react-router-dom';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faFileInvoice, faIdBadge, faUsersCog, faNewspaper, faSatelliteDish } from '@fortawesome/free-solid-svg-icons';
+import { faFileInvoice, faIdBadge, faUsersCog, faNewspaper, faSatelliteDish, faSignOutAlt } from '@fortawesome/free-solid-svg-icons';
 
 import styled from 'styled-components';
+import { AuthContext } from '../../App';
 
 const NavigationStyle = styled.nav`
     height: 100%;
@@ -16,7 +17,10 @@ const NavigationStyle = styled.nav`
 
 const NavTitle = styled.div`
     padding: 10px;
+    width: 100%;
+    box-sizing: border-box;
 
+    img { width: 100%; }
     h1 { margin: 0; }
 `;
 
@@ -50,10 +54,11 @@ const NavFooter = styled.div`
 `;
 
 export default props => {
+    const { logOut } = useContext(AuthContext);
     return(
         <NavigationStyle>
             <NavTitle>
-                <h1>ти броиш</h1>
+                <img src='/logo_horizontal_white.png'/>
             </NavTitle>
             <NavLinks>
                 <NavLink to='/profile'>
@@ -70,6 +75,9 @@ export default props => {
                 </NavLink>
                 <NavLink to='/posts'>
                     <FontAwesomeIcon icon={faNewspaper}/> Статии
+                </NavLink>
+                <NavLink onClick={logOut}>
+                    <FontAwesomeIcon icon={faSignOutAlt}/> Изход
                 </NavLink>
             </NavLinks>
             <NavFooter>
