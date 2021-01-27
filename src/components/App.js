@@ -11,6 +11,7 @@ import Loading from './layout/Loading';
 import Sections from './sections/Sections';
 
 import styled from 'styled-components';
+import ProcessProtocols from './process_protocols/ProcessProtocols';
 
 const AppStyle = styled.div`
     font-family: Montserrat, sans-serif;
@@ -20,7 +21,7 @@ export const AuthContext = React.createContext();
 
 export default props => {
 
-    const [state, setState] = useState({user: null, loading: true});
+    const [state, setState] = useState({user: null, loading: true, token: ''});
 
     useEffect(() => {
         firebase.initializeApp({
@@ -34,13 +35,14 @@ export default props => {
             if (user) {
                 const idToken = await user.getIdToken();
 
+                setState({...state, loading: true});
                 const res = await axios.get('https://d1tapi.dabulgaria.bg/me', { 
                     headers: { 'Authorization': `Bearer ${idToken}` }
                 });
 
-                setState({user: res.data, loading: false});
+                setState({user: res.data, loading: false, token: idToken});
             } else {
-                setState({user: null, loading: false});
+                setState({user: null, loading: false, token: ''});
             }
         });
     }, []);
@@ -56,13 +58,16 @@ export default props => {
     return(
         <AppStyle>
         <BrowserRouter>
-            <AuthContext.Provider value={{user: state.user, logIn, logOut}}>
+            <AuthContext.Provider value={{user: state.user, token: state.token, logIn, logOut}}>
             {
                 state.loading
                 ? <Loading/>
                 :    <Switch>
                         <Route path='/login'>
                             {state.user? <Redirect to='/'/> : <Login/>}
+                        </Route>
+                        <Route exact path='/protocols/process'>
+                            {!state.user? <Redirect to='/login'/> : <ProcessProtocols/>}
                         </Route>
                         <Route path='/'>
                             {!state.user? <Redirect to='/login'/> : <Sections/>}
