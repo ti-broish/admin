@@ -103,7 +103,4 @@ testApp
 coverage
 
 bundles
-
-package-lock.json
-
 dist
