@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useContext } from 'react';
 
-import { ContentPanel } from '../Sections';
+import { ContentPanel } from '../Modules';
 
 import { Link, useParams } from 'react-router-dom';
 import axios from 'axios';
@@ -16,7 +16,6 @@ export default props => {
         axios.get(`https://d1tapi.dabulgaria.bg/protocols/${protocol}`, { 
             headers: { 'Authorization': `Bearer ${token}` }
         }).then(res => {
-            console.log(res.data);
             setData(res.data);
         });
     }, []);

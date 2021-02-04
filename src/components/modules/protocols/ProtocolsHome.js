@@ -3,7 +3,7 @@ import React, { useEffect, useContext, useState } from 'react';
 import axios from 'axios';
 import { Link } from 'react-router-dom';
 
-import { ContentPanel } from '../Sections';
+import { ContentPanel } from '../Modules';
 
 import { AuthContext } from '../../App';
 
@@ -15,7 +15,6 @@ export default props => {
         const res = await axios.get('https://d1tapi.dabulgaria.bg/protocols?page=1&limit=20', { 
             headers: { 'Authorization': `Bearer ${token}` }
         });
-        console.log(res.data);
         setProtocols(res.data.items);
     }) ()}, []);
 

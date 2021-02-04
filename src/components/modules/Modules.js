@@ -11,6 +11,7 @@ import Posts from './Posts';
 import Profile from './Profile';
 
 import styled from 'styled-components';
+import Sections from './Sections';
 
 const NavigationHalf = styled.div`
     width: 220px;
@@ -53,6 +54,7 @@ export default props => {
         <ContentHalf>
             <Switch>
                 <Route path='/profile' component={Profile}/>
+                <Route path='/sections' component={Sections}/>
                 <Route path='/protocols' component={Protocols}/>
                 <Route path='/violations' component={Violations}/>
                 <Route path='/admin' component={Admin}/>

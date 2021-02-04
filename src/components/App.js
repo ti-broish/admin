@@ -8,7 +8,7 @@ import { BrowserRouter, Switch, Route, Redirect } from 'react-router-dom';
 
 import Login from './front/Login';
 import Loading from './layout/Loading';
-import Sections from './sections/Sections';
+import Modules from './modules/Modules';
 
 import styled from 'styled-components';
 import ProcessProtocols from './process_protocols/ProcessProtocols';
@@ -70,7 +70,7 @@ export default props => {
                             {!state.user? <Redirect to='/login'/> : <ProcessProtocols/>}
                         </Route>
                         <Route path='/'>
-                            {!state.user? <Redirect to='/login'/> : <Sections/>}
+                            {!state.user? <Redirect to='/login'/> : <Modules/>}
                         </Route>
                     </Switch>
             }

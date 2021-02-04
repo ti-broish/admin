@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 
 import { Link } from 'react-router-dom';
 
-import { ContentPanel } from '../sections/Sections';
+import { ContentPanel } from '../modules/Modules';
 import ProtocolPhotos from './ProtocolPhotos';
 import VerifyProtocolInfo from './VerifyProtocolInfo';
 

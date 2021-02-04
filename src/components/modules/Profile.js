@@ -2,7 +2,7 @@ import React, { useContext } from 'react';
 
 import { AuthContext } from '../App';
 
-import { ContentPanel } from './Sections';
+import { ContentPanel } from './Modules';
 
 import styled from 'styled-components';
 

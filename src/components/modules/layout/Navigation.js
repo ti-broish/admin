@@ -5,7 +5,8 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { 
     faFileInvoice, faIdBadge, faUsersCog, 
     faNewspaper, faSatelliteDish, faSignOutAlt,
-    faCheckSquare
+    faCheckSquare,
+    faPersonBooth
 } from '@fortawesome/free-solid-svg-icons';
 
 import styled from 'styled-components';
@@ -70,6 +71,9 @@ export default props => {
                 </NavLink>
                 <NavLink to='/protocols/process'>    
                     <FontAwesomeIcon icon={faCheckSquare}/> Проверявай
+                </NavLink>
+                <NavLink to='/sections'>    
+                    <FontAwesomeIcon icon={faPersonBooth}/> Секции
                 </NavLink>
                 <NavLink to='/protocols'>    
                     <FontAwesomeIcon icon={faFileInvoice}/> Протоколи
