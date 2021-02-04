@@ -2,7 +2,11 @@ import React, { useContext } from 'react';
 
 import { Link } from 'react-router-dom';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faFileInvoice, faIdBadge, faUsersCog, faNewspaper, faSatelliteDish, faSignOutAlt } from '@fortawesome/free-solid-svg-icons';
+import { 
+    faFileInvoice, faIdBadge, faUsersCog, 
+    faNewspaper, faSatelliteDish, faSignOutAlt,
+    faCheckSquare
+} from '@fortawesome/free-solid-svg-icons';
 
 import styled from 'styled-components';
 import { AuthContext } from '../../App';
@@ -63,6 +67,9 @@ export default props => {
             <NavLinks>
                 <NavLink to='/profile'>
                     <FontAwesomeIcon icon={faIdBadge}/> Профил
+                </NavLink>
+                <NavLink to='/protocols/process'>    
+                    <FontAwesomeIcon icon={faCheckSquare}/> Проверявай
                 </NavLink>
                 <NavLink to='/protocols'>    
                     <FontAwesomeIcon icon={faFileInvoice}/> Протоколи
