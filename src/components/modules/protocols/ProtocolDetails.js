@@ -16,14 +16,15 @@ export default props => {
         axios.get(`https://d1tapi.dabulgaria.bg/protocols/${protocol}`, { 
             headers: { 'Authorization': `Bearer ${token}` }
         }).then(res => {
+            console.log(res.data);
             setData(res.data);
         });
     }, []);
 
     return(
         <ContentPanel>
+            <Link to={props.backPage}>Назад</Link>
             <h1>Протокол {protocol}</h1>
-            <Link to="/protocols">Назад</Link>
             <hr/>
             {
                 !data? <h1>Зареждане</h1> :

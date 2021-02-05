@@ -61,7 +61,7 @@ export default props => {
             <AuthContext.Provider value={{user: state.user, token: state.token, logIn, logOut}}>
             {
                 state.loading
-                ? <Loading/>
+                ? <Loading fullScreen/>
                 :    <Switch>
                         <Route path='/login'>
                             {state.user? <Redirect to='/'/> : <Login/>}

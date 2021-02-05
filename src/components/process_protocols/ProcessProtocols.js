@@ -84,7 +84,7 @@ export default props => {
     };
 
     return(
-        loading? <Loading/> :
+        loading? <Loading fullScreen/> :
         !protocol?
             <ReadyScreen>
                 <h1 style={{textAlign: 'center', fontSize: '54px'}}>Обработка на протоколи</h1>
