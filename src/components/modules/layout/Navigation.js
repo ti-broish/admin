@@ -81,7 +81,7 @@ export default props => {
                 <NavLink to='/violations'>
                     <FontAwesomeIcon icon={faSatelliteDish}/> Сигнали
                 </NavLink>
-                <NavLink to='/admin'>
+                <NavLink to='/users'>
                     <FontAwesomeIcon icon={faUsersCog}/> Администрация
                 </NavLink>
                 <NavLink to='/posts'>

@@ -20,13 +20,22 @@ const TableViewContainer = styled.div`
 `;
 
 const PaginationLinks = styled.div`
-    padding: 10px;
+    padding: 20px;
     text-align: center;
 
     a {
         color: #444;
         margin: 0 10px;
         text-decoration: none;
+
+        &:hover {
+            color: #777;
+        }
+
+        &.disabled {
+            color: #999;
+            pointer-events: none;
+        }
     }
 `;
 
@@ -102,24 +111,26 @@ export default props => {
     };
 
     const renderLinks = () => {
-        const firstAvail = true;
-        const lastAvail = true;
+        const firstAvail = data.meta.currentPage !== 1;
+        const lastAvail = data.meta.currentPage !== data.meta.totalPages;
         const nextAvail = data.links.next;
         const prevAvail = data.links.previous;
 
         return (
             <PaginationLinks>
-                <Link to={data.links.first}>
+                <Link className={firstAvail? '' : 'disabled'} to={data.links.first}>
                     <FontAwesomeIcon icon={faFastBackward}/> Първа
                 </Link>
-                <Link disabled={!prevAvail} to={data.links.previous}>
+                <Link className={prevAvail? '' : 'disabled'} to={data.links.previous}>
                     <FontAwesomeIcon icon={faChevronLeft}/> Предишна
                 </Link>
-                {data.meta.currentPage} / {data.meta.totalPages}
-                <Link to={data.links.next}>
+                <div style={{margin: '0 5px', display: 'inline-block', color: '#444', width: '60px'}}>
+                    {data.meta.currentPage} / {data.meta.totalPages}
+                </div>
+                <Link className={nextAvail? '' : 'disabled'} to={data.links.next}>
                     Следваща <FontAwesomeIcon icon={faChevronRight}/>
                 </Link>
-                <Link to={data.links.last}>
+                <Link className={lastAvail? '' : 'disabled'} to={data.links.last}>
                     Последна <FontAwesomeIcon icon={faFastForward}/>
                 </Link>
             </PaginationLinks>

@@ -57,7 +57,7 @@ export default props => {
                 <Route path='/sections' component={Sections}/>
                 <Route path='/protocols' component={Protocols}/>
                 <Route path='/violations' component={Violations}/>
-                <Route path='/admin' component={Admin}/>
+                <Route path='/users' component={Admin}/>
                 <Route path='/posts' component={Posts}/>
                 <Redirect to='/profile'/>
             </Switch>
