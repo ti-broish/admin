@@ -61,7 +61,7 @@ export default props => {
     const [protocol, setProtocol] = useState(null);
     const [loading, setLoading] = useState(true);
 
-    const { token, user, authGet, authDelete } = useContext(AuthContext);
+    const { token, user, authGet, authDelete, authPost } = useContext(AuthContext);
 
     useEffect(() => { init(); }, []);
 
@@ -85,16 +85,18 @@ export default props => {
     };
 
     const nextProtocol = async () => {
+
+        setLoading(true);
         
-        //const res = await axios.post('https://d1tapi.dabulgaria.bg/protocols/assign', {}, { 
-        //    headers: { 'Authorization': `Bearer ${token}` }
-        //});
+        const res = await authPost('/protocols/assign');
+        const res2 = await authGet(`/protocols/${res.data.id}`);
+        
+        setProtocol(res2.data);
+        setLoading(false);
+    };
 
-        //const res = await axios.get('https://d1tapi.dabulgaria.bg/me/protocols', { 
-        //    headers: { 'Authorization': `Bearer ${token}` }
-        //});
-
-        //console.log(res.data);
+    const processingDone = () => {
+        setProtocol(null);
     };
 
     return(
@@ -111,6 +113,6 @@ export default props => {
                 </NextProtocolButton>
                 <Link to="/protocols" style={{textAlign: 'center', display: 'block'}}>Върнете се обратно</Link>
             </ReadyScreen> :
-            <VerifyProtocolInfo protocol={protocol} returnProtocol={returnProtocol}/>
+            <VerifyProtocolInfo protocol={protocol} returnProtocol={returnProtocol} processingDone={processingDone}/>
     );
 };

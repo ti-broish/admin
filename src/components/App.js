@@ -65,8 +65,10 @@ export default props => {
         return res;
     };
 
-    const authPost = async () => {
-
+    const authPost = async (path, body) => {
+        const domain = 'https://d1tapi.dabulgaria.bg';
+        const res = await axios.post(`${domain}${path}`, body? body : {}, { headers: { 'Authorization': `Bearer ${state.token}` }});
+        return res;
     };
 
     const authDelete = async (path) => {

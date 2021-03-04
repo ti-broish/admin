@@ -71,6 +71,14 @@ const SectionInput = styled.div`
         &.last {
             border-right: 1px solid #eee;
         }
+
+        &.invalid {
+            background-color: #ff8f8f;
+        }
+
+        &.changed {
+            background-color: #fdfd97;
+        }
     }
 
     input {
@@ -106,85 +114,62 @@ const BackButton = styled.button`
     margin-right: 20px;
 `;
 
-const AcceptButton = styled.button`
+const VerificationPanelButton = styled.button`
     border: none;
+    padding: 5px 10px;
+    font-size: 26px;
+    cursor: pointer;
+    border-radius: 5px;
+    box-sizing: border-box;
+    display: inline-block;
+    font-weight: bold;
+    width: 50%;
+
+    &:active {
+        top: 10px;
+        border-bottom: 0;
+        margin-bottom: 10px;
+    }
+
+    &:disabled {
+        background-color: #aaa;
+        cursor: not-allowed;
+        color: #888;
+        border-bottom-color: #666;
+
+        &:hover {
+            background-color: #aaa;
+        }
+    }
+`;
+
+const AcceptButton = styled(VerificationPanelButton)`
     background-color: #44e644;
-    color: white;
-    padding: 5px 10px;
-    font-size: 16px;
-    cursor: pointer;
-    border-radius: 5px;
     border-bottom: 3px solid #2eae1c;
-    display: block;
-    box-sizing: border-box;
-    display: inline-block;
-    font-weight: bold;
-    width: 115px;
-    margin-top: 30px;
+    color: white;
 
     &:hover {
         background-color: #2ece2e;
     }
-
-    &:active {
-        top: 10px;
-        border-bottom: 0;
-        margin-bottom: 10px;
-    }
 `;
 
-const CorrectButton = styled.button`
-    border: none;
-    background-color: #eff70d;
-    color: white;
-    padding: 5px 10px;
-    font-size: 16px;
-    cursor: pointer;
-    border-radius: 5px;
+const CorrectButton = styled(VerificationPanelButton)`
+    background-color: #f9de00;
     border-bottom: 3px solid #a69b00;
-    display: block;
-    box-sizing: border-box;
-    display: inline-block;
-    font-weight: bold;
-    width: 115px;
-    margin-top: 30px;
+    color: white;
 
     &:hover {
         background-color: #2ece2e;
-    }
-
-    &:active {
-        top: 10px;
-        border-bottom: 0;
-        margin-bottom: 10px;
     }
 `;
 
-const RejectButton = styled.button`
-    border: none;
+const RejectButton = styled(VerificationPanelButton)`
     background-color: #ff4545;
-    color: white;
-    padding: 5px 10px;
-    font-size: 16px;
-    cursor: pointer;
-    border-radius: 5px;
     border-bottom: 3px solid #ce4c4c;
-    display: block;
-    box-sizing: border-box;
-    display: inline-block;
-    font-weight: bold;
-    width: 115px;
-    margin-top: 20px;
-    margin-left: 5px;
+    color: white;
 
     &:hover {
         background-color: #2ece2e;
-    }
-
-    &:active {
-        top: 10px;
-        border-bottom: 0;
-        margin-bottom: 10px;
     }
 `;
 
@@ -206,6 +191,14 @@ const ProtocolDetailsTable = styled.table`
         border-top: 2px solid #ddd;
         border-radius: 10px;
         text-align: right;
+
+        &.changed {
+            background-color: #fdfd97;
+        }
+
+        &.invalid {
+            background-color: #ff8f8f;
+        }
     }
     
     select { 
@@ -245,6 +238,14 @@ const PartyResultsTable = styled.table`
         border-top: 2px solid #ddd;
         border-radius: 5px;
         text-align: right;
+
+        &.invalid {
+            background-color: #ff8f8f;
+        }
+
+        &.changed {
+            background-color: #fdfd97;
+        }
     }
     
     select { 
@@ -268,33 +269,147 @@ const PartyResultsTable = styled.table`
 import { AuthContext } from '../App';
 
 export default props => {
-    const { parties } = useContext(AuthContext);
+    const { parties, authPost } = useContext(AuthContext);
+
+    const zeroIfEmpty = value => value? value : 0;
 
     const [formData, setFormData] = useState({
         sectionId: props.protocol.section.id,
-        votersCount: 245,
-        validVotesCount: 13,
-        invalidVotesCount: 37,
+        votersCount: zeroIfEmpty(props.protocol.results.votersCount),
+        validVotesCount: zeroIfEmpty(props.protocol.results.validVotesCount),
+        invalidVotesCount: zeroIfEmpty(props.protocol.results.invalidVotesCount),
     });
 
+    const initResults = () => {
+        const resultsObj = { '0': 0 };
+
+        for(const party of parties) {
+            if(party.isFeatured || party.id.toString() === '0')
+                resultsObj[party.id] = 0;
+        }
+
+        for(const result of props.protocol.results.results) {
+            resultsObj[result.party] = result.validVotesCount;
+        }
+
+        return resultsObj;
+    };
+
+    const [resultsData, setResultsData] = useState(initResults());
+
+    const fieldStatus = {};
+
+    for(let i = 0; i < 9; i ++) {
+        const char1 = props.protocol.section.id[i];
+        const char2 = formData.sectionId[i];
+    
+        if(typeof char1 == 'undefined' || typeof char2 == 'undefined')
+            fieldStatus[`sectionId${i+1}`] = { invalid: true };   
+        else if(char1.toString() !== char2.toString())
+            fieldStatus[`sectionId${i+1}`] = { changed: true };
+        else 
+            fieldStatus[`sectionId${i+1}`] = { unchanged: true };
+    }
+
+    for(const party of parties) {
+        if(party.isFeatured || party.id.toString() === '0') {
+            const originalResult = 0;
+            for(const result of props.protocol.results.results) {
+                if(result.party === party.id) {
+                    originalResult = result.validVotesCount;
+                }
+            }
+
+            if(resultsData[party.id] === '')
+                fieldStatus[`party${party.id}`] = { invalid: true };
+            else if(originalResult.toString() !== resultsData[party.id].toString())
+                fieldStatus[`party${party.id}`] = { changed: true };
+            else 
+                fieldStatus[`party${party.id}`] = { unchanged: true };
+        }
+    }
+
+    const addStatusForResultField = fieldName => {
+        if(formData[fieldName] === '')
+            fieldStatus[fieldName] = { invalid: true };
+        else if(formData[fieldName] !== zeroIfEmpty(props.protocol.results[fieldName]))
+            fieldStatus[fieldName] = { changed: true };
+        else 
+            fieldStatus[fieldName] = { unchanged: true };
+    };
+
+    addStatusForResultField('votersCount');
+    addStatusForResultField('validVotesCount');
+    addStatusForResultField('invalidVotesCount');
+
     const partyRow = party => {
+        const status = fieldStatus[`party${party.id}`];
         return(
             <tr>
                 <td>{party.id.toString() === '0'? null : party.id}</td>
                 <td>{party.displayName}</td>
-                <td><input type="text" value="3" data-party-id={party.id} onChange={handlePartyResultChange}/></td>
+                <td>
+                    <input type="text"
+                        className={status.invalid? 'invalid' : status.changed? 'changed' : ''}
+                        data-party-id={party.id}
+                        value={resultsData[party.id]}
+                        onChange={handleResultsChange}
+                    />
+                </td>
             </tr>
         );
+    };
+
+    const handleResultsChange = e => {
+        setResultsData({...resultsData, [e.target.dataset.partyId]: e.target.value});
     };
 
     const handleChange = e => {
         setFormData({...formData, [e.target.name]: e.target.value})
     };
 
-    const handlePartyResultChange = e => {
-        //console.log(e.target.data)
-        console.log(e.target.value);
-        console.log(e.target.dataset);
+    const getBoxClass = boxNum => {
+        const status = fieldStatus[`sectionId${boxNum}`];
+        return status.invalid? 'box invalid' : status.changed? 'box changed' : 'box';
+    };
+
+    let invalidFields = false;
+    let changedFields = false;
+
+    for(const key of Object.keys(fieldStatus)) {
+        if(fieldStatus[key].invalid)
+            invalidFields = true;
+        if(fieldStatus[key].changed)
+            changedFields = true;
+    }
+
+    console.log(changedFields);
+
+    const approveProtocol = async () => {
+        await authPost(`/protocols/${props.protocol.id}/approve`);
+        props.processingDone();
+    };
+
+    const rejectProtocol = async () => {
+        await authPost(`/protocols/${props.protocol.id}/reject`);
+        props.processingDone();
+    };
+
+    const replaceProtocol = async () => {
+        const postBody = { 
+            section: { id: formData.sectionId },
+            results: { 
+                invalidVotesCount: parseInt(formData.invalidVotesCount),
+                validVotesCount: parseInt(formData.validVotesCount),
+                votersCount: parseInt(formData.votersCount),
+                results: Object.keys(resultsData).map(key => {
+                    return { party: parseInt(key), validVotesCount: parseInt(resultsData[key]) };
+                })
+            }
+        };
+        console.log(postBody);
+        await authPost(`/protocols/${props.protocol.id}/replace`, postBody);
+        props.processingDone();
     };
 
     return(
@@ -316,7 +431,7 @@ export default props => {
                             <td style={{paddingBottom: '20px'}}>
                                 <SectionInput>
                                     <div>
-                                        <div className='box'>
+                                        <div className={getBoxClass(1)}>
                                             <input 
                                                 type="text"
                                                 style={{width: '333px'}} 
@@ -326,14 +441,14 @@ export default props => {
                                                 onChange={handleChange}
                                             />
                                         </div>
-                                        <div className='box'/>
-                                        <div className='box'/>
-                                        <div className='box'/>
-                                        <div className='box'/>
-                                        <div className='box'/>
-                                        <div className='box'/>
-                                        <div className='box'/>
-                                        <div className='box last'/>
+                                        <div className={getBoxClass(2)}/>
+                                        <div className={getBoxClass(3)}/>
+                                        <div className={getBoxClass(4)}/>
+                                        <div className={getBoxClass(5)}/>
+                                        <div className={getBoxClass(6)}/>
+                                        <div className={getBoxClass(7)}/>
+                                        <div className={getBoxClass(8)}/>
+                                        <div className={getBoxClass(9) + ' last'}/>
                                         <br/>
                                         <span style={{width: '72px'}}>Район</span>
                                         <span style={{width: '72px'}}>Община</span>
@@ -363,6 +478,7 @@ export default props => {
                                 <input
                                     type="text"
                                     name="votersCount"
+                                    className={fieldStatus['votersCount'].invalid? 'invalid' : fieldStatus['votersCount'].changed? 'changed' : ''}
                                     value={formData.votersCount}
                                     onChange={handleChange}
                                 />
@@ -380,6 +496,7 @@ export default props => {
                                     type="text"
                                     value={formData.invalidVotesCount}
                                     name="invalidVotesCount"
+                                    className={fieldStatus['invalidVotesCount'].invalid? 'invalid' : fieldStatus['invalidVotesCount'].changed? 'changed' : ''}
                                     onChange={handleChange}
                                 />
                             </td>
@@ -391,6 +508,7 @@ export default props => {
                                     type="text"
                                     value={formData.validVotesCount}
                                     name="validVotesCount"
+                                    className={fieldStatus['validVotesCount'].invalid? 'invalid' : fieldStatus['validVotesCount'].changed? 'changed' : ''}  
                                     onChange={handleChange}
                                 />
                             </td>
@@ -406,9 +524,18 @@ export default props => {
                         </tbody>
                     </PartyResultsTable>
                     <hr/>
-                    <AcceptButton style={{width: '300px'}}>Потвърди протокол</AcceptButton>
-                    <CorrectButton style={{width: '300px'}}>Коригирай протокол</CorrectButton>
-                    <RejectButton style={{width: '300px'}}>Отхвърли протокол</RejectButton>
+                    {
+                        invalidFields || changedFields?
+                            <CorrectButton onClick={replaceProtocol} disabled={invalidFields}>
+                                Коригирай
+                            </CorrectButton> :
+                            <AcceptButton onClick={approveProtocol}>
+                                Потвърди
+                            </AcceptButton>
+                    }
+                    <RejectButton onClick={rejectProtocol}>
+                        Отхвърли
+                    </RejectButton>
                 </ProtocolDetails>
             </ProtocolInfoSection>
         </div>
