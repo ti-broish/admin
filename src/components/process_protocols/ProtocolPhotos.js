@@ -44,7 +44,7 @@ const PageNavButton = styled.button`
 export default props => {
     const [page, setPage] = useState(0);
 
-    const maxPage = props.protocol.photos.length - 1;
+    const maxPage = props.protocol.pictures.length - 1;
     const nextAvail = page < maxPage;
     const prevAvail = page > 0;
     
@@ -65,7 +65,7 @@ export default props => {
     return(
         <PhotoSection>
             {pageNav()}
-            <img src={`/sample-protocol/${props.protocol.photos[page]}`}/>
+            <img src={props.protocol.pictures[page].url}/>
             {pageNav()}
         </PhotoSection>
     );

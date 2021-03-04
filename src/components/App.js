@@ -21,7 +21,7 @@ export const AuthContext = React.createContext();
 
 export default props => {
 
-    const [state, setState] = useState({user: null, loading: true, token: ''});
+    const [state, setState] = useState({user: null, loading: true, token: '', parties: []});
 
     useEffect(() => {
         firebase.initializeApp({
@@ -40,9 +40,13 @@ export default props => {
                     headers: { 'Authorization': `Bearer ${idToken}` }
                 });
 
-                setState({user: res.data, loading: false, token: idToken});
+                const res2 = await axios.get('https://d1tapi.dabulgaria.bg/parties', { 
+                    headers: { 'Authorization': `Bearer ${idToken}` }
+                });
+
+                setState({user: res.data, loading: false, token: idToken, parties: res2.data});
             } else {
-                setState({user: null, loading: false, token: ''});
+                setState({user: null, loading: false, token: '', parties: []});
             }
         });
     }, []);
@@ -54,11 +58,29 @@ export default props => {
     const logOut = () => {
         firebase.app().auth().signOut();
     };
+
+    const authGet = async (path) => {
+        const domain = 'https://d1tapi.dabulgaria.bg';
+        const res = await axios.get(`${domain}${path}`, { headers: { 'Authorization': `Bearer ${state.token}` }});
+        return res;
+    };
+
+    const authPost = async () => {
+
+    };
+
+    const authDelete = async (path) => {
+        const domain = 'https://d1tapi.dabulgaria.bg';
+        const res = await axios.delete(`${domain}${path}`, { headers: { 'Authorization': `Bearer ${state.token}` }});
+        return res;
+    };
    
     return(
         <AppStyle>
         <BrowserRouter>
-            <AuthContext.Provider value={{user: state.user, token: state.token, logIn, logOut}}>
+            <AuthContext.Provider value={{
+                user: state.user, token: state.token, parties: state.parties, 
+                logIn, logOut, authGet, authPost, authDelete}}>
             {
                 state.loading
                 ? <Loading fullScreen/>

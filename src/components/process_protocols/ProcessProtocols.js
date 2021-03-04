@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useContext, useEffect } from 'react';
 
 import { Link } from 'react-router-dom';
 
@@ -10,6 +10,7 @@ import styled from 'styled-components';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faFile } from '@fortawesome/free-solid-svg-icons';
 import Loading from '../layout/Loading';
+import axios from 'axios';
 
 const ReadyScreen = styled.div`
     max-width: 900px;
@@ -54,33 +55,46 @@ const NextProtocolButton = styled.button`
     }
 `;
 
+import { AuthContext } from '../App';
+
 export default props => {
     const [protocol, setProtocol] = useState(null);
-    const [loading, setLoading] = useState(false);
+    const [loading, setLoading] = useState(true);
 
-    const nextProtocol = () => {
-        setLoading(true);
-        setTimeout(() => {
+    const { token, user, authGet, authDelete } = useContext(AuthContext);
+
+    useEffect(() => { init(); }, []);
+
+    const init = async () => {
+        const res =  await authGet(`/protocols?assignee=${user.id}`);
+        
+        if(res.data.items.length > 0) {
+            const res2 = await authGet(`/protocols/${res.data.items[0].id}`);
+            setProtocol(res2.data);
             setLoading(false);
-            setProtocol({
-                photos: [
-                    '234602054-01.png',
-                    '234602054-02.png',
-                    '234602054-03.png',
-                    '234602054-04.png',
-                    '234602054-05.png',
-                    '234602054-06.png',
-                    '234602054-07.png',
-                    '234602054-08.png',
-                    '234602054-09.png',
-                    '234602054-10.png',
-                    '234602054-11.png',
-                    '234602054-12.png',
-                    '234602054-13.png',
-                    '234602054-14.png',
-                ]
-            });
-        }, 2000);
+        } else {
+            setLoading(false);
+        }
+    };
+
+    const returnProtocol = async () => {
+        //const res = await authDelete(`/protocols/${protocol.id}/assignees/${user.id}`);
+        //console.log(res);
+        alert('Връщане на протокол не е имплементирано');
+        setProtocol(null);
+    };
+
+    const nextProtocol = async () => {
+        
+        //const res = await axios.post('https://d1tapi.dabulgaria.bg/protocols/assign', {}, { 
+        //    headers: { 'Authorization': `Bearer ${token}` }
+        //});
+
+        //const res = await axios.get('https://d1tapi.dabulgaria.bg/me/protocols', { 
+        //    headers: { 'Authorization': `Bearer ${token}` }
+        //});
+
+        //console.log(res.data);
     };
 
     return(
@@ -97,6 +111,6 @@ export default props => {
                 </NextProtocolButton>
                 <Link to="/protocols" style={{textAlign: 'center', display: 'block'}}>Върнете се обратно</Link>
             </ReadyScreen> :
-            <VerifyProtocolInfo protocol={protocol} returnProtocol={() => setProtocol(null)}/>
+            <VerifyProtocolInfo protocol={protocol} returnProtocol={returnProtocol}/>
     );
 };
