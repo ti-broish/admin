@@ -67,7 +67,12 @@ export default props => {
 
     const authPost = async (path, body) => {
         const domain = 'https://d1tapi.dabulgaria.bg';
-        const res = await axios.post(`${domain}${path}`, body? body : {}, { headers: { 'Authorization': `Bearer ${state.token}` }});
+        let res;
+        try {
+            res = await axios.post(`${domain}${path}`, body? body : {}, { headers: { 'Authorization': `Bearer ${state.token}` }});
+        } catch(err) {
+            alert(`Error ${err.response.status}: ${err.response.statusText}\n${err.response.data.message.map((m, i) => `\n${i+1}. ${m}`)}`);
+        }
         return res;
     };
 

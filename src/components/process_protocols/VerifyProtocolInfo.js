@@ -408,7 +408,8 @@ export default props => {
             }
         };
         console.log(postBody);
-        await authPost(`/protocols/${props.protocol.id}/replace`, postBody);
+        const res = await authPost(`/protocols/${props.protocol.id}/replace`, postBody);
+        console.log(res);
         props.processingDone();
     };
 
