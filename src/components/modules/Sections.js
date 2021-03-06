@@ -1,7 +1,5 @@
 import React, { useEffect, useContext } from 'react';
 
-import axios from 'axios';
-
 import { ContentPanel } from './Modules';
 import { AuthContext } from '../App';
 

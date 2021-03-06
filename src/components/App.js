@@ -36,11 +36,11 @@ export default props => {
                 const idToken = await user.getIdToken();
 
                 setState({...state, loading: true});
-                const res = await axios.get('https://d1tapi.dabulgaria.bg/me', { 
+                const res = await axios.get(`${apiHost()}/me`, { 
                     headers: { 'Authorization': `Bearer ${idToken}` }
                 });
 
-                const res2 = await axios.get('https://d1tapi.dabulgaria.bg/parties', { 
+                const res2 = await axios.get(`${apiHost()}/parties`, { 
                     headers: { 'Authorization': `Bearer ${idToken}` }
                 });
 
@@ -59,17 +59,23 @@ export default props => {
         firebase.app().auth().signOut();
     };
 
+    const apiHost = () => {
+        if(!process.env.API_HOST) {
+            return 'https://d1tapi.dabulgaria.bg';
+        } else {
+            return process.env.API_HOST;
+        }
+    };
+
     const authGet = async (path) => {
-        const domain = 'https://d1tapi.dabulgaria.bg';
-        const res = await axios.get(`${domain}${path}`, { headers: { 'Authorization': `Bearer ${state.token}` }});
+        const res = await axios.get(`${apiHost()}${path}`, { headers: { 'Authorization': `Bearer ${state.token}` }});
         return res;
     };
 
     const authPost = async (path, body) => {
-        const domain = 'https://d1tapi.dabulgaria.bg';
         let res;
         try {
-            res = await axios.post(`${domain}${path}`, body? body : {}, { headers: { 'Authorization': `Bearer ${state.token}` }});
+            res = await axios.post(`${apiHost()}${path}`, body? body : {}, { headers: { 'Authorization': `Bearer ${state.token}` }});
         } catch(err) {
             alert(`Error ${err.response.status}: ${err.response.statusText}\n${err.response.data.message.map((m, i) => `\n${i+1}. ${m}`)}`);
         }
@@ -77,8 +83,7 @@ export default props => {
     };
 
     const authDelete = async (path) => {
-        const domain = 'https://d1tapi.dabulgaria.bg';
-        const res = await axios.delete(`${domain}${path}`, { headers: { 'Authorization': `Bearer ${state.token}` }});
+        const res = await axios.delete(`${apiHost()}${path}`, { headers: { 'Authorization': `Bearer ${state.token}` }});
         return res;
     };
    

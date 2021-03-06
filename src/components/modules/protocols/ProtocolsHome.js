@@ -1,6 +1,5 @@
 import React, { useEffect, useContext, useState } from 'react';
 
-import axios from 'axios';
 import { Link, useLocation, useHistory } from 'react-router-dom';
 
 import { AuthContext } from '../../App';
@@ -73,14 +72,14 @@ const useQuery = () => {
 }
 
 export default props => {
-    const { token } = useContext(AuthContext);
+    const { authGet } = useContext(AuthContext);
     const [data, setData] = useState(null);
     const [loading, setLoading] = useState(false);
     const query = useQuery();
     const history = useHistory();
 
     useEffect(() => {
-        let url = 'https://d1tapi.dabulgaria.bg/protocols';
+        let url = '/protocols';
         const page = query.get("page");
         const limit = query.get("limit");
 
@@ -90,7 +89,7 @@ export default props => {
         if(limit) url += `limit=${limit}`;
 
         setLoading(true);
-        axios.get(url, { headers: { 'Authorization': `Bearer ${token}` }}).then(res => {
+        authGet(url).then(res => {
             setLoading(false);
             setData(res.data);
         });
