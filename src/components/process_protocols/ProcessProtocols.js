@@ -1,16 +1,13 @@
 import React, { useState, useContext, useEffect } from 'react';
 
-import { Link } from 'react-router-dom';
+import { useHistory } from 'react-router-dom';
 
-import { ContentPanel } from '../modules/Modules';
-import ProtocolPhotos from './ProtocolPhotos';
 import VerifyProtocolInfo from './VerifyProtocolInfo';
 
 import styled from 'styled-components';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faFile } from '@fortawesome/free-solid-svg-icons';
+import { faFile, faChevronLeft } from '@fortawesome/free-solid-svg-icons';
 import Loading from '../layout/Loading';
-import axios from 'axios';
 
 const ReadyScreen = styled.div`
     max-width: 900px;
@@ -64,12 +61,22 @@ const Message = styled.p`
     border-radius: 10px;
 `;
 
+const BackButton = styled.button`
+    cursor: pointer;
+    background: none;
+    border: 1px solid #aaa;
+    border-radius: 10px;
+    margin-right: 10px;
+`;
+
 import { AuthContext } from '../App';
 
 export default props => {
     const [protocol, setProtocol] = useState(null);
     const [loading, setLoading] = useState(true);
     const [message, setMessage] = useState(null);
+
+    const history = useHistory()
 
     const { token, user, authGet, authDelete, authPost } = useContext(AuthContext);
 
@@ -116,8 +123,12 @@ export default props => {
         loading? <Loading fullScreen/> :
         !protocol?
             <ReadyScreen>
-                <h1 style={{textAlign: 'center', fontSize: '54px'}}>Обработка на протоколи</h1>
-                <Link to="/protocols" style={{textAlign: 'center', display: 'block'}}>Върнете се обратно</Link>
+                <h1 style={{textAlign: 'center', fontSize: '54px'}}>
+                    <BackButton onClick={history.goBack}>
+                        <FontAwesomeIcon icon={faChevronLeft}/>
+                    </BackButton>
+                    Валидация на протоколи
+                </h1>
                 <hr/>
                 {!message? 
                     <p>Когато сте готови, натиснете долу и ще ви бъде назначен протокол.</p> : 

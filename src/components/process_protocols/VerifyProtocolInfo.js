@@ -123,10 +123,12 @@ const VerificationPanelButton = styled.button`
     box-sizing: border-box;
     display: inline-block;
     font-weight: bold;
-    width: 50%;
+    width: calc(50% - 20px);
+    margin: 0 10px;
+    position: relative;
 
     &:active {
-        top: 10px;
+        top: 5px;
         border-bottom: 0;
         margin-bottom: 10px;
     }
@@ -145,7 +147,7 @@ const VerificationPanelButton = styled.button`
 
 const AcceptButton = styled(VerificationPanelButton)`
     background-color: #44e644;
-    border-bottom: 3px solid #2eae1c;
+    border-bottom: 5px solid #2eae1c;
     color: white;
 
     &:hover {
@@ -155,21 +157,21 @@ const AcceptButton = styled(VerificationPanelButton)`
 
 const CorrectButton = styled(VerificationPanelButton)`
     background-color: #f9de00;
-    border-bottom: 3px solid #a69b00;
+    border-bottom: 5px solid #a69b00;
     color: white;
 
     &:hover {
-        background-color: #2ece2e;
+        background-color: #ffe405;
     }
 `;
 
 const RejectButton = styled(VerificationPanelButton)`
     background-color: #ff4545;
-    border-bottom: 3px solid #ce4c4c;
+    border-bottom: 5px solid #ce4c4c;
     color: white;
 
     &:hover {
-        background-color: #2ece2e;
+        background-color: #ff2626;
     }
 `;
 
@@ -261,9 +263,20 @@ const PartyResultsTable = styled.table`
         cursor: pointer;
     }
 
-    td:nth-child(1) { width: 5%; }
-    td:nth-child(2) { width: 75%; }
+    td:nth-child(1) { width: 8%; }
+    td:nth-child(2) { width: 72%; }
     td:nth-child(3) { width: 20%; }
+`;
+
+const PartyNumber = styled.span`
+    color: white;
+    font-weight: bold;
+    background-color: #${props => props.color};
+    width: 21px;
+    display: block;
+    padding: 3px 5px;
+    text-align: right;
+    border-radius: 3px;
 `;
 
 import { AuthContext } from '../App';
@@ -344,9 +357,14 @@ export default props => {
 
     const partyRow = party => {
         const status = fieldStatus[`party${party.id}`];
+        console.log(party.color);
         return(
             <tr>
-                <td>{party.id.toString() === '0'? null : party.id}</td>
+                <td>{party.id.toString() === '0'? null : 
+                    party.color? <PartyNumber color={party.color}>{party.id}</PartyNumber> :
+                    party.id
+                }
+                </td>
                 <td>{party.displayName}</td>
                 <td>
                     <input type="text"
