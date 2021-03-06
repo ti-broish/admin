@@ -55,19 +55,29 @@ const NextProtocolButton = styled.button`
     }
 `;
 
+const Message = styled.p`
+    color: green;
+    font-size: 20px;
+    border: 1px solid green;
+    padding: 10px;
+    background-color: #e0ffe0;
+    border-radius: 10px;
+`;
+
 import { AuthContext } from '../App';
 
 export default props => {
     const [protocol, setProtocol] = useState(null);
     const [loading, setLoading] = useState(true);
+    const [message, setMessage] = useState(null);
 
     const { token, user, authGet, authDelete, authPost } = useContext(AuthContext);
 
     useEffect(() => { init(); }, []);
 
     const init = async () => {
-        const res =  await authGet(`/protocols?assignee=${user.id}`);
-        
+        const res = await authGet(`/protocols?status=received&assignee=${user.id}`);
+
         if(res.data.items.length > 0) {
             const res2 = await authGet(`/protocols/${res.data.items[0].id}`);
             setProtocol(res2.data);
@@ -78,9 +88,11 @@ export default props => {
     };
 
     const returnProtocol = async () => {
-        //const res = await authDelete(`/protocols/${protocol.id}/assignees/${user.id}`);
-        //console.log(res);
-        alert('Връщане на протокол не е имплементирано');
+        setLoading(true);
+        const res = await authDelete(`/protocols/${protocol.id}/assignees/${user.id}`);
+
+        setLoading(false);
+        setMessage(`Протокол ${protocol.id} ВЪРНАТ без взето решение.`);
         setProtocol(null);
     };
 
@@ -95,7 +107,8 @@ export default props => {
         setLoading(false);
     };
 
-    const processingDone = () => {
+    const processingDone = message => {
+        setMessage(message);
         setProtocol(null);
     };
 
@@ -104,15 +117,21 @@ export default props => {
         !protocol?
             <ReadyScreen>
                 <h1 style={{textAlign: 'center', fontSize: '54px'}}>Обработка на протоколи</h1>
+                <Link to="/protocols" style={{textAlign: 'center', display: 'block'}}>Върнете се обратно</Link>
                 <hr/>
-                <p>
-                    Когато сте готови, натиснете долу и ще ви бъде назначен протокол.
-                </p>
+                {!message? 
+                    <p>Когато сте готови, натиснете долу и ще ви бъде назначен протокол.</p> : 
+                    <Message>{message}</Message>
+                }
                 <NextProtocolButton onClick={nextProtocol}>
                     <FontAwesomeIcon icon={faFile}/> Следващ протокол
                 </NextProtocolButton>
-                <Link to="/protocols" style={{textAlign: 'center', display: 'block'}}>Върнете се обратно</Link>
             </ReadyScreen> :
-            <VerifyProtocolInfo protocol={protocol} returnProtocol={returnProtocol} processingDone={processingDone}/>
+            <VerifyProtocolInfo 
+                protocol={protocol} 
+                returnProtocol={returnProtocol}
+                setLoading={setLoading}
+                processingDone={processingDone}
+            />
     );
 };

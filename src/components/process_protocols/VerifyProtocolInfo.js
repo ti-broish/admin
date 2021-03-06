@@ -383,16 +383,18 @@ export default props => {
             changedFields = true;
     }
 
-    console.log(changedFields);
-
     const approveProtocol = async () => {
+        props.setLoading(true);
         await authPost(`/protocols/${props.protocol.id}/approve`);
-        props.processingDone();
+        props.setLoading(false);
+        props.processingDone(`Протокол ${props.protocol.id} ОДОБРЕН`);
     };
 
     const rejectProtocol = async () => {
+        props.setLoading(true);
         await authPost(`/protocols/${props.protocol.id}/reject`);
-        props.processingDone();
+        props.setLoading(false);
+        props.processingDone(`Протокол ${props.protocol.id} ОТХВЪРЛЕН`);
     };
 
     const replaceProtocol = async () => {
@@ -407,10 +409,10 @@ export default props => {
                 })
             }
         };
-        console.log(postBody);
+        props.setLoading(true);
         const res = await authPost(`/protocols/${props.protocol.id}/replace`, postBody);
-        console.log(res);
-        props.processingDone();
+        props.setLoading(false);
+        props.processingDone(`Протокол ${props.protocol.id} ОДОБРЕН с КОРЕКЦИЯ`);
     };
 
     return(
