@@ -72,12 +72,13 @@ export default props => {
                 <NavLink to='/protocols/process'>    
                     <FontAwesomeIcon icon={faCheckSquare}/> Проверявай
                 </NavLink>
-                <NavLink to='/sections'>    
+                {/*<NavLink to='/sections'>    
                     <FontAwesomeIcon icon={faPersonBooth}/> Секции
-                </NavLink>
+                </NavLink>*/}
                 <NavLink to='/protocols'>    
                     <FontAwesomeIcon icon={faFileInvoice}/> Протоколи
                 </NavLink>
+                {/*
                 <NavLink to='/violations'>
                     <FontAwesomeIcon icon={faSatelliteDish}/> Сигнали
                 </NavLink>
@@ -86,7 +87,7 @@ export default props => {
                 </NavLink>
                 <NavLink to='/posts'>
                     <FontAwesomeIcon icon={faNewspaper}/> Статии
-                </NavLink>
+                </NavLink>*/}
                 <NavLink onClick={logOut}>
                     <FontAwesomeIcon icon={faSignOutAlt}/> Изход
                 </NavLink>
