@@ -302,7 +302,8 @@ export default props => {
         }
 
         for(const result of props.protocol.results.results) {
-            resultsObj[result.party] = result.validVotesCount;
+            if(result.validVotesCount)
+                resultsObj[result.party.id] = result.validVotesCount;
         }
 
         return resultsObj;
@@ -311,6 +312,8 @@ export default props => {
     const [resultsData, setResultsData] = useState(initResults());
 
     const fieldStatus = {};
+
+    console.log(props.protocol);
 
     for(let i = 0; i < 9; i ++) {
         const char1 = props.protocol.section.id[i];
@@ -326,9 +329,9 @@ export default props => {
 
     for(const party of parties) {
         if(party.isFeatured || party.id.toString() === '0') {
-            const originalResult = 0;
+            let originalResult = 0;
             for(const result of props.protocol.results.results) {
-                if(result.party === party.id) {
+                if(result.party.id === party.id) {
                     originalResult = result.validVotesCount;
                 }
             }
@@ -341,6 +344,8 @@ export default props => {
                 fieldStatus[`party${party.id}`] = { unchanged: true };
         }
     }
+
+    console.log(props.protocol);
 
     const addStatusForResultField = fieldName => {
         if(formData[fieldName] === '')
@@ -357,7 +362,6 @@ export default props => {
 
     const partyRow = party => {
         const status = fieldStatus[`party${party.id}`];
-        console.log(party.color);
         return(
             <tr>
                 <td>{party.id.toString() === '0'? null : 
@@ -419,11 +423,11 @@ export default props => {
         const postBody = { 
             section: { id: formData.sectionId },
             results: { 
-                invalidVotesCount: parseInt(formData.invalidVotesCount),
-                validVotesCount: parseInt(formData.validVotesCount),
-                votersCount: parseInt(formData.votersCount),
+                invalidVotesCount: parseInt(formData.invalidVotesCount, 10),
+                validVotesCount: parseInt(formData.validVotesCount, 10),
+                votersCount: parseInt(formData.votersCount, 10),
                 results: Object.keys(resultsData).map(key => {
-                    return { party: parseInt(key), validVotesCount: parseInt(resultsData[key]) };
+                    return { party: parseInt(key, 10), validVotesCount: parseInt(resultsData[key], 10) };
                 })
             }
         };
