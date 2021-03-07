@@ -284,7 +284,7 @@ import { AuthContext } from '../App';
 export default props => {
     const { parties, authPost } = useContext(AuthContext);
 
-    const zeroIfEmpty = value => value? value : 0;
+    const zeroIfEmpty = value => value? value : '';//0;
 
     const [formData, setFormData] = useState({
         sectionId: props.protocol.section.id,
@@ -294,11 +294,11 @@ export default props => {
     });
 
     const initResults = () => {
-        const resultsObj = { '0': 0 };
+        const resultsObj = { '0': '' };
 
         for(const party of parties) {
             if(party.isFeatured || party.id.toString() === '0')
-                resultsObj[party.id] = 0;
+                resultsObj[party.id] = '';
         }
 
         for(const result of props.protocol.results.results) {

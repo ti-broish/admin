@@ -136,7 +136,7 @@ export default props => {
                 </h1>
                 <hr/>
                 {!message? 
-                    <p>Когато сте готови, натиснете долу и ще ви бъде назначен протокол.</p> : 
+                    <p>Когато сте готови, натиснете бутона долу и ще ви бъде назначен протокол.</p> : 
                     <Message>{message}</Message>
                 }
                 <NextProtocolButton onClick={nextProtocol}>
