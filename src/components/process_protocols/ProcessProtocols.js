@@ -108,9 +108,14 @@ export default props => {
         setLoading(true);
         
         const res = await authPost('/protocols/assign');
-        const res2 = await authGet(`/protocols/${res.data.id}`);
         
-        setProtocol(res2.data);
+        if(res.status === 204) {
+            setMessage(`Опашката за протоколи е празна`);
+        } else {
+            const res2 = await authGet(`/protocols/${res.data.id}`);
+            setProtocol(res2.data);
+        }
+
         setLoading(false);
     };
 

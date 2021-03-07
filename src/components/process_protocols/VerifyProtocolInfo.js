@@ -313,8 +313,6 @@ export default props => {
 
     const fieldStatus = {};
 
-    console.log(props.protocol);
-
     for(let i = 0; i < 9; i ++) {
         const char1 = props.protocol.section.id[i];
         const char2 = formData.sectionId[i];
@@ -344,8 +342,6 @@ export default props => {
                 fieldStatus[`party${party.id}`] = { unchanged: true };
         }
     }
-
-    console.log(props.protocol);
 
     const addStatusForResultField = fieldName => {
         if(formData[fieldName] === '')
@@ -432,7 +428,12 @@ export default props => {
             }
         };
         props.setLoading(true);
-        const res = await authPost(`/protocols/${props.protocol.id}/replace`, postBody);
+        try {
+            const res = await authPost(`/protocols/${props.protocol.id}/replace`, postBody);
+        } catch(err) {
+            props.setLoading(false);
+            return;
+        }
         props.setLoading(false);
         props.processingDone(`Протокол ${props.protocol.id} ОДОБРЕН с КОРЕКЦИЯ`);
     };

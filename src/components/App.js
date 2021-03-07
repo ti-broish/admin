@@ -78,6 +78,7 @@ export default props => {
             res = await axios.post(`${apiHost()}${path}`, body? body : {}, { headers: { 'Authorization': `Bearer ${state.token}` }});
         } catch(err) {
             alert(`Error ${err.response.status}: ${err.response.statusText}\n${err.response.data.message.map((m, i) => `\n${i+1}. ${m}`)}`);
+            throw err;
         }
         return res;
     };
