@@ -269,7 +269,7 @@ const PartyResultsTable = styled.table`
 `;
 
 const PartyNumber = styled.span`
-    color: white;
+    color: ${props => props.textColor? props.textColor : 'white'};
     font-weight: bold;
     background-color: #${props => props.color};
     width: 21px;
@@ -283,6 +283,7 @@ import { AuthContext } from '../App';
 
 export default props => {
     const { parties, authPost } = useContext(AuthContext);
+    const [allParties, setAllParties] = useState(Math.random() < 0.5);
 
     const zeroIfEmpty = value => value? value : '';//0;
 
@@ -297,7 +298,7 @@ export default props => {
         const resultsObj = { '0': '' };
 
         for(const party of parties) {
-            if(party.isFeatured || party.id.toString() === '0')
+            if((allParties? true : party.isFeatured) || party.id.toString() === '0')
                 resultsObj[party.id] = '';
         }
 
@@ -326,7 +327,7 @@ export default props => {
     }
 
     for(const party of parties) {
-        if(party.isFeatured || party.id.toString() === '0') {
+        if((allParties? true : party.isFeatured) || party.id.toString() === '0') {
             let originalResult = 0;
             for(const result of props.protocol.results.results) {
                 if(result.party.id === party.id) {
@@ -361,8 +362,9 @@ export default props => {
         return(
             <tr>
                 <td>{party.id.toString() === '0'? null : 
-                    party.color? <PartyNumber color={party.color}>{party.id}</PartyNumber> :
-                    party.id
+                    party.color? 
+                        <PartyNumber color={party.color}>{party.id}</PartyNumber> :
+                        <PartyNumber color={'white'} textColor={'555'}>{party.id}</PartyNumber>
                 }
                 </td>
                 <td>{party.displayName}</td>
@@ -545,7 +547,10 @@ export default props => {
                     <h1>8. РАЗПРЕДЕЛЕНИЕ НА ГЛАСОВЕТЕ ПО КАНДИДАТСКИ ЛИСТИ</h1>
                     <PartyResultsTable>
                         <tbody>
-                        {parties.map(party => !party.isFeatured? null : partyRow(party))}
+                        {parties.map(party => 
+                            !((allParties? true : party.isFeatured) && party.id.toString() !== '0')
+                            ? null 
+                            : partyRow(party))}
                         {partyRow(parties.find(party => party.id.toString() === '0'))}
                         </tbody>
                     </PartyResultsTable>
