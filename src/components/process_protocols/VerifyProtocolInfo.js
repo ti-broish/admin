@@ -501,7 +501,7 @@ export default props => {
                     <ProtocolDetailsTable>
                     <tbody>
                         <tr>
-                            <td>3. Брой на гласувалите избиратели според положените подписи в избирателния списък (...)</td>
+                            <td>2. Брой на гласувалите избиратели според положените подписи в избирателния списък (...)</td>
                             <td>
                                 <input
                                     type="text"
@@ -518,7 +518,7 @@ export default props => {
                     <ProtocolDetailsTable>
                         <tbody>
                         <tr>
-                            <td>6. Брой намерени в избирателната кутия недействителни гласове (бюлетини)</td>
+                            <td>5. Брой намерени в избирателната кутия недействителни гласове (бюлетини)</td>
                             <td>
                                 <input
                                     type="text"
@@ -530,7 +530,7 @@ export default props => {
                             </td>
                         </tr>
                         <tr>
-                            <td>7. Общ брой намерени в избирателната кутия действителни гласове (бюлетини)</td>
+                            <td>6. Общ брой намерени в избирателната кутия действителни гласове (бюлетини)</td>
                             <td>
                                 <input
                                     type="text"
@@ -544,14 +544,14 @@ export default props => {
                         </tbody>
                     </ProtocolDetailsTable>
                     <hr/>
-                    <h1>8. РАЗПРЕДЕЛЕНИЕ НА ГЛАСОВЕТЕ ПО КАНДИДАТСКИ ЛИСТИ</h1>
+                    <h1>7. РАЗПРЕДЕЛЕНИЕ НА ГЛАСОВЕТЕ ПО КАНДИДАТСКИ ЛИСТИ</h1>
                     <PartyResultsTable>
                         <tbody>
+                        {partyRow(parties.find(party => party.id.toString() === '0'))}
                         {parties.map(party => 
                             !((allParties? true : party.isFeatured) && party.id.toString() !== '0')
                             ? null 
                             : partyRow(party))}
-                        {partyRow(parties.find(party => party.id.toString() === '0'))}
                         </tbody>
                     </PartyResultsTable>
                     <hr/>
