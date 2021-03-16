@@ -381,11 +381,24 @@ export default props => {
     };
 
     const handleResultsChange = e => {
-        setResultsData({...resultsData, [e.target.dataset.partyId]: e.target.value});
+        const newValue = filterNumberFieldInput(e.target.value, resultsData[e.target.dataset.partyId]);
+        setResultsData({...resultsData, [e.target.dataset.partyId]: newValue});
     };
 
-    const handleChange = e => {
-        setFormData({...formData, [e.target.name]: e.target.value})
+    const handleNumberChange = e => {
+        const newValue = filterNumberFieldInput(e.target.value, formData[e.target.name]);
+        setFormData({...formData, [e.target.name]: newValue});
+    };
+
+    const filterNumberFieldInput = (newValue, oldValue) => {
+        const parsed = parseInt(newValue, 10);
+        if(parsed) {
+            return parsed;
+        } else if(newValue === '') {
+            return '';
+        } else {
+            return oldValue;
+        }
     };
 
     const getBoxClass = boxNum => {
@@ -429,6 +442,9 @@ export default props => {
                 })
             }
         };
+
+        console.log(postBody);
+
         props.setLoading(true);
         try {
             const res = await authPost(`/protocols/${props.protocol.id}/replace`, postBody);
@@ -466,7 +482,7 @@ export default props => {
                                                 value={formData.sectionId} 
                                                 maxLength={9}
                                                 name="sectionId"
-                                                onChange={handleChange}
+                                                onChange={handleNumberChange}
                                             />
                                         </div>
                                         <div className={getBoxClass(2)}/>
@@ -494,21 +510,37 @@ export default props => {
                             <td>Изпратен от (организация)</td>
                             <td>{props.protocol.author.organization.name}</td>
                         </tr>
+                        <tr>
+                            <td>Район (МИР)</td>
+                            <td></td>
+                        </tr>
+                        <tr>
+                            <td>Община</td>
+                            <td></td>
+                        </tr>
+                        <tr>
+                            <td>Адм. ед.</td>
+                            <td></td>
+                        </tr>
+                        <tr>
+                            <td>Секция</td>
+                            <td></td>
+                        </tr>
                     </tbody>
                     </table>
                     <hr/>
-                    <h1>ДАННИ ОТ ИЗБИРАТЕЛНИ СПИСЪЦИ</h1>
+                    <h1>ДАННИ ОТ ИЗБИРАТЕЛНИЯ СПИСЪК</h1>
                     <ProtocolDetailsTable>
                     <tbody>
                         <tr>
-                            <td>2. Брой на гласувалите избиратели според положените подписи в избирателния списък (...)</td>
+                            <td>2. Брой на гласувалите избиратели според положените подписи в избирателния списък (вкл. под чертата)</td>
                             <td>
                                 <input
                                     type="text"
                                     name="votersCount"
                                     className={fieldStatus['votersCount'].invalid? 'invalid' : fieldStatus['votersCount'].changed? 'changed' : ''}
                                     value={formData.votersCount}
-                                    onChange={handleChange}
+                                    onChange={handleNumberChange}
                                 />
                             </td>
                         </tr>
@@ -525,19 +557,30 @@ export default props => {
                                     value={formData.invalidVotesCount}
                                     name="invalidVotesCount"
                                     className={fieldStatus['invalidVotesCount'].invalid? 'invalid' : fieldStatus['invalidVotesCount'].changed? 'changed' : ''}
-                                    onChange={handleChange}
+                                    onChange={handleNumberChange}
                                 />
                             </td>
                         </tr>
                         <tr>
-                            <td>6. Общ брой намерени в избирателната кутия действителни гласове (бюлетини)</td>
+                            <td>6.1. Брой на действителните гласове, подадени за кандидатските листи на партии, коалиции и ИК</td>
                             <td>
                                 <input
                                     type="text"
                                     value={formData.validVotesCount}
                                     name="validVotesCount"
                                     className={fieldStatus['validVotesCount'].invalid? 'invalid' : fieldStatus['validVotesCount'].changed? 'changed' : ''}  
-                                    onChange={handleChange}
+                                    onChange={handleNumberChange}
+                                />
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>6.2. Брой на действителните гласове "Не подкрепям никого"</td>
+                            <td>
+                                <input type="text"
+                                    className={fieldStatus[`party0`].invalid? 'invalid' : fieldStatus[`party0`].changed? 'changed' : ''}
+                                    data-party-id={'0'}
+                                    value={resultsData['0']}
+                                    onChange={handleResultsChange}
                                 />
                             </td>
                         </tr>
@@ -547,7 +590,6 @@ export default props => {
                     <h1>7. РАЗПРЕДЕЛЕНИЕ НА ГЛАСОВЕТЕ ПО КАНДИДАТСКИ ЛИСТИ</h1>
                     <PartyResultsTable>
                         <tbody>
-                        {partyRow(parties.find(party => party.id.toString() === '0'))}
                         {parties.map(party => 
                             !((allParties? true : party.isFeatured) && party.id.toString() !== '0')
                             ? null 

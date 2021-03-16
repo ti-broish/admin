@@ -133,7 +133,7 @@ export default props => {
     };
 
     const handleChange = ev => {
-        const { name, value } = event.target;
+        const { name, value } = ev.target;
         setFormData({ ...formData, [name]: value })
     };
 
