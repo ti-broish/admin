@@ -5,7 +5,7 @@
   "main": "index.js",
   "scripts": {
     "build": "webpack --config webpack/build.config.js",
-    "serve": "webpack serve --env API_HOST=https://d1tapi.dabulgaria.bg --config webpack/serve.config.js"
+    "serve": "webpack serve --env API_HOST=https://api.tibroish.bg --config webpack/serve.config.js"
   },
   "author": "",
   "dependencies": {
@@ -31,6 +31,7 @@
     "normalize.css": "^8.0.1",
     "react": "^17.0.1",
     "react-dom": "^17.0.1",
+    "react-image": "^4.0.3",
     "react-reveal": "^1.2.2",
     "react-router-dom": "^5.2.0",
     "react-use-keypress": "^1.2.0",
