@@ -1,4 +1,4 @@
-import React, { useContext, useState } from 'react';
+import React, { useContext, useState, useEffect } from 'react';
 import ReactDOM from 'react-dom';
 import ProtocolPhotos from './ProtocolPhotos';
 
@@ -284,6 +284,11 @@ import { AuthContext } from '../App';
 export default props => {
     const { parties, authPost } = useContext(AuthContext);
     const [allParties, setAllParties] = useState(Math.random() < 0.5);
+    const [divisionNames, setDivisionNames] = useState({
+        region: null,
+        admunit: null,
+        district: null,
+    });
 
     const zeroIfEmpty = value => value? value : '';//0;
 
@@ -293,6 +298,20 @@ export default props => {
         validVotesCount: zeroIfEmpty(props.protocol.results.validVotesCount),
         invalidVotesCount: zeroIfEmpty(props.protocol.results.invalidVotesCount),
     });
+
+    useEffect(() => {
+        if(formData.sectionId.length === 9) {
+            updateDivisionNames();
+        }
+    }, [formData.sectionId])
+
+    const updateDivisionNames = () => {
+        setDivisionNames({ region: null, admunit: null, district: null });
+
+        setTimeout(() => {
+            setDivisionNames({ region: 'НЕИМПЛЕМЕНТИРАНО', admunit: 'НЕИМПЛЕМЕНТИРАНО', district: 'НЕИМПЛЕМЕНТИРАНО'});
+        }, 1000);
+    };
 
     const initResults = () => {
         const resultsObj = { '0': '' };
@@ -378,6 +397,10 @@ export default props => {
                 </td>
             </tr>
         );
+    };
+
+    const handleProtocolNumberChange = e => {
+        setFormData({...formData, sectionId: e.target.value});
     };
 
     const handleResultsChange = e => {
@@ -482,7 +505,7 @@ export default props => {
                                                 value={formData.sectionId} 
                                                 maxLength={9}
                                                 name="sectionId"
-                                                onChange={handleNumberChange}
+                                                onChange={handleProtocolNumberChange}
                                             />
                                         </div>
                                         <div className={getBoxClass(2)}/>
@@ -503,28 +526,26 @@ export default props => {
                             </td>
                         </tr>
                         <tr>
-                            <td>Място</td>
-                            <td>{props.protocol.section.place}</td>
-                        </tr>
-                        <tr>
-                            <td>Изпратен от (организация)</td>
-                            <td>{props.protocol.author.organization.name}</td>
-                        </tr>
-                        <tr>
                             <td>Район (МИР)</td>
-                            <td></td>
+                            <td>
+                                {divisionNames.region? divisionNames.region : <i>Зареждане...</i>}
+                            </td>
                         </tr>
                         <tr>
                             <td>Община</td>
-                            <td></td>
+                            <td>
+                                {divisionNames.region? divisionNames.admunit : <i>Зареждане...</i>}
+                            </td>
                         </tr>
                         <tr>
                             <td>Адм. ед.</td>
-                            <td></td>
+                            <td>
+                                {divisionNames.region? divisionNames.district : <i>Зареждане...</i>}
+                            </td>
                         </tr>
                         <tr>
-                            <td>Секция</td>
-                            <td></td>
+                            <td style={{paddingTop: '20px'}}>Изпратен от (организация)</td>
+                            <td style={{paddingTop: '20px'}}>{props.protocol.author.organization.name}</td>
                         </tr>
                     </tbody>
                     </table>
