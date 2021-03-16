@@ -282,12 +282,15 @@ const PartyNumber = styled.span`
 import { AuthContext } from '../App';
 
 export default props => {
-    const { parties, authPost } = useContext(AuthContext);
+    const { parties, authPost, authGet } = useContext(AuthContext);
     const [allParties, setAllParties] = useState(Math.random() < 0.5);
     const [divisionNames, setDivisionNames] = useState({
-        region: null,
-        admunit: null,
-        district: null,
+        country: null,
+        electionRegion: null,
+        municipality: null,
+        town: null,
+        cityRegion: null,
+        address: null,
     });
 
     const zeroIfEmpty = value => value? value : '';//0;
@@ -305,12 +308,28 @@ export default props => {
         }
     }, [formData.sectionId])
 
-    const updateDivisionNames = () => {
-        setDivisionNames({ region: null, admunit: null, district: null });
+    const updateDivisionNames = async () => {
+        setDivisionNames({
+            country: null,
+            electionRegion: null,
+            municipality: null,
+            town: null,
+            cityRegion: null,
+            address: null,
+        });
 
-        setTimeout(() => {
-            setDivisionNames({ region: 'НЕИМПЛЕМЕНТИРАНО', admunit: 'НЕИМПЛЕМЕНТИРАНО', district: 'НЕИМПЛЕМЕНТИРАНО'});
-        }, 1000);
+        const res = await authGet(`/sections/${formData.sectionId}`);
+
+        console.log(res.data);
+
+        setDivisionNames({
+            country: res.data.town.country.name,
+            electionRegion: res.data.electionRegion.name,
+            municipality: res.data.town.municipality.name,
+            town: res.data.town.name,
+            cityRegion: res.data.cityRegion.name,
+            address: res.data.place,
+        });
     };
 
     const initResults = () => {
@@ -526,22 +545,28 @@ export default props => {
                             </td>
                         </tr>
                         <tr>
-                            <td>Район (МИР)</td>
-                            <td>
-                                {divisionNames.region? divisionNames.region : <i>Зареждане...</i>}
-                            </td>
+                            <td>Държава</td>
+                            <td>{divisionNames.country}</td>
+                        </tr>
+                        <tr>
+                            <td>МИР</td>
+                            <td>{divisionNames.electionRegion}</td>
                         </tr>
                         <tr>
                             <td>Община</td>
-                            <td>
-                                {divisionNames.region? divisionNames.admunit : <i>Зареждане...</i>}
-                            </td>
+                            <td>{divisionNames.municipality}</td>
                         </tr>
                         <tr>
-                            <td>Адм. ед.</td>
-                            <td>
-                                {divisionNames.region? divisionNames.district : <i>Зареждане...</i>}
-                            </td>
+                            <td>Град</td>
+                            <td>{divisionNames.town}</td>
+                        </tr>
+                        <tr>
+                            <td>Район</td>
+                            <td>{divisionNames.cityRegion}</td>
+                        </tr>
+                        <tr>
+                            <td>Локация</td>
+                            <td>{divisionNames.address}</td>
                         </tr>
                         <tr>
                             <td style={{paddingTop: '20px'}}>Изпратен от (организация)</td>
