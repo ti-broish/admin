@@ -1,8 +1,9 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 
 import styled from 'styled-components';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faChevronLeft, faChevronRight } from '@fortawesome/free-solid-svg-icons';
+import useKeypress from 'react-use-keypress';
 
 const PhotoSection = styled.div`
     width: 50vw;
@@ -47,15 +48,26 @@ export default props => {
     const maxPage = props.protocol.pictures.length - 1;
     const nextAvail = page < maxPage;
     const prevAvail = page > 0;
+
+    useKeypress(['ArrowLeft'], event => prevPage());
+    useKeypress(['ArrowRight'], event => nextPage());
+
+    const prevPage = () => {
+        if(prevAvail) setPage(page - 1);
+    };
+
+    const nextPage = () => {
+        if(nextAvail) setPage(page + 1);
+    };
     
     const pageNav = () => {
         return(
             <PageNav>
-                <PageNavButton hidden={!prevAvail} onClick={() => setPage(page - 1)}>
+                <PageNavButton hidden={!prevAvail} onClick={prevPage}>
                     <FontAwesomeIcon icon={faChevronLeft}/> Предишна
                 </PageNavButton>
                 <p style={{color: 'white'}}>{page + 1} / {maxPage + 1}</p>
-                <PageNavButton hidden={!nextAvail} onClick={() => setPage(page + 1)}>
+                <PageNavButton hidden={!nextAvail} onClick={nextPage}>
                     Следваща <FontAwesomeIcon icon={faChevronRight}/>
                 </PageNavButton>
             </PageNav>
