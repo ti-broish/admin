@@ -460,10 +460,6 @@ export default props => {
             changedFields = true;
     }
 
-    const openConfirmationModal = (title, message, callback) => {
-
-    };
-
     const approveProtocol = async () => {
         props.setLoading(true);
         await authPost(`/protocols/${props.protocol.id}/approve`);
@@ -490,8 +486,6 @@ export default props => {
                 })
             }
         };
-
-        console.log(postBody);
 
         props.setLoading(true);
         try {

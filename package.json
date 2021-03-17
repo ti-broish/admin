@@ -6,7 +6,7 @@
   "scripts": {
     "build": "webpack --config webpack/build.config.js",
     "build-production": "webpack --config webpack/build.config.js --env API_HOST=https://api.tibroish.bg",
-    "serve": "webpack serve --config webpack/serve.config.js --env API_HOST=https://d1tapi.dabulgaria.bg"
+    "serve": "webpack serve --config webpack/serve.config.js --env API_HOST=https://api.tibroish.bg"
   },
   "author": "",
   "dependencies": {
