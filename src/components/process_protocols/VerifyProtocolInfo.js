@@ -320,15 +320,15 @@ export default props => {
 
         const res = await authGet(`/sections/${formData.sectionId}`);
 
-        console.log(res.data);
+        const { town, electionRegion, cityRegion, place} = res.data;
 
         setDivisionNames({
-            country: res.data.town.country.name,
-            electionRegion: res.data.electionRegion.name,
-            municipality: res.data.town.municipality.name,
-            town: res.data.town.name,
-            cityRegion: res.data.cityRegion.name,
-            address: res.data.place,
+            country: town.country.name,
+            electionRegion: electionRegion.name,
+            municipality: town.municipality.name,
+            town: town.name,
+            cityRegion: !cityRegion? '' : cityRegion.name,
+            address: place,
         });
     };
 
