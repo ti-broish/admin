@@ -280,10 +280,12 @@ const PartyNumber = styled.span`
 `;
 
 import { AuthContext } from '../App';
+import ConfirmationModal from './ConfirmationModal';
 
 export default props => {
     const { parties, authPost, authGet } = useContext(AuthContext);
     const [allParties, setAllParties] = useState(Math.random() < 0.5);
+    const [modalState, setModalState] = useState({isOpen: false});
     const [divisionNames, setDivisionNames] = useState({
         country: null,
         electionRegion: null,
@@ -458,6 +460,10 @@ export default props => {
             changedFields = true;
     }
 
+    const openConfirmationModal = (title, message, callback) => {
+
+    };
+
     const approveProtocol = async () => {
         props.setLoading(true);
         await authPost(`/protocols/${props.protocol.id}/approve`);
@@ -500,6 +506,15 @@ export default props => {
 
     return(
         <div>
+            <ConfirmationModal
+                isOpen={modalState.isOpen}
+                title={modalState.title}
+                message={modalState.message}
+                confirmButtonName={modalState.confirmButtonName}
+                cancelButtonName={modalState.cancelButtonName}
+                confirmHandler={modalState.confirmHandler}
+                cancelHandler={modalState.cancelHandler}
+            />
             <FontAwesomeIcon icon={faChevronDown}/>
             <ProtocolPhotos protocol={props.protocol}/>
             <ProtocolInfoSection>
@@ -645,9 +660,20 @@ export default props => {
                     <hr/>
                     {
                         invalidFields || changedFields?
-                            <CorrectButton onClick={replaceProtocol} disabled={invalidFields}>
-                                Коригирай
-                            </CorrectButton> :
+                            <AcceptButton 
+                                disabled={invalidFields}
+                                onClick={() => setModalState({
+                                    isOpen: true,
+                                    title: 'Сигурни ли сте?',
+                                    message: 'Сигурни ли сте, че искате да потвърдите този протокол?',
+                                    confirmButtonName: 'Потвърди',
+                                    cancelButtonName: 'Върни се',
+                                    confirmHandler: replaceProtocol,
+                                    cancelHandler: () => setModalState({isOpen: false})
+                                })}
+                            >
+                                Потвърди
+                            </AcceptButton> :
                             <AcceptButton onClick={approveProtocol}>
                                 Потвърди
                             </AcceptButton>
