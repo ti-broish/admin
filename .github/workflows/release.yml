@@ -38,5 +38,5 @@ jobs:
           access_key: ${{ secrets.MINIO_PRODUCTION_ACCESS_KEY }}
           secret_key: ${{ secrets.MINIO_PRODUCTION_SECRET_KEY }}
           bucket: ${{ secrets.MINIO_PRODUCTION_BUCKET }}
-          source_dir: 'public'
+          source_dir: 'dist'
           target_dir: '/'
