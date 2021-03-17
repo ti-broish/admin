@@ -9,9 +9,9 @@ import ProtocolPage from './ProtocolPage';
 
 const GalleryButton = styled.button`
     color: white;
-    position: absolute;
-    top: 10px;
-    left: 5px;
+    //position: absolute;
+    //top: 10px;
+    //left: 5px;
     cursor: pointer;
     background: none;
     border: none;
@@ -25,9 +25,18 @@ const GalleryButton = styled.button`
 
 const PageNav = styled.div`
     text-align: center;
-    margin-top: 10px;
+    position: fixed;
+    height: 60px;
+    z-index: 12;
+    background-color: black;
+    width: calc(50vw - 12px);
     
     & > * { display: inline-block; }
+`;
+
+const PageNavCompensator = styled.div`
+    height: 60px;
+    display: block;
 `;
 
 const PageNavButton = styled.button`
@@ -60,18 +69,20 @@ const PhotoSection = styled.div`
     }
 `;
 
-
 export default props => {
     const [rotation, setRotation] = useState(0);
 
     const maxPage = props.protocol.pictures.length - 1;
 
     const pageNav = () => {
-        return(
+        return([
             <PageNav>
-                <button onClick={rotate}>
+                <GalleryButton onClick={() => props.setPage(null)}>
+                    <FontAwesomeIcon icon={faTh}/>
+                </GalleryButton>
+                <GalleryButton onClick={rotate}>
                     <FontAwesomeIcon icon={faUndo}/>
-                </button>
+                </GalleryButton>
                 <PageNavButton hidden={!props.prevAvail} onClick={props.prevPage}>
                     <FontAwesomeIcon icon={faChevronLeft}/> Предишна
                 </PageNavButton>
@@ -79,8 +90,9 @@ export default props => {
                 <PageNavButton hidden={!props.nextAvail} onClick={props.nextPage}>
                     Следваща <FontAwesomeIcon icon={faChevronRight}/>
                 </PageNavButton>
-            </PageNav>
-        );
+            </PageNav>,
+            <PageNavCompensator/>
+        ]);
     };
 
     const rotate = () => {
@@ -91,9 +103,6 @@ export default props => {
 
     return(
         <PhotoSection>
-            <GalleryButton onClick={() => props.setPage(null)}>
-                <FontAwesomeIcon icon={faTh}/>
-            </GalleryButton>
             {pageNav()}
             {props.protocol.pictures.map((picture, i) => 
                 <ProtocolPage isCurrentPage={props.page === i} picture={picture} rotation={rotation}/>
