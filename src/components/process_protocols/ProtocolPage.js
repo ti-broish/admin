@@ -4,31 +4,24 @@ import styled from 'styled-components';
 
 import { SpinnerCircularFixed } from 'spinners-react';
 
-const ProtocolPageContainer = styled.div`
-    width: 100%;
-    text-align: center;
-    min-height: 400px;
-    vertical-align: middle;
-    ${props => props.currentPage? '' : 'display: none;'}
-`;
-
 const ProtocolPageImage = styled.img`
     ${props => {
         const ratio = props.dims.width / props.dims.height;
+        const scale = props.zoom / 100;
 
         //client width si e prosto width
         //trqbva da vidim kolko e razlikata mejdu height i client width
 
         if(props.rotation === 90 || props.rotation === 270) {
             return `
-                width: ${props.dims.width * ratio}px !important; 
-                height: ${props.dims.width}px !important;
-                padding: 0 ${(props.dims.width * (1 - ratio)) / 2}px;
+                width: ${(props.dims.width * ratio) * scale}px !important; 
+                height: ${(props.dims.width) * scale}px !important;
+                padding: 0 ${((props.dims.width * (1 - ratio)) / 2) * scale}px;
             `;
         } else {
             return `
-                width: ${props.dims.width - 12}px !important; 
-                height: ${props.dims.height - 12 / ratio}px !important;
+                width: ${(props.dims.width - 12) * scale}px !important; 
+                height: ${(props.dims.height - 12 / ratio) * scale}px !important;
                 padding: 0;
             `;
         }
@@ -68,6 +61,7 @@ export default props => {
             <ProtocolPageImage 
                 rotation={props.rotation}
                 dims={dims}
+                zoom={props.zoom}
                 hide={loading || !props.isCurrentPage}
                 src={props.picture.url}
                 onLoad={imageLoaded}

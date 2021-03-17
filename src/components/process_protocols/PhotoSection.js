@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faChevronLeft, faChevronRight, faTh, faUndo } from '@fortawesome/free-solid-svg-icons';
+import { faChevronLeft, faChevronRight, faTh, faUndo, faSearchPlus, faSearchMinus } from '@fortawesome/free-solid-svg-icons';
 
 import styled from 'styled-components';
 
@@ -57,11 +57,12 @@ const PageNavButton = styled.button`
 const PhotoSection = styled.div`
     width: 50vw;
     height: 100vh;
-    overflow-y: auto;
+    overflow-y: hidden;
     background-color: black;
     position: absolute;
     top: 0;
     left: 0;
+    text-align: center;
 
     img {
         //width: 100%;
@@ -69,8 +70,11 @@ const PhotoSection = styled.div`
     }
 `;
 
+import ScrollContainer from 'react-indiana-drag-scroll';
+
 export default props => {
     const [rotation, setRotation] = useState(0);
+    const [zoom, setZoom] = useState(100);
 
     const maxPage = props.protocol.pictures.length - 1;
 
@@ -82,6 +86,12 @@ export default props => {
                 </GalleryButton>
                 <GalleryButton onClick={rotate}>
                     <FontAwesomeIcon icon={faUndo}/>
+                </GalleryButton>
+                <GalleryButton disabled={!zoomInPossible} onClick={zoomIn}>
+                    <FontAwesomeIcon icon={faSearchPlus}/>
+                </GalleryButton>
+                <GalleryButton disabled={!zoomOutPossible} onClick={zoomOut}>
+                    <FontAwesomeIcon icon={faSearchMinus}/>
                 </GalleryButton>
                 <PageNavButton hidden={!props.prevAvail} onClick={props.prevPage}>
                     <FontAwesomeIcon icon={faChevronLeft}/> Предишна
@@ -101,12 +111,39 @@ export default props => {
         setRotation(newRotation);
     };
 
+    const MIN_ZOOM = 50;
+    const MAX_ZOON = 200;
+
+    const zoomInPossible = zoom < 200;
+    const zoomOutPossible = zoom > 50;
+
+    const zoomIn = () => {
+        let newZoom = zoom + 10;
+        if(newZoom > 200) newZoom = 200;
+        setZoom(newZoom);
+    };
+
+    const zoomOut = () => {
+        let newZoom = zoom - 10;
+        if(newZoom < 50) newZoom = 50;
+        setZoom(newZoom);
+    };
+
     return(
         <PhotoSection>
             {pageNav()}
-            {props.protocol.pictures.map((picture, i) => 
-                <ProtocolPage isCurrentPage={props.page === i} picture={picture} rotation={rotation}/>
-            )}
+            <ScrollContainer hideScrollbars={false} className="scroll-container">
+                <div style={{maxHeight: 'calc(100vh - 72px)'}}>
+                {props.protocol.pictures.map((picture, i) => 
+                    <ProtocolPage 
+                        isCurrentPage={props.page === i} 
+                        picture={picture} 
+                        rotation={rotation}
+                        zoom={zoom}
+                    />
+                )}
+                </div>
+            </ScrollContainer>
         </PhotoSection>
     );
 };
