@@ -263,9 +263,18 @@ const PartyResultsTable = styled.table`
         cursor: pointer;
     }
 
-    td:nth-child(1) { width: 8%; }
-    td:nth-child(2) { width: 72%; }
-    td:nth-child(3) { width: 20%; }
+    ${props => props.isMachine? `
+        td:nth-child(1) { width: 8%; }
+        td:nth-child(2) { width: 42%; }
+        td:nth-child(3) { width: 30%; }
+        td:nth-child(4) { width: 20%; }
+    ` : `
+        td:nth-child(1) { width: 8%; }
+        td:nth-child(2) { width: 72%; }
+        td:nth-child(3) { width: 20%; }
+    `}
+
+
 `;
 
 const PartyNumber = styled.span`
@@ -284,15 +293,16 @@ import ConfirmationModal from './ConfirmationModal';
 
 export default props => {
     const { parties, authPost, authGet } = useContext(AuthContext);
-    const [allParties, setAllParties] = useState(Math.random() < 0.5);
+    const [allParties, setAllParties] = useState(true);//Math.random() < 0.5);
     const [modalState, setModalState] = useState({isOpen: false});
-    const [divisionNames, setDivisionNames] = useState({
+    const [sectionData, setSectionData] = useState({
         country: null,
         electionRegion: null,
         municipality: null,
         town: null,
         cityRegion: null,
         address: null,
+        isMachine: false,
     });
 
     const zeroIfEmpty = value => value? value : '';//0;
@@ -306,31 +316,33 @@ export default props => {
 
     useEffect(() => {
         if(formData.sectionId.length === 9) {
-            updateDivisionNames();
+            updateSectionData();
         }
     }, [formData.sectionId])
 
-    const updateDivisionNames = async () => {
-        setDivisionNames({
+    const updateSectionData = async () => {
+        setSectionData({
             country: null,
             electionRegion: null,
             municipality: null,
             town: null,
             cityRegion: null,
             address: null,
+            isMachine: false,
         });
 
         const res = await authGet(`/sections/${formData.sectionId}`);
 
         const { town, electionRegion, cityRegion, place} = res.data;
 
-        setDivisionNames({
+        setSectionData({
             country: town.country.name,
             electionRegion: electionRegion.name,
             municipality: town.municipality.name,
             town: town.name,
             cityRegion: !cityRegion? '' : cityRegion.name,
             address: place,
+            isMachine: res.data.isMachine,
         });
     };
 
@@ -340,11 +352,17 @@ export default props => {
         for(const party of parties) {
             if((allParties? true : party.isFeatured) || party.id.toString() === '0')
                 resultsObj[party.id] = '';
+                resultsObj[`${party.id}m`] = '';
+                resultsObj[`${party.id}nm`] = '';
         }
 
         for(const result of props.protocol.results.results) {
             if(result.validVotesCount)
                 resultsObj[result.party.id] = result.validVotesCount;
+            if(result.machineVotesCount)
+                resultsObj[`${result.party.id}m`] = result.machineVotesCount;
+            if(result.nonMachineVotesCount)
+                resultsObj[`${result.party.id}nm`] = result.nonMachineVotesCount;
         }
 
         return resultsObj;
@@ -368,19 +386,29 @@ export default props => {
 
     for(const party of parties) {
         if((allParties? true : party.isFeatured) || party.id.toString() === '0') {
-            let originalResult = 0;
-            for(const result of props.protocol.results.results) {
-                if(result.party.id === party.id) {
-                    originalResult = result.validVotesCount;
-                }
-            }
 
-            if(resultsData[party.id] === '')
-                fieldStatus[`party${party.id}`] = { invalid: true };
-            else if(originalResult.toString() !== resultsData[party.id].toString())
-                fieldStatus[`party${party.id}`] = { changed: true };
-            else 
-                fieldStatus[`party${party.id}`] = { unchanged: true };
+            const updateFieldStatus = (apiKey, resultSuffix) => {
+                let originalResult = 0;
+                for(const result of props.protocol.results.results) {
+                    if(result.party.id === party.id) {
+                        originalResult = result[apiKey]? result[apiKey] : '';
+                    }
+                }
+
+                if(resultsData[`${party.id}${resultSuffix}`] === '')
+                    fieldStatus[`party${party.id}${resultSuffix}`] = { invalid: true };
+                else if(originalResult.toString() !== resultsData[`${party.id}${resultSuffix}`].toString())
+                    fieldStatus[`party${party.id}${resultSuffix}`] = { changed: true };
+                else 
+                    fieldStatus[`party${party.id}${resultSuffix}`] = { unchanged: true };
+            };
+
+            updateFieldStatus('validVotesCount', '');
+
+            if(sectionData.isMachine) {
+                updateFieldStatus('machineVotesCount', 'm');
+                updateFieldStatus('nonMachineVotesCount', 'nm');
+            }
         }
     }
 
@@ -399,24 +427,78 @@ export default props => {
 
     const partyRow = party => {
         const status = fieldStatus[`party${party.id}`];
+        const statusM = fieldStatus[`party${party.id}m`];
+        const statusNM = fieldStatus[`party${party.id}nm`];
         return(
-            <tr>
-                <td>{party.id.toString() === '0'? null : 
-                    party.color? 
-                        <PartyNumber color={party.color}>{party.id}</PartyNumber> :
-                        <PartyNumber color={'white'} textColor={'555'}>{party.id}</PartyNumber>
-                }
-                </td>
-                <td>{party.displayName}</td>
-                <td>
-                    <input type="text"
-                        className={status.invalid? 'invalid' : status.changed? 'changed' : ''}
-                        data-party-id={party.id}
-                        value={resultsData[party.id]}
-                        onChange={handleResultsChange}
-                    />
-                </td>
-            </tr>
+            !sectionData.isMachine
+            ?
+                <tr>
+                    <td>{party.id.toString() === '0'? null : 
+                        party.color? 
+                            <PartyNumber color={party.color}>{party.id}</PartyNumber> :
+                            <PartyNumber color={'white'} textColor={'555'}>{party.id}</PartyNumber>
+                    }
+                    </td>
+                    <td>{party.displayName}</td>
+                    <td>
+                        <input type="text"
+                            className={status.invalid? 'invalid' : status.changed? 'changed' : ''}
+                            data-party-id={party.id}
+                            value={resultsData[party.id]}
+                            onChange={handleResultsChange}
+                        />
+                    </td>
+                </tr>
+            : [
+                <tr>
+                    <td>{party.id.toString() === '0'? null : 
+                        party.color? 
+                            <PartyNumber color={party.color}>{party.id}</PartyNumber> :
+                            <PartyNumber color={'white'} textColor={'555'}>{party.id}</PartyNumber>
+                    }
+                    </td>
+                    <td rowspan="3" style={{
+                        verticalAlign: 'top', 
+                        paddingTop: '5px',
+                        borderBottom: '1px solid rgb(204, 204, 204)',
+                    }}>
+                        {party.displayName}
+                    </td>
+                    <td>от бюлетини</td>
+                    <td>
+                        <input type="text"
+                            className={statusNM.invalid? 'invalid' : statusNM.changed? 'changed' : ''}
+                            data-party-id={`${party.id}nm`}
+                            value={resultsData[`${party.id}nm`]}
+                            onChange={handleResultsChange}
+                        />
+                    </td>
+                </tr>,
+                <tr>
+                    <td></td>
+                    <td>от маш. гласове</td>
+                    <td>
+                        <input type="text"
+                            className={statusM.invalid? 'invalid' : statusM.changed? 'changed' : ''}
+                            data-party-id={`${party.id}m`}
+                            value={resultsData[`${party.id}m`]}
+                            onChange={handleResultsChange}
+                        />
+                    </td>
+                </tr>,
+                <tr>
+                    <td></td>
+                    <td style={{borderBottom: '1px solid #ccc'}}>общо М + БГ</td>
+                    <td>
+                        <input type="text"
+                            className={status.invalid? 'invalid' : status.changed? 'changed' : ''}
+                            data-party-id={party.id}
+                            value={resultsData[party.id]}
+                            onChange={handleResultsChange}
+                        />
+                    </td>
+                </tr>
+            ]
         );
     };
 
@@ -425,8 +507,9 @@ export default props => {
     };
 
     const handleResultsChange = e => {
-        const newValue = filterNumberFieldInput(e.target.value, resultsData[e.target.dataset.partyId]);
-        setResultsData({...resultsData, [e.target.dataset.partyId]: newValue});
+        const key = `${e.target.dataset.partyId}`;
+        const newValue = filterNumberFieldInput(e.target.value, resultsData[key]);
+        setResultsData({...resultsData, [key]: newValue});
     };
 
     const handleNumberChange = e => {
@@ -475,17 +558,40 @@ export default props => {
     };
 
     const replaceProtocol = async () => {
+        const results = {};
+
+        Object.keys(resultsData).forEach(key => {
+            if(key[key.length - 2] === 'n') {
+                let newKey = key.slice(0, key.length - 2);
+                if(!results[newKey]) results[newKey] = {};
+                results[newKey].nonMachineVotesCount = !sectionData.isMachine? null : parseInt(resultsData[key], 10);
+            } else if(key[key.length - 1] === 'm') {
+                let newKey = key.slice(0, key.length - 1);
+                if(!results[newKey]) results[newKey] = {};
+                results[newKey].machineVotesCount = !sectionData.isMachine? null : parseInt(resultsData[key], 10);
+            } else {
+                if(!results[key]) results[key] = {};
+                results[key].validVotesCount = parseInt(resultsData[key], 10);
+            }
+        });
+
         const postBody = { 
             section: { id: formData.sectionId },
             results: { 
                 invalidVotesCount: parseInt(formData.invalidVotesCount, 10),
                 validVotesCount: parseInt(formData.validVotesCount, 10),
                 votersCount: parseInt(formData.votersCount, 10),
-                results: Object.keys(resultsData).map(key => {
-                    return { party: parseInt(key, 10), validVotesCount: parseInt(resultsData[key], 10) };
+                results: Object.keys(results).map(key => {
+                    return { party: parseInt(key, 10), 
+                        validVotesCount: results[key].validVotesCount,
+                        machineVotesCount: results[key].machineVotesCount,
+                        nonMachineVotesCount: results[key].nonMachineVotesCount,
+                    };
                 })
             }
         };
+        
+        console.log(postBody);
 
         props.setLoading(true);
         try {
@@ -555,31 +661,35 @@ export default props => {
                         </tr>
                         <tr>
                             <td>Държава</td>
-                            <td>{divisionNames.country}</td>
+                            <td>{sectionData.country}</td>
                         </tr>
                         <tr>
                             <td>МИР</td>
-                            <td>{divisionNames.electionRegion}</td>
+                            <td>{sectionData.electionRegion}</td>
                         </tr>
                         <tr>
                             <td>Община</td>
-                            <td>{divisionNames.municipality}</td>
+                            <td>{sectionData.municipality}</td>
                         </tr>
                         <tr>
                             <td>Град</td>
-                            <td>{divisionNames.town}</td>
+                            <td>{sectionData.town}</td>
                         </tr>
                         <tr>
                             <td>Район</td>
-                            <td>{divisionNames.cityRegion}</td>
+                            <td>{sectionData.cityRegion}</td>
                         </tr>
                         <tr>
                             <td>Локация</td>
-                            <td>{divisionNames.address}</td>
+                            <td>{sectionData.address}</td>
                         </tr>
                         <tr>
                             <td style={{paddingTop: '20px'}}>Изпратен от (организация)</td>
                             <td style={{paddingTop: '20px'}}>{props.protocol.author.organization.name}</td>
+                        </tr>
+                        <tr>
+                            <td>Машинна секция</td>
+                            <td>{sectionData.isMachine? 'Да' : 'Не'}</td>
                         </tr>
                     </tbody>
                     </table>
@@ -628,6 +738,32 @@ export default props => {
                                 />
                             </td>
                         </tr>
+                        {
+                            !sectionData.isMachine? null : [
+                                <tr>
+                                    <td>6.2а. Брой на намерените в избирателна кутия дейстивтелни гласове "Не подрекпям никого"</td>
+                                    <td>
+                                        <input type="text"
+                                            className={fieldStatus[`party0nm`].invalid? 'invalid' : fieldStatus[`party0nm`].changed? 'changed' : ''}
+                                            data-party-id={'0nm'}
+                                            value={resultsData['0nm']}
+                                            onChange={handleResultsChange}
+                                        />
+                                    </td>
+                                </tr>,
+                                <tr>
+                                    <td>6.2б. Брой гласували за "Не подкрепям никого" от машинното гласуване</td>
+                                    <td>
+                                        <input type="text"
+                                            className={fieldStatus[`party0m`].invalid? 'invalid' : fieldStatus[`party0m`].changed? 'changed' : ''}
+                                            data-party-id={'0m'}
+                                            value={resultsData['0m']}
+                                            onChange={handleResultsChange}
+                                        />
+                                    </td>
+                                </tr>
+                            ]
+                        }
                         <tr>
                             <td>6.2. Брой на действителните гласове "Не подкрепям никого"</td>
                             <td>
@@ -643,7 +779,7 @@ export default props => {
                     </ProtocolDetailsTable>
                     <hr/>
                     <h1>7. РАЗПРЕДЕЛЕНИЕ НА ГЛАСОВЕТЕ ПО КАНДИДАТСКИ ЛИСТИ</h1>
-                    <PartyResultsTable>
+                    <PartyResultsTable isMachine={sectionData.isMachine}>
                         <tbody>
                         {parties.map(party => 
                             !((allParties? true : party.isFeatured) && party.id.toString() !== '0')
