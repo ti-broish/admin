@@ -29,7 +29,8 @@ export default props => {
         : <PhotoSection 
             page={page}
             setPage={setPage} 
-            protocol={props.protocol} 
+            protocol={props.protocol}
+            reorderPictures={props.reorderPictures}
             prevAvail={prevAvail} 
             nextAvail={nextAvail}
             nextPage={nextPage}

@@ -124,6 +124,10 @@ export default props => {
         setProtocol(null);
     };
 
+    const reorderPictures = newPictures => {
+        setProtocol({...protocol, pictures: newPictures})
+    };
+
     return(
         loading? <Loading fullScreen/> :
         !protocol?
@@ -144,7 +148,8 @@ export default props => {
                 </NextProtocolButton>
             </ReadyScreen> :
             <VerifyProtocolInfo 
-                protocol={protocol} 
+                protocol={protocol}
+                reorderPictures={reorderPictures}
                 returnProtocol={returnProtocol}
                 setLoading={setLoading}
                 processingDone={processingDone}

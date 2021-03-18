@@ -21,6 +21,15 @@ const GalleryButton = styled.button`
     &:hover {
         background-color: #333;
     }
+
+    &:disabled {
+        color: #bbb;
+        cursor: auto;
+
+        &:hover {
+            background: none;
+        }
+    }
 `;
 
 const PageNav = styled.div`
@@ -93,10 +102,10 @@ export default props => {
                 <GalleryButton disabled={!zoomOutPossible} onClick={zoomOut}>
                     <FontAwesomeIcon icon={faSearchMinus}/>
                 </GalleryButton>
-                <GalleryButton>
+                <GalleryButton disabled={!movePageBackPossible} onClick={movePageBack}>
                     <FontAwesomeIcon icon={faStepBackward}/>
                 </GalleryButton>
-                <GalleryButton>
+                <GalleryButton disabled={!movePageForwardPossible} onClick={movePageForward}>
                     <FontAwesomeIcon icon={faStepForward}/>
                 </GalleryButton>
                 <PageNavButton hidden={!props.prevAvail} onClick={props.prevPage}>
@@ -118,21 +127,50 @@ export default props => {
     };
 
     const MIN_ZOOM = 50;
-    const MAX_ZOON = 200;
+    const MAX_ZOOM = 200;
 
-    const zoomInPossible = zoom < 200;
-    const zoomOutPossible = zoom > 50;
+    const zoomInPossible = zoom < MAX_ZOOM;
+    const zoomOutPossible = zoom > MIN_ZOOM;
 
     const zoomIn = () => {
         let newZoom = zoom + 10;
-        if(newZoom > 200) newZoom = 200;
+        if(newZoom > MAX_ZOOM) newZoom = MAX_ZOOM;
         setZoom(newZoom);
     };
 
     const zoomOut = () => {
         let newZoom = zoom - 10;
-        if(newZoom < 50) newZoom = 50;
+        if(newZoom < MIN_ZOOM) newZoom = MIN_ZOOM;
         setZoom(newZoom);
+    };
+
+    const movePageBackPossible = props.page !== 0;
+    const movePageForwardPossible = props.page < props.protocol.pictures.length - 1;
+
+    const movePageBack = () => {
+        if(movePageBackPossible) {
+            let pictures = props.protocol.pictures;
+            let curPage = pictures[props.page];
+
+            pictures.splice(props.page, 1);
+            pictures.splice(props.page - 1, 0, curPage);
+            
+            props.reorderPictures(pictures);
+            props.prevPage();
+        }
+    };
+
+    const movePageForward = () => {
+        if(movePageForwardPossible) {
+            let pictures = props.protocol.pictures;
+            let curPage = pictures[props.page];
+
+            pictures.splice(props.page, 1);
+            pictures.splice(props.page + 1, 0, curPage);
+            
+            props.reorderPictures(pictures);
+            props.nextPage();
+        }
     };
 
     return(
@@ -142,6 +180,7 @@ export default props => {
                 <div style={{maxHeight: 'calc(100vh - 72px)'}}>
                 {props.protocol.pictures.map((picture, i) => 
                     <ProtocolPage 
+                        key={picture.url}
                         isCurrentPage={props.page === i} 
                         picture={picture} 
                         rotation={rotation}

@@ -510,7 +510,7 @@ export default props => {
                 cancelHandler={modalState.cancelHandler}
             />
             <FontAwesomeIcon icon={faChevronDown}/>
-            <ProtocolPhotos protocol={props.protocol}/>
+            <ProtocolPhotos protocol={props.protocol} reorderPictures={props.reorderPictures}/>
             <ProtocolInfoSection>
                 <SectionHeader>
                     <BackButton onClick={props.returnProtocol}>
