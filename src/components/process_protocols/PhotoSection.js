@@ -33,12 +33,13 @@ const GalleryButton = styled.button`
 `;
 
 const PageNav = styled.div`
-    text-align: center;
     position: fixed;
     height: 60px;
     z-index: 12;
     background-color: black;
     width: calc(50vw - 12px);
+    padding: 8px 0;
+    box-sizing: border-box;
     
     & > * { display: inline-block; }
 `;
@@ -71,12 +72,6 @@ const PhotoSection = styled.div`
     position: absolute;
     top: 0;
     left: 0;
-    text-align: center;
-
-    img {
-        //width: 100%;
-        margin-top: 20px;
-    }
 `;
 
 import ScrollContainer from 'react-indiana-drag-scroll';
@@ -84,6 +79,7 @@ import ScrollContainer from 'react-indiana-drag-scroll';
 export default props => {
     const [rotation, setRotation] = useState(0);
     const [zoom, setZoom] = useState(100);
+    const [loadedImages, setLoadedImages] = useState(0);
 
     const maxPage = props.protocol.pictures.length - 1;
 
@@ -108,13 +104,19 @@ export default props => {
                 <GalleryButton disabled={!movePageForwardPossible} onClick={movePageForward}>
                     <FontAwesomeIcon icon={faStepForward}/>
                 </GalleryButton>
-                <PageNavButton hidden={!props.prevAvail} onClick={props.prevPage}>
-                    <FontAwesomeIcon icon={faChevronLeft}/> Предишна
-                </PageNavButton>
-                <p style={{color: 'white'}}>{props.page + 1} / {maxPage + 1}</p>
-                <PageNavButton hidden={!props.nextAvail} onClick={props.nextPage}>
-                    Следваща <FontAwesomeIcon icon={faChevronRight}/>
-                </PageNavButton>
+                <GalleryButton disabled={!props.prevAvail} onClick={props.prevPage}>
+                    <FontAwesomeIcon icon={faChevronLeft}/>
+                </GalleryButton>
+                <p style={{
+                    color: 'white',
+                    fontSize: '36px',
+                    margin: 0,
+                }}>
+                    {props.page + 1}/{maxPage + 1}
+                </p>
+                <GalleryButton disabled={!props.nextAvail} onClick={props.nextPage}>
+                    <FontAwesomeIcon icon={faChevronRight}/>
+                </GalleryButton>
             </PageNav>,
             <PageNavCompensator/>
         ]);
@@ -185,6 +187,8 @@ export default props => {
                         picture={picture} 
                         rotation={rotation}
                         zoom={zoom}
+                        preload={loadedImages === i}
+                        imageLoaded={() => setLoadedImages(loadedImages + 1)}
                     />
                 )}
                 </div>

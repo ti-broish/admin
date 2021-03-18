@@ -9,9 +9,6 @@ const ProtocolPageImage = styled.img`
         const ratio = props.dims.width / props.dims.height;
         const scale = props.zoom / 100;
 
-        //client width si e prosto width
-        //trqbva da vidim kolko e razlikata mejdu height i client width
-
         if(props.rotation === 90 || props.rotation === 270) {
             return `
                 width: ${(props.dims.width * ratio) * scale}px !important; 
@@ -45,6 +42,8 @@ export default props => {
             width: ev.target.width / ratio,
             height: ev.target.height / ratio,
         });
+
+        props.imageLoaded();
     };
 
     return(
@@ -58,6 +57,7 @@ export default props => {
                     thickness={70}
                 />
             </div>}
+            {!props.isCurrentPage && !props.preload? null :
             <ProtocolPageImage 
                 rotation={props.rotation}
                 dims={dims}
@@ -65,7 +65,7 @@ export default props => {
                 hide={loading || !props.isCurrentPage}
                 src={props.picture.url}
                 onLoad={imageLoaded}
-            />
+            />}
         </div>
     );
 };
