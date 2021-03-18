@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faChevronLeft, faChevronRight, faTh, faUndo, faSearchPlus, faSearchMinus } from '@fortawesome/free-solid-svg-icons';
+import { faChevronLeft, faChevronRight, faTh, faUndo, faSearchPlus, faSearchMinus, faStepBackward, faStepForward } from '@fortawesome/free-solid-svg-icons';
 
 import styled from 'styled-components';
 
@@ -92,6 +92,12 @@ export default props => {
                 </GalleryButton>
                 <GalleryButton disabled={!zoomOutPossible} onClick={zoomOut}>
                     <FontAwesomeIcon icon={faSearchMinus}/>
+                </GalleryButton>
+                <GalleryButton>
+                    <FontAwesomeIcon icon={faStepBackward}/>
+                </GalleryButton>
+                <GalleryButton>
+                    <FontAwesomeIcon icon={faStepForward}/>
                 </GalleryButton>
                 <PageNavButton hidden={!props.prevAvail} onClick={props.prevPage}>
                     <FontAwesomeIcon icon={faChevronLeft}/> Предишна
