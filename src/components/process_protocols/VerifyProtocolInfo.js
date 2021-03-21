@@ -306,6 +306,7 @@ export default props => {
     });
 
     const zeroIfEmpty = value => value? value : '';//0;
+    const emptyStrIfNull = value => (value || value === 0)? value : '';
 
     const [formData, setFormData] = useState({
         sectionId: props.protocol.section.id,
@@ -338,7 +339,7 @@ export default props => {
         setSectionData({
             country: town.country.name,
             electionRegion: electionRegion.name,
-            municipality: town.municipality.name,
+            municipality: town.municipality? town.municipality.name : '',
             town: town.name,
             cityRegion: !cityRegion? '' : cityRegion.name,
             address: place,
@@ -357,9 +358,9 @@ export default props => {
         }
 
         for(const result of props.protocol.results.results) {
-            resultsObj[result.party.id] = result.validVotesCount;
-            resultsObj[`${result.party.id}m`] = result.machineVotesCount;
-            resultsObj[`${result.party.id}nm`] = result.nonMachineVotesCount;
+            resultsObj[result.party.id] = emptyStrIfNull(result.validVotesCount);
+            resultsObj[`${result.party.id}m`] = emptyStrIfNull(result.machineVotesCount);
+            resultsObj[`${result.party.id}nm`] = emptyStrIfNull(result.nonMachineVotesCount);
         }
 
         return resultsObj;
@@ -388,7 +389,7 @@ export default props => {
                 let originalResult = '';
                 for(const result of props.protocol.results.results) {
                     if(result.party.id === party.id) {
-                        originalResult = result[apiKey];//? result[apiKey] : '';
+                        originalResult = emptyStrIfNull(result[apiKey]);
                     }
                 }
 
