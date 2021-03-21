@@ -80,6 +80,7 @@ export default props => {
     const [rotation, setRotation] = useState(0);
     const [zoom, setZoom] = useState(100);
     const [loadedImages, setLoadedImages] = useState(0);
+    const [rotations, setRotations] = useState(props.protocol.pictures.map(()=>0));
 
     const maxPage = props.protocol.pictures.length - 1;
 
@@ -123,9 +124,12 @@ export default props => {
     };
 
     const rotate = () => {
-        let newRotation = rotation + 90;
+        let newRotation = rotations[props.page] + 90;
         if(newRotation >= 360) newRotation -= 360;
-        setRotation(newRotation);
+        //setRotation(newRotation);
+        const newRotations = [...rotations];
+        newRotations[props.page] = newRotation;
+        setRotations(newRotations);
     };
 
     const MIN_ZOOM = 50;
@@ -185,7 +189,7 @@ export default props => {
                         key={picture.url}
                         isCurrentPage={props.page === i} 
                         picture={picture} 
-                        rotation={rotation}
+                        rotation={rotations[props.page]}
                         zoom={zoom}
                         preload={loadedImages === i}
                         imageLoaded={() => setLoadedImages(loadedImages + 1)}
