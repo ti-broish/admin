@@ -357,12 +357,9 @@ export default props => {
         }
 
         for(const result of props.protocol.results.results) {
-            if(result.validVotesCount)
-                resultsObj[result.party.id] = result.validVotesCount;
-            if(result.machineVotesCount)
-                resultsObj[`${result.party.id}m`] = result.machineVotesCount;
-            if(result.nonMachineVotesCount)
-                resultsObj[`${result.party.id}nm`] = result.nonMachineVotesCount;
+            resultsObj[result.party.id] = result.validVotesCount;
+            resultsObj[`${result.party.id}m`] = result.machineVotesCount;
+            resultsObj[`${result.party.id}nm`] = result.nonMachineVotesCount;
         }
 
         return resultsObj;
@@ -388,10 +385,10 @@ export default props => {
         if((allParties? true : party.isFeatured) || party.id.toString() === '0') {
 
             const updateFieldStatus = (apiKey, resultSuffix) => {
-                let originalResult = 0;
+                let originalResult = '';
                 for(const result of props.protocol.results.results) {
                     if(result.party.id === party.id) {
-                        originalResult = result[apiKey]? result[apiKey] : '';
+                        originalResult = result[apiKey];//? result[apiKey] : '';
                     }
                 }
 
@@ -518,9 +515,9 @@ export default props => {
     };
 
     const filterNumberFieldInput = (newValue, oldValue) => {
-        const parsed = parseInt(newValue, 10);
-        if(parsed) {
-            return parsed;
+        let isNum = /^\d+$/.test(newValue);
+        if(isNum) {
+            return newValue;
         } else if(newValue === '') {
             return '';
         } else {
