@@ -77,7 +77,6 @@ const PhotoSection = styled.div`
 import ScrollContainer from 'react-indiana-drag-scroll';
 
 export default props => {
-    const [rotation, setRotation] = useState(0);
     const [zoom, setZoom] = useState(100);
     const [loadedImages, setLoadedImages] = useState(0);
     const [rotations, setRotations] = useState(props.protocol.pictures.map(()=>0));
