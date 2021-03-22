@@ -6,7 +6,7 @@ import PageGallery from './PageGallery';
 import PhotoSection from './PhotoSection';
 
 export default props => {
-    const [page, setPage] = useState(0);
+    const [page, setPage] = useState(null);
 
     const maxPage = props.protocol.pictures.length - 1;
     const nextAvail = page < maxPage;
@@ -25,7 +25,7 @@ export default props => {
 
     return(
         page === null
-        ? <PageGallery setPage={setPage} protocol={props.protocol}/> 
+        ? <PageGallery setPage={setPage} protocol={props.protocol} reorderPictures={props.reorderPictures}/> 
         : <PhotoSection 
             page={page}
             setPage={setPage} 
