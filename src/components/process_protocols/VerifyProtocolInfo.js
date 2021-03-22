@@ -339,9 +339,9 @@ export default props => {
         setSectionData({
             country: town.country.name,
             electionRegion: electionRegion.name,
-            municipality: town.municipality? town.municipality.name : '',
+            municipality: town.municipality? town.municipality.name : null,
             town: town.name,
-            cityRegion: !cityRegion? '' : cityRegion.name,
+            cityRegion: !cityRegion? null : cityRegion.name,
             address: place,
             isMachine: res.data.isMachine,
         });
@@ -657,30 +657,20 @@ export default props => {
                                 </SectionInput>
                             </td>
                         </tr>
-                        <tr>
-                            <td>Държава</td>
-                            <td>{sectionData.country}</td>
-                        </tr>
-                        <tr>
-                            <td>МИР</td>
-                            <td>{sectionData.electionRegion}</td>
-                        </tr>
-                        <tr>
-                            <td>Община</td>
-                            <td>{sectionData.municipality}</td>
-                        </tr>
-                        <tr>
-                            <td>Град</td>
-                            <td>{sectionData.town}</td>
-                        </tr>
-                        <tr>
-                            <td>Район</td>
-                            <td>{sectionData.cityRegion}</td>
-                        </tr>
-                        <tr>
-                            <td>Локация</td>
-                            <td>{sectionData.address}</td>
-                        </tr>
+                    </tbody>
+                    </table>
+                    <p style={{fontSize: '20px'}}>
+                        {!sectionData.country? null : ['Държава: ', <b>{sectionData.country}</b>, ', ']}
+                        {!sectionData.electionRegion? null : ['Изборен район: ', <b>{sectionData.electionRegion}</b>, ', ']}
+                        <br/>
+                        {!sectionData.municipality? null : ['Община: ', <b>{sectionData.municipality}</b>, ', ']}
+                        {!sectionData.town? null : ['Населено място: ', <b>{sectionData.town}</b>, ', ']}
+                        <br/>
+                        {!sectionData.cityRegion? null : ['Район: ', <b>{sectionData.cityRegion}</b>, ', ']}
+                        {!sectionData.address? null : ['Локация: ', <b>{sectionData.address}</b>]}
+                    </p>
+                    <table>
+                        <tbody>
                         <tr>
                             <td style={{paddingTop: '20px'}}>Изпратен от (организация)</td>
                             <td style={{paddingTop: '20px'}}>{props.protocol.author.organization.name}</td>
