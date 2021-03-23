@@ -1,6 +1,8 @@
-import React, { useContext, useState, useEffect } from 'react';
+import React, { useContext, useState, useEffect, useRef } from 'react';
 import ReactDOM from 'react-dom';
 import ProtocolPhotos from './ProtocolPhotos';
+
+import useKeypress from 'react-use-keypress';
 
 import styled from 'styled-components';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
@@ -305,6 +307,39 @@ export default props => {
         isMachine: false,
     });
 
+    const ref = useRef();
+
+    useKeypress(['ArrowUp'], event => {
+        let lastInput = null;
+
+        const traverseNodeTree = node => {
+            if(node === document.activeElement && lastInput != null) 
+                lastInput.focus();
+            else {
+                if(node.tagName === 'INPUT') lastInput = node;
+                [...node.children].forEach(traverseNodeTree);
+            }
+        };
+
+        traverseNodeTree(ref.current);
+    });
+
+    useKeypress(['ArrowDown', 'Enter'], event => {
+        let shouldFocus = false;
+
+        const traverseNodeTree = node => {
+            if(node.tagName === 'INPUT' && shouldFocus) {
+                node.focus();
+                shouldFocus = false;
+            } else {
+                if(node === document.activeElement) shouldFocus = true;
+                [...node.children].forEach(traverseNodeTree);
+            }
+        };
+
+        traverseNodeTree(ref.current);
+    });
+
     const zeroIfEmpty = value => value? value : '';//0;
     const emptyStrIfNull = value => (value || value === 0)? value : '';
 
@@ -511,6 +546,7 @@ export default props => {
     };
 
     const handleNumberChange = e => {
+        console.log(e);
         const newValue = filterNumberFieldInput(e.target.value, formData[e.target.name]);
         setFormData({...formData, [e.target.name]: newValue});
     };
@@ -615,7 +651,7 @@ export default props => {
             />
             <FontAwesomeIcon icon={faChevronDown}/>
             <ProtocolPhotos protocol={props.protocol} reorderPictures={props.reorderPictures}/>
-            <ProtocolInfoSection>
+            <ProtocolInfoSection ref={ref}>
                 <SectionHeader>
                     <BackButton onClick={props.returnProtocol}>
                         <FontAwesomeIcon icon={faChevronLeft}/>
