@@ -103,7 +103,7 @@ export default props => {
                 <hr/>
                 <p>{props.message}</p>
                 {!props.warningMessage? null : 
-                    <p style={{color: '#e6e603', fontWeight: 'bold'}}>
+                    <p style={{color: '#f9d71c', fontWeight: 'bold'}}>
                         <FontAwesomeIcon icon={faExclamationTriangle}/>
                         {props.warningMessage}
                     </p>

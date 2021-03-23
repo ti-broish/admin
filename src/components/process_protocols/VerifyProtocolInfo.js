@@ -638,16 +638,16 @@ export default props => {
     const performSumCheck = () => {
         let sum = 0;
         for(const key of Object.keys(resultsData)) {
-            if(key[key.length-1] !== 'm' && !isNaN(resultsData[key]))
+            if(key[0] !== '0' && key[key.length-1] !== 'm' && !isNaN(resultsData[key]))
                 sum += parseInt(resultsData[key], 10);
         }
 
-        if(sum !== formData.validVotesCount) {
+        if(sum !== parseInt(formData.validVotesCount, 10)) {
             return [`
                 Сборът на гласовете в т. 7 (${sum}) не се равнява на числото 
                 въведено в т. 6.1 (${formData.validVotesCount}).`,
                 <br/>,<br/>,
-                `Ако грешката идва от самата снимка, моля не го поправяйте!
+                `Ако грешката идва от протокола, моля не го поправяйте!
             `];
         } else return null;
     };
