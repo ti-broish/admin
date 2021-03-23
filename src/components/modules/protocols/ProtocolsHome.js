@@ -67,6 +67,10 @@ const ProtocolTable = styled.table`
     }
 `;
 
+const ProtocolStatus = styled.span`
+    font-weight: bold;
+`;
+
 const useQuery = () => {
     return new URLSearchParams(useLocation().search);
 }
@@ -104,7 +108,10 @@ export default props => {
 
     const status = apiStatus => {
         switch(apiStatus) {
-            case "received" : return <span style={{color: 'green'}}>Получен</span>;
+            case "received" : return <ProtocolStatus style={{color: '#6c6cff'}}>Получен</ProtocolStatus>;
+            case "rejected" : return <ProtocolStatus style={{color: '#ff3939'}}>Отхвърлен</ProtocolStatus>;
+            case "approved" : return <ProtocolStatus style={{color: '#46df00'}}>Одобрен</ProtocolStatus>;
+            case "replaced" : return <ProtocolStatus style={{color: '#ecd40e'}}>Редактиран</ProtocolStatus>;
             default: return apiStatus;
         }
     };
@@ -171,13 +178,6 @@ export default props => {
                     </tbody>
                     </ProtocolTable>,
                     renderLinks(),
-                    <div>
-                        Протоколи на страница: {query.get("limit")}
-                        <Link to="/">10</Link>
-                        <Link to="/">20</Link>
-                        <Link to="/">50</Link>
-                        <Link to="/">100</Link>
-                    </div>
                 ]
             }
         </TableViewContainer>
