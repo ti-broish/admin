@@ -1,6 +1,8 @@
 import React from 'react';
 
 import styled from 'styled-components';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faExclamationTriangle } from '@fortawesome/free-solid-svg-icons';
 
 const ModalOverlay = styled.div`
     position: fixed;
@@ -100,6 +102,12 @@ export default props => {
                 <h1>{props.title}</h1>
                 <hr/>
                 <p>{props.message}</p>
+                {!props.warningMessage? null : 
+                    <p style={{color: '#e6e603', fontWeight: 'bold'}}>
+                        <FontAwesomeIcon icon={faExclamationTriangle}/>
+                        {props.warningMessage}
+                    </p>
+                }
                 <AcceptButton onClick={props.confirmHandler}>{props.confirmButtonName}</AcceptButton>
                 <CancelButton onClick={props.cancelHandler}>{props.cancelButtonName}</CancelButton>
             </ConfirmationModal>

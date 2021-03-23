@@ -546,7 +546,6 @@ export default props => {
     };
 
     const handleNumberChange = e => {
-        console.log(e);
         const newValue = filterNumberFieldInput(e.target.value, formData[e.target.name]);
         setFormData({...formData, [e.target.name]: newValue});
     };
@@ -624,8 +623,6 @@ export default props => {
                 })
             }
         };
-        
-        console.log(postBody);
 
         props.setLoading(true);
         try {
@@ -638,6 +635,23 @@ export default props => {
         props.processingDone(`Протокол ${props.protocol.id} ОДОБРЕН с КОРЕКЦИЯ`);
     };
 
+    const performSumCheck = () => {
+        let sum = 0;
+        for(const key of Object.keys(resultsData)) {
+            if(key[key.length-1] !== 'm' && !isNaN(resultsData[key]))
+                sum += parseInt(resultsData[key], 10);
+        }
+
+        if(sum !== formData.validVotesCount) {
+            return [`
+                Сборът на гласовете в т. 7 (${sum}) не се равнява на числото 
+                въведено в т. 6.1 (${formData.validVotesCount}).`,
+                <br/>,<br/>,
+                `Ако грешката идва от самата снимка, моля не го поправяйте!
+            `];
+        } else return null;
+    };
+
     return(
         <div>
             <ConfirmationModal
@@ -648,6 +662,7 @@ export default props => {
                 cancelButtonName={modalState.cancelButtonName}
                 confirmHandler={modalState.confirmHandler}
                 cancelHandler={modalState.cancelHandler}
+                warningMessage={modalState.warningMessage}
             />
             <FontAwesomeIcon icon={faChevronDown}/>
             <ProtocolPhotos protocol={props.protocol} reorderPictures={props.reorderPictures}/>
@@ -820,6 +835,7 @@ export default props => {
                                     isOpen: true,
                                     title: 'Сигурни ли сте?',
                                     message: 'Сигурни ли сте, че искате да потвърдите този протокол?',
+                                    warningMessage: performSumCheck(),
                                     confirmButtonName: 'Потвърди',
                                     cancelButtonName: 'Върни се',
                                     confirmHandler: replaceProtocol,
