@@ -2,9 +2,11 @@ import React, { useState, useEffect, useContext } from 'react';
 
 import { ContentPanel } from '../Modules';
 
-import { Link, useHistory, useParams } from 'react-router-dom';
+import { useHistory, useParams } from 'react-router-dom';
 
 import { AuthContext } from '../../App';
+import Loading from '../../layout/Loading';
+import { TableStyle } from '../Profile';
 
 export default props => {
     const { authGet } = useContext(AuthContext);
@@ -28,10 +30,10 @@ export default props => {
             <h1>Протокол {protocol}</h1>
             <hr/>
             {
-                !data? <h1>Зареждане</h1> :
+                !data? <Loading/> :
                     <div>
                         <h1>Секция</h1>
-                        <table>
+                        <TableStyle>
                             <tbody>
                                 <tr>
                                     <td>Номер</td>
@@ -42,10 +44,10 @@ export default props => {
                                     <td>{data.section.place}</td>
                                 </tr>
                             </tbody>
-                        </table>
+                        </TableStyle>
                         <hr/>
                         <h1>Протокол</h1>
-                        <table>
+                        <TableStyle>
                             <tbody>
                                 <tr>
                                     <td>Изпратен от (организация)</td>
@@ -72,10 +74,10 @@ export default props => {
                                     <td>{data.results.machineVotesCount}</td>
                                 </tr>
                             </tbody>
-                        </table>
+                        </TableStyle>
                         <hr/>
                         <h1>Резултати</h1>
-                        <table>
+                        <TableStyle>
                             <tbody>
                                 {
                                     data.results.results.map(result => 
@@ -89,7 +91,7 @@ export default props => {
                                     )
                                 }
                             </tbody>
-                        </table>
+                        </TableStyle>
                         <hr/>
                         <h1>Снимки</h1>
                         {

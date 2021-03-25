@@ -61,8 +61,6 @@ const NavFooter = styled.div`
 export default props => {
     const { logOut, user } = useContext(AuthContext);
 
-    console.log(user);
-
     const requireRoles = roles => {
         for(const role of roles) {
             if(user.roles.includes(role))

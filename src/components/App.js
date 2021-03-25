@@ -87,13 +87,24 @@ export default props => {
         const res = await axios.delete(`${apiHost()}${path}`, { headers: { 'Authorization': `Bearer ${state.token}` }});
         return res;
     };
+
+    const authPut = async (path, body) => {
+        let res;
+        try {
+            res = await axios.put(`${apiHost()}${path}`, body? body : {}, { headers: { 'Authorization': `Bearer ${state.token}` }});
+        } catch(err) {
+            alert(`Error ${err.response.status}: ${err.response.statusText}\n${err.response.data.message.map((m, i) => `\n${i+1}. ${m}`)}`);
+            throw err;
+        }
+        return res;
+    };
    
     return(
         <AppStyle>
         <BrowserRouter>
             <AuthContext.Provider value={{
                 user: state.user, token: state.token, parties: state.parties, 
-                logIn, logOut, authGet, authPost, authDelete}}>
+                logIn, logOut, authGet, authPost, authDelete, authPut}}>
             {
                 state.loading
                 ? <Loading fullScreen/>

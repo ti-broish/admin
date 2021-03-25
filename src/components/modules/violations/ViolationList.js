@@ -71,6 +71,19 @@ const ViolationStatus = styled.span`
     font-weight: bold;
 `;
 
+const AssigneeIcon = styled.span`
+    background-color: #4aa2ff;
+    border-radius: 50%;
+    color: white;
+    font-weight: bold;
+    height: 34px;
+    display: block;
+    width: 34px;
+    padding: 8px 3px;
+    box-sizing: border-box;
+    margin-left: 20px;
+`;
+
 const useQuery = () => {
     return new URLSearchParams(useLocation().search);
 }
@@ -95,7 +108,6 @@ export default props => {
         setLoading(true);
         authGet(url).then(res => {
             setLoading(false);
-            console.log(res.data);
             setData(res.data);
         });
     }, [query.get("page")]);
@@ -104,10 +116,17 @@ export default props => {
         switch(apiStatus) {
             case "received" : return <ViolationStatus style={{color: '#6c6cff'}}>Получен</ViolationStatus>;
             case "rejected" : return <ViolationStatus style={{color: '#ff3939'}}>Отхвърлен</ViolationStatus>;
-            case "approved" : return <ViolationStatus style={{color: '#46df00'}}>Одобрен</ViolationStatus>;
-            case "replaced" : return <ViolationStatus style={{color: '#ecd40e'}}>Редактиран</ViolationStatus>;
+            case "processed" : return <ViolationStatus style={{color: '#46df00'}}>Обработен</ViolationStatus>;
+            case "processing" : return <ViolationStatus style={{color: '#ecd40e'}}>Обработва се</ViolationStatus>;
             default: return apiStatus;
         }
+    };
+
+    const assignees = assignees => {
+        return assignees.length === 0? <i>Свободен</i> : 
+            <AssigneeIcon>
+                {assignees[0].firstName[0]}{assignees[0].lastName[0]}
+            </AssigneeIcon>;
     };
 
     const renderLinks = () => {
@@ -164,7 +183,7 @@ export default props => {
                         ?   <tr><td colspan="6"><Loading/></td></tr>
                         :   data.items.map((violation, i) => 
                                 <tr key={i} onClick={()=>openViolation(violation.id)}>
-                                    <td>{violation.assignees.length === 0? <i>Свободен</i> : 'Зает'}</td>
+                                    <td style={violation.assignees.length === 0? {} : {padding: 0}}>{assignees(violation.assignees)}</td>
                                     <td>{!violation.section? <i>Не е посочена секция</i> : violation.section.id}</td>
                                     <td>{violation.town.name}</td>
                                     <td>{violation.author.firstName} {violation.author.lastName}</td>

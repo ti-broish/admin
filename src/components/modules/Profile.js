@@ -6,9 +6,10 @@ import { ContentPanel } from './Modules';
 
 import styled from 'styled-components';
 
-const TableStyle = styled.table`
+export const TableStyle = styled.table`
     width: 100%;
-    font-size: 16px;
+    font-size: 18px;
+    color: #333;
 
     td {
         padding: 5px;
