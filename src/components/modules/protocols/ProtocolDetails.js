@@ -2,25 +2,29 @@ import React, { useState, useEffect, useContext } from 'react';
 
 import { ContentPanel } from '../Modules';
 
-import { Link, useParams } from 'react-router-dom';
+import { Link, useHistory, useParams } from 'react-router-dom';
 
 import { AuthContext } from '../../App';
 
 export default props => {
     const { authGet } = useContext(AuthContext);
     const { protocol } = useParams();
+    const history = useHistory();
     const [data, setData] = useState(null);
 
     useEffect(() => {
         authGet(`/protocols/${protocol}`).then(res => {
-            console.log(res.data);
             setData(res.data);
         });
     }, []);
 
+    const goBack = () => {
+        history.goBack()
+    }
+
     return(
         <ContentPanel>
-            <Link to={props.backPage}>Назад</Link>
+            <button onClick={goBack}>Назад</button>
             <h1>Протокол {protocol}</h1>
             <hr/>
             {

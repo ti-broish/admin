@@ -1,14 +1,18 @@
 import React from 'react';
 
 import Navigation from './layout/Navigation';
-import Footer from './layout/Footer';
 
 import { Switch, Route, Redirect } from 'react-router-dom';
-import Protocols from './Protocols';
-import Violations from './Violations';
+import Violations from './violations/ViolationList';
 import Admin from './Admin';
 import Posts from './Posts';
 import Profile from './Profile';
+
+import ProtocolsHome from './protocols/ProtocolsHome';
+import ProtocolDetails from './protocols/ProtocolDetails';
+
+import ViolationList from './violations/ViolationList';
+import ViolationDetails from './violations/ViolationDetails';
 
 import styled from 'styled-components';
 import Sections from './Sections';
@@ -55,8 +59,10 @@ export default props => {
             <Switch>
                 <Route path='/profile' component={Profile}/>
                 <Route path='/sections' component={Sections}/>
-                <Route path='/protocols' component={Protocols}/>
-                <Route path='/violations' component={Violations}/>
+                <Route path='/protocol/:protocol' component={ProtocolDetails}/>
+                <Route path='/protocols' component={ProtocolsHome}/>
+                <Route path='/violation/:violation' component={ViolationDetails}/>
+                <Route path='/violations' component={ViolationList}/>
                 <Route path='/users' component={Admin}/>
                 <Route path='/posts' component={Posts}/>
                 <Redirect to='/profile'/>

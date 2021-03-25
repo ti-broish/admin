@@ -1,13 +1,13 @@
-import React, { useEffect, useContext, useState } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 
-import { Link, useLocation, useHistory } from 'react-router-dom';
-
-import { AuthContext } from '../../App';
+import { Link, useHistory, useLocation } from 'react-router-dom';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faChevronLeft, faChevronRight, faFastForward, faFastBackward } from '@fortawesome/free-solid-svg-icons';
 
-import styled from 'styled-components';
+import { AuthContext } from '../../App';
 import Loading from '../../layout/Loading';
+
+import styled from 'styled-components';
 
 const TableViewContainer = styled.div`
     padding: 40px;
@@ -38,7 +38,7 @@ const PaginationLinks = styled.div`
     }
 `;
 
-const ProtocolTable = styled.table`
+const ViolationTable = styled.table`
     background-color: white;
     width: 100%;
     border-collapse: collapse;
@@ -67,7 +67,7 @@ const ProtocolTable = styled.table`
     }
 `;
 
-const ProtocolStatus = styled.span`
+const ViolationStatus = styled.span`
     font-weight: bold;
 `;
 
@@ -77,13 +77,13 @@ const useQuery = () => {
 
 export default props => {
     const { authGet } = useContext(AuthContext);
+    const [loading, setLoading] = useState(true);
     const [data, setData] = useState(null);
-    const [loading, setLoading] = useState(false);
     const query = useQuery();
     const history = useHistory();
 
     useEffect(() => {
-        let url = '/protocols';
+        let url = '/violations';
         const page = query.get("page");
         const limit = query.get("limit");
 
@@ -99,19 +99,12 @@ export default props => {
         });
     }, [query.get("page")]);
 
-    const origin = apiOrigin => {
-        switch(apiOrigin) {
-            case 'ti-broish' : return "Ти Броиш";
-            default: return apiOrigin;
-        }
-    };
-
     const status = apiStatus => {
         switch(apiStatus) {
-            case "received" : return <ProtocolStatus style={{color: '#6c6cff'}}>Получен</ProtocolStatus>;
-            case "rejected" : return <ProtocolStatus style={{color: '#ff3939'}}>Отхвърлен</ProtocolStatus>;
-            case "approved" : return <ProtocolStatus style={{color: '#46df00'}}>Одобрен</ProtocolStatus>;
-            case "replaced" : return <ProtocolStatus style={{color: '#ecd40e'}}>Редактиран</ProtocolStatus>;
+            case "received" : return <ViolationStatus style={{color: '#6c6cff'}}>Получен</ViolationStatus>;
+            case "rejected" : return <ViolationStatus style={{color: '#ff3939'}}>Отхвърлен</ViolationStatus>;
+            case "approved" : return <ViolationStatus style={{color: '#46df00'}}>Одобрен</ViolationStatus>;
+            case "replaced" : return <ViolationStatus style={{color: '#ecd40e'}}>Редактиран</ViolationStatus>;
             default: return apiStatus;
         }
     };
@@ -143,42 +136,46 @@ export default props => {
         );
     };
 
-    const openProtocol = id => {
-        history.push(`/protocol/${id}`);
+    const openViolation = id => {
+        history.push(`/violation/${id}`);
     };
 
     return(
         <TableViewContainer>
-            <h1>Протоколи</h1>
+            <h1>Обработване на сигнали</h1>
             <hr/>
             {
                 !data? <Loading/> : [
                     renderLinks(),
-                    <ProtocolTable>
+                    <ViolationTable>
                     <thead>
+                        <th>Назначен</th>
                         <th>№ на секция</th>
-                        <th>Произход</th>
-                        <th>Адрес</th>
+                        <th>Град</th>
+                        <th>Автор</th>
+                        <th>Описание</th>
                         <th>Статут</th>
                     </thead>
                     <tbody>
                     {
                         loading
-                        ?   <tr><td colspan="4"><Loading/></td></tr>
-                        :   data.items.map((protocol, i) => 
-                                <tr key={i} onClick={()=>openProtocol(protocol.id)}>
-                                    <td style={{textAlign: 'right'}}>{protocol.section.id}</td>
-                                    <td>{origin(protocol.origin)}</td>
-                                    <td>{protocol.section.place}</td>
-                                    <td>{status(protocol.status)}</td>
+                        ?   <tr><td colspan="6"><Loading/></td></tr>
+                        :   data.items.map((violation, i) => 
+                                <tr key={i} onClick={()=>openViolation(violation.id)}>
+                                    <td>{violation.assignees.length === 0? <i>Свободен</i> : 'Зает'}</td>
+                                    <td>{!violation.section? <i>Не е посочена секция</i> : violation.section.id}</td>
+                                    <td>{violation.town.name}</td>
+                                    <td>{violation.author.firstName} {violation.author.lastName}</td>
+                                    <td>{violation.description.slice(0, 40) + '...'}</td>
+                                    <td>{status(violation.status)}</td>
                                 </tr>
                             )
                     }
                     </tbody>
-                    </ProtocolTable>,
+                    </ViolationTable>,
                     renderLinks(),
                 ]
             }
         </TableViewContainer>
-    );
+    )
 };

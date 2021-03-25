@@ -78,10 +78,9 @@ export default props => {
                 <NavLink to='/protocols'>    
                     <FontAwesomeIcon icon={faFileInvoice}/> Протоколи
                 </NavLink>
-                {/*
                 <NavLink to='/violations'>
                     <FontAwesomeIcon icon={faSatelliteDish}/> Сигнали
-                </NavLink>
+                </NavLink>{/*
                 <NavLink to='/users'>
                     <FontAwesomeIcon icon={faUsersCog}/> Администрация
                 </NavLink>
