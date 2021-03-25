@@ -59,7 +59,18 @@ const NavFooter = styled.div`
 `;
 
 export default props => {
-    const { logOut } = useContext(AuthContext);
+    const { logOut, user } = useContext(AuthContext);
+
+    console.log(user);
+
+    const requireRoles = roles => {
+        for(const role of roles) {
+            if(user.roles.includes(role))
+                return true;
+        }
+        return false;
+    };
+
     return(
         <NavigationStyle>
             <NavTitle>
@@ -69,21 +80,27 @@ export default props => {
                 <NavLink to='/profile'>
                     <FontAwesomeIcon icon={faIdBadge}/> Профил
                 </NavLink>
-                <NavLink to='/protocols/process'>    
-                    <FontAwesomeIcon icon={faCheckSquare}/> Проверявай
-                </NavLink>
-                {/*<NavLink to='/sections'>    
-                    <FontAwesomeIcon icon={faPersonBooth}/> Секции
-                </NavLink>*/}
-                <NavLink to='/protocols'>    
-                    <FontAwesomeIcon icon={faFileInvoice}/> Протоколи
-                </NavLink>
-                <NavLink to='/violations'>
-                    <FontAwesomeIcon icon={faSatelliteDish}/> Сигнали
-                </NavLink>{/*
-                <NavLink to='/users'>
-                    <FontAwesomeIcon icon={faUsersCog}/> Администрация
-                </NavLink>
+                { !requireRoles(['validator', 'external-validator', 'admin'])? null :
+                    <NavLink to='/protocols/process'>    
+                        <FontAwesomeIcon icon={faCheckSquare}/> Проверявай
+                    </NavLink>
+                }
+                { !requireRoles(['admin'])? null :
+                    <NavLink to='/protocols'>    
+                        <FontAwesomeIcon icon={faFileInvoice}/> Протоколи
+                    </NavLink>
+                }
+                { !requireRoles(['lawyer', 'admin'])? null :
+                    <NavLink to='/violations'>
+                        <FontAwesomeIcon icon={faSatelliteDish}/> Сигнали
+                    </NavLink>
+                }
+                { !requireRoles(['admin'])? null :
+                    <NavLink to='/users'>
+                        <FontAwesomeIcon icon={faUsersCog}/> Администрация
+                    </NavLink>
+                }
+                {/*
                 <NavLink to='/posts'>
                     <FontAwesomeIcon icon={faNewspaper}/> Статии
                 </NavLink>*/}

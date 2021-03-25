@@ -95,6 +95,7 @@ export default props => {
         setLoading(true);
         authGet(url).then(res => {
             setLoading(false);
+            console.log(res.data);
             setData(res.data);
         });
     }, [query.get("page")]);
@@ -154,6 +155,7 @@ export default props => {
                         <th>Град</th>
                         <th>Автор</th>
                         <th>Описание</th>
+                        <th>Публикуван</th>
                         <th>Статут</th>
                     </thead>
                     <tbody>
@@ -167,6 +169,10 @@ export default props => {
                                     <td>{violation.town.name}</td>
                                     <td>{violation.author.firstName} {violation.author.lastName}</td>
                                     <td>{violation.description.slice(0, 40) + '...'}</td>
+                                    <td>{violation.isPublished?
+                                        <span style={{color: 'green'}}>Да</span> : 
+                                        <span style={{color: 'red'}}>Не</span>
+                                    }</td>
                                     <td>{status(violation.status)}</td>
                                 </tr>
                             )

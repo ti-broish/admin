@@ -3,7 +3,6 @@ import React from 'react';
 import Navigation from './layout/Navigation';
 
 import { Switch, Route, Redirect } from 'react-router-dom';
-import Violations from './violations/ViolationList';
 import Admin from './Admin';
 import Posts from './Posts';
 import Profile from './Profile';
