@@ -3,7 +3,7 @@ import React, { useState, useEffect, useContext } from 'react';
 import { useHistory, useParams } from 'react-router-dom';
 
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faChevronLeft, faTimes, faCheck, faEdit, faUpload } from '@fortawesome/free-solid-svg-icons';
+import { faChevronLeft, faTimes, faCheck, faEdit, faUpload, faEyeSlash } from '@fortawesome/free-solid-svg-icons';
 
 import { ContentPanel } from '../Modules';
 import { AuthContext } from '../../App';
@@ -12,6 +12,7 @@ import Loading from '../../layout/Loading';
 import { TableStyle } from '../Profile';
 
 import styled from 'styled-components';
+import CommentSection from './CommentSection';
 
 const BackButton = styled.button`
     cursor: pointer;
@@ -123,11 +124,10 @@ const FancyButtonRed = styled(FancyButton)`
 `;
 
 export default props => {
-    const { authGet, authPost, user } = useContext(AuthContext);
+    const { authGet, authPost, user, authPatch } = useContext(AuthContext);
     const { violation } = useParams();
     const history = useHistory();
     const [data, setData] = useState(null);
-    const [comments, setComments] = useState(null);
     const [buttonLoading, setButtonLoading] = useState({
         assign: false, process: false, reject: false
     });
@@ -135,10 +135,6 @@ export default props => {
     useEffect(() => {
         authGet(`/violations/${violation}`).then(res => {
             setData(res.data);
-        });
-
-        authGet(`/violations/${violation}/comments`).then(res => {
-            setComments(res.data);
         });
     }, []);
 
@@ -173,7 +169,11 @@ export default props => {
     };
 
     const publishViolation = () => {
-        alert('Почакай малко! Още не работи.');
+        setButtonLoading({...buttonLoading, publish: true});
+        authPatch(`/violations/${violation}`, {isPublished: !data.isPublished}).then(res => {
+            setButtonLoading({...buttonLoading, publish: false});
+            setData(res.data);
+        });
     };
 
     const status = apiStatus => {
@@ -191,7 +191,7 @@ export default props => {
     const assignPossible = () => data.assignees.length === 0 && data.status === 'received' && !buttonLoading.assign;
     const processPossible = () => iAmAssignee && data.status === 'processing' && !buttonLoading.process;
     const rejectPossible =  () => iAmAssignee && data.status === 'processing' && !buttonLoading.reject;
-    const publishPossible =  () => true;
+    const publishPossible =  () => !buttonLoading.publish;
 
     return (
         <ContentPanel>
@@ -228,9 +228,13 @@ export default props => {
                         ]}
                     </FancyButtonRed>
                     <FancyButtonBlue onClick={publishViolation} disabled={!publishPossible()}>
-                        {buttonLoading.publish? 'Момент...' : [
-                            <FontAwesomeIcon icon={faUpload}/>,
-                            ' Публикувай'
+                        {buttonLoading.publish? 'Момент...' :
+                            data.isPublished? [
+                                <FontAwesomeIcon icon={faEyeSlash}/>,
+                                ' Скрий'
+                            ] : [
+                                <FontAwesomeIcon icon={faUpload}/>,
+                                ' Публикувай'
                         ]}
                     </FancyButtonBlue>
                     <hr/>
@@ -285,15 +289,7 @@ export default props => {
                 </div>
             }
             <hr/>
-            <h2>Коментари</h2>
-            {
-                !comments? <Loading/> :
-                    <div>
-                        {
-                            comments.items.length === 0? <p>Все още няма коментари</p> : null
-                        }
-                    </div>
-            }
+            <CommentSection/>
         </ContentPanel>
     );
 };

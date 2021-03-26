@@ -98,13 +98,24 @@ export default props => {
         }
         return res;
     };
+
+    const authPatch = async (path, body) => {
+        let res;
+        try {
+            res = await axios.patch(`${apiHost()}${path}`, body? body : {}, { headers: { 'Authorization': `Bearer ${state.token}` }});
+        } catch(err) {
+            alert(`Error ${err.response.status}: ${err.response.statusText}\n${err.response.data.message.map((m, i) => `\n${i+1}. ${m}`)}`);
+            throw err;
+        }
+        return res;
+    };
    
     return(
         <AppStyle>
         <BrowserRouter>
             <AuthContext.Provider value={{
                 user: state.user, token: state.token, parties: state.parties, 
-                logIn, logOut, authGet, authPost, authDelete, authPut}}>
+                logIn, logOut, authGet, authPost, authDelete, authPut, authPatch}}>
             {
                 state.loading
                 ? <Loading fullScreen/>
