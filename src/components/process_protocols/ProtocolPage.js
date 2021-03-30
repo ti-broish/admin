@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 
 import styled from 'styled-components';
 
@@ -6,26 +6,44 @@ import { SpinnerCircularFixed } from 'spinners-react';
 
 const ProtocolPageImage = styled.img`
     ${props => {
-        const ratio = props.dims.width / props.dims.height;
         const scale = props.zoom / 100;
+        const w = props.dims.width;
+        const h = props.dims.height;
+        const ratio = w / h;
 
         if(props.rotation === 90 || props.rotation === 270) {
             return `
-                width: ${(props.dims.width * ratio) * scale}px !important; 
-                height: ${(props.dims.width) * scale}px !important;
-                padding: 0 ${((props.dims.width * (1 - ratio)) / 2) * scale}px;
+                width: ${w * ratio * scale}px !important; 
+                height: ${w * scale}px !important;
+                //padding: 0 ${((w * (1 - ratio)) / 2) * scale}px;
             `;
         } else {
             return `
-                width: ${(props.dims.width - 12) * scale}px !important; 
-                height: ${(props.dims.height - 12 / ratio) * scale}px !important;
+                width: ${w * scale}px !important; 
+                height: ${h * scale}px !important;
                 padding: 0;
             `;
         }
     }}
-    ${props => props.rotation? `
-        transform: rotate(${props.rotation}deg);` 
-    : ''}
+    ${props => { 
+        const w = props.dims.width;
+        const h = props.dims.height;
+
+        return props.rotation? `
+            transform-origin: 50% 50%;
+            transform: rotate(${props.rotation}deg)
+                ${props.rotation === 90? `
+                    translate(
+                        ${0}px, 
+                        ${(w * ((w / h) - 1)) / 2}px
+                    );` :
+                props.rotation === 270? `
+                    translate(
+                        ${0}px, 
+                        ${(w * (1 - (w / h))) / 2}px
+                    );` : 
+                `;`
+    }` : ''}}
     ${props => !props.hide? '' : 'display: none;'}
 `;
 
@@ -33,22 +51,45 @@ export default props => {
 
     const [loading, setLoading] = useState(true);
     const [dims, setDims] = useState({width: 0, height: 0});
+    const ref = useRef();
+    
+    useEffect(() => {
+        window.addEventListener('resize', resizeHandler);
+        
+        return () => {
+            window.removeEventListener('resize', resizeHandler);
+        };
+    }, []);
+
+    const resizeHandler = () => {
+        if(ref.current) {
+            const containerWidth = ref.current.parentElement.clientWidth;
+            const ratio = ref.current.naturalWidth / containerWidth;
+            setDims({
+                width: ref.current.naturalWidth / ratio,
+                height: ref.current.naturalHeight / ratio,
+            });
+
+            const aspectRatio = ref.current.naturalWidth / ref.current.naturalHeight;
+            props.imageLoaded(ref.current.naturalWidth / ratio * aspectRatio);
+        }
+    };
 
     const imageLoaded = ev => {
         setLoading(false);
         const containerWidth = ev.target.parentElement.clientWidth;
-        const ratio = ev.target.width / containerWidth;
+        const ratio = ev.target.naturalWidth / containerWidth;
         setDims({
-            width: ev.target.width / ratio,
-            height: ev.target.height / ratio,
+            width: ev.target.naturalWidth / ratio,
+            height: ev.target.naturalHeight / ratio,
         });
 
-        props.imageLoaded();
+        const aspectRatio = ev.target.naturalWidth / ev.target.naturalHeight;
+        props.imageLoaded(ev.target.naturalWidth / ratio * aspectRatio);
     };
 
-    return(
-        <div>
-            {!loading || !props.isCurrentPage? null : 
+    return([
+        !loading || !props.isCurrentPage? null : 
             <div style={{marginTop: '236px', textAlign: 'center'}}>
                 <SpinnerCircularFixed 
                     speed={400}
@@ -56,8 +97,8 @@ export default props => {
                     secondaryColor={'#aaa'}
                     thickness={70}
                 />
-            </div>}
-            {!props.isCurrentPage && !props.preload? null :
+            </div>,
+        !props.isCurrentPage && !props.preload? null :
             <ProtocolPageImage 
                 rotation={props.rotation}
                 dims={dims}
@@ -65,7 +106,7 @@ export default props => {
                 hide={loading || !props.isCurrentPage}
                 src={props.picture.url}
                 onLoad={imageLoaded}
-            />}
-        </div>
-    );
+                ref={ref}
+            />
+    ]);
 };

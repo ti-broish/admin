@@ -5,11 +5,14 @@ import { Img } from 'react-image';
 import { SpinnerCircularFixed } from 'spinners-react';
 
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faStepBackward, faStepForward } from '@fortawesome/free-solid-svg-icons';
+import { faStepBackward, faStepForward, faUndo } from '@fortawesome/free-solid-svg-icons';
+
+import ProtocolPage from './ProtocolPage';
 
 const PhotoGallery = styled.div`
     width: 50vw;
     height: 100vh;
+    overflow-x: hidden;
     overflow-y: auto;
     background-color: black;
     position: absolute;
@@ -23,21 +26,30 @@ const PhotoGallery = styled.div`
 `;
 
 const GalleryPhotoButton = styled.button`
-    width: calc(100% / 3);
+    width: calc(100% / 3 - 3px);
     cursor: pointer;
     background: none;
     border: none;
     //margin: 5px;
-    padding: 5px;
+    padding: 3px;
+    vertical-align: top;
+    box-sizing: border-box;
 
     img {
-        width: 100%;
-        ${props => props.selected? `box-shadow: 0px 0px 20px yellow;` : ''}
+        box-sizing: border-box;
+        //width: 100%;
+        ${props => props.selected? 
+            `border: 2px solid yellow;` : 
+            'border: 2px solid transparent;'
+        }
     }
 
     &:hover {
         img {
-            filter: brightness(1.5);
+            ${props => props.selected? 
+                `border: 2px solid yellow;` : 
+                'border: 2px solid white;'
+            }
         }
     }
 `;
@@ -116,6 +128,7 @@ const OpenButton = styled.button`
 
 export default props => {
     const [selectedPhoto, setSelectedPhoto] = useState(null);
+    const [heights, setHeights] = useState(props.protocol.pictures.map(p => 0));
 
     const movePageBackPossible = selectedPhoto !== 0;
     const movePageForwardPossible = selectedPhoto < props.protocol.pictures.length - 1;
@@ -146,6 +159,15 @@ export default props => {
         }
     };
 
+    const rotate = () => {
+        let pictures = props.protocol.pictures;
+        if(!pictures[selectedPhoto].rotation) pictures[selectedPhoto].rotation = 0;
+        pictures[selectedPhoto].rotation += 90;
+        if(pictures[selectedPhoto].rotation >= 360) pictures[selectedPhoto].rotation -= 360;
+        console.log(pictures[selectedPhoto].rotation);
+        props.reorderPictures([...pictures]);
+    };
+
     return(
         <PhotoGallery>
             {
@@ -157,9 +179,12 @@ export default props => {
                         <OpenButton onClick={()=>props.setPage(selectedPhoto)}>
                             Отвори
                         </OpenButton>
-                        <span style={{verticalAlign: 'top', padding: '10px'}}>
+                        <SelectedPageButton onClick={rotate}>
+                            <FontAwesomeIcon icon={faUndo}/>
+                        </SelectedPageButton>
+                        {/*<span style={{verticalAlign: 'top', padding: '10px'}}>
                             Размести:
-                        </span>
+                        </span>*/}
                         <SelectedPageButton disabled={!movePageBackPossible} onClick={movePageBack}>
                             <FontAwesomeIcon icon={faStepBackward}/>
                         </SelectedPageButton>
@@ -174,18 +199,25 @@ export default props => {
                 <GalleryPhotoButton 
                     selected={selectedPhoto === i} 
                     onClick={() => setSelectedPhoto(i)}
+                    onDoubleClick={() => props.setPage(i)}
+                    style={{ minHeight: 
+                        (picture.rotation === 90 || picture.rotation === 270)? 
+                            heights[i] : 0
+                    }}
+                    rotation={picture.rotation? picture.rotation : 0}
                 >
-                    <Img
-                        src={picture.url}
-                        loader={
-                            <SpinnerCircularFixed 
-                                speed={400}
-                                color={'#ddd'}
-                                secondaryColor={'#aaa'}
-                                thickness={70}
-                                style={{marginTop: '236px'}}
-                            />
-                        }
+                    <ProtocolPage 
+                        key={picture.url}
+                        isCurrentPage={true} 
+                        picture={picture} 
+                        rotation={picture.rotation? picture.rotation : 0}
+                        preload={true}
+                        zoom={100}
+                        imageLoaded={enforcedHeight => {
+                            const newHeights = heights;
+                            newHeights[i] = enforcedHeight;
+                            setHeights([...newHeights]);
+                        }}
                     />
                 </GalleryPhotoButton>
             )}

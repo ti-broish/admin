@@ -79,7 +79,6 @@ import ScrollContainer from 'react-indiana-drag-scroll';
 export default props => {
     const [zoom, setZoom] = useState(100);
     const [loadedImages, setLoadedImages] = useState(0);
-    const [rotations, setRotations] = useState(props.protocol.pictures.map(()=>0));
 
     const maxPage = props.protocol.pictures.length - 1;
 
@@ -89,20 +88,11 @@ export default props => {
                 <GalleryButton onClick={() => props.setPage(null)}>
                     <FontAwesomeIcon icon={faTh}/>
                 </GalleryButton>
-                <GalleryButton onClick={rotate}>
-                    <FontAwesomeIcon icon={faUndo}/>
-                </GalleryButton>
                 <GalleryButton disabled={!zoomInPossible} onClick={zoomIn}>
                     <FontAwesomeIcon icon={faSearchPlus}/>
                 </GalleryButton>
                 <GalleryButton disabled={!zoomOutPossible} onClick={zoomOut}>
                     <FontAwesomeIcon icon={faSearchMinus}/>
-                </GalleryButton>
-                <GalleryButton disabled={!movePageBackPossible} onClick={movePageBack}>
-                    <FontAwesomeIcon icon={faStepBackward}/>
-                </GalleryButton>
-                <GalleryButton disabled={!movePageForwardPossible} onClick={movePageForward}>
-                    <FontAwesomeIcon icon={faStepForward}/>
                 </GalleryButton>
                 <GalleryButton disabled={!props.prevAvail} onClick={props.prevPage}>
                     <FontAwesomeIcon icon={faChevronLeft}/>
@@ -120,15 +110,6 @@ export default props => {
             </PageNav>,
             <PageNavCompensator/>
         ]);
-    };
-
-    const rotate = () => {
-        let newRotation = rotations[props.page] + 90;
-        if(newRotation >= 360) newRotation -= 360;
-        //setRotation(newRotation);
-        const newRotations = [...rotations];
-        newRotations[props.page] = newRotation;
-        setRotations(newRotations);
     };
 
     const MIN_ZOOM = 50;
@@ -152,7 +133,7 @@ export default props => {
     const movePageBackPossible = props.page !== 0;
     const movePageForwardPossible = props.page < props.protocol.pictures.length - 1;
 
-    const movePageBack = () => {
+    /*const movePageBack = () => {
         if(movePageBackPossible) {
             let pictures = props.protocol.pictures;
             let curPage = pictures[props.page];
@@ -176,19 +157,19 @@ export default props => {
             props.reorderPictures(pictures);
             props.nextPage();
         }
-    };
+    };*/
 
     return(
         <PhotoSection>
             {pageNav()}
             <ScrollContainer hideScrollbars={false} className="scroll-container">
-                <div style={{maxHeight: 'calc(100vh - 72px)'}}>
+                <div style={{maxHeight: 'calc(100vh - 60px)'}}>
                 {props.protocol.pictures.map((picture, i) => 
                     <ProtocolPage 
                         key={picture.url}
                         isCurrentPage={props.page === i} 
                         picture={picture} 
-                        rotation={rotations[props.page]}
+                        rotation={picture.rotation? picture.rotation : 0}
                         zoom={zoom}
                         preload={loadedImages === i}
                         imageLoaded={() => setLoadedImages(loadedImages + 1)}
