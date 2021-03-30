@@ -23,13 +23,19 @@ export default props => {
 
     const [state, setState] = useState({user: null, loading: true, token: '', parties: []});
 
+    const altIfNull = (val, alt) => val? val : alt;
+
+    const apiKey = altIfNull(process.env.FIREBASE_API_KEY, "AIzaSyB5Zi-TCtek2d1rrxPCUykHc7hUGruY7aU");
+    const authDomain = altIfNull(process.env.FIREBASE_AUTH_DOMAIN, "ti-broish.firebaseapp.com");
+    const databaseURL = altIfNull(process.env.FIREBASE_DATABASE_URL, "https://ti-broish.firebaseio.com");
+    const projectId = altIfNull(process.env.FIREBASE_PROJECT_ID, "ti-broish");
+    console.log(apiKey);
+    console.log(authDomain);
+    console.log(databaseURL);
+    console.log(projectId);
+
     useEffect(() => {
-        firebase.initializeApp({
-            apiKey: "AIzaSyB5Zi-TCtek2d1rrxPCUykHc7hUGruY7aU",
-            authDomain: "ti-broish.firebaseapp.com",
-            databaseURL: "https://ti-broish.firebaseio.com",
-            projectId: "ti-broish",
-        });
+        firebase.initializeApp({ apiKey, authDomain, databaseURL, projectId });
 
         firebase.app().auth().onAuthStateChanged(async user => {
             if (user) {
