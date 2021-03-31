@@ -30,7 +30,7 @@ jobs:
         run: npm ci
 
       - name: Build
-        run: ./node_modules/.bin/webpack --config webpack/build.config.js --env API_HOST=$STAGING_API_HOST  FIREBASE_API_KEY=$STAGING_FIREBASE_API_KEY FIREBASE_AUTH_DOMAIN=$STAGING_FIREBASE_AUTH_DOMAIN FIREBASE_DATABASE_URL=$STAGING_FIREBASE_DATABASE_URL FIREBASE_PROJECT_ID=$STAGING_FIREBASE_PROJECT_ID
+        run: ./node_modules/.bin/webpack --config webpack/build.config.js --env API_HOST=$STAGING_API_HOST FIREBASE_API_KEY=$STAGING_FIREBASE_API_KEY FIREBASE_AUTH_DOMAIN=$STAGING_FIREBASE_AUTH_DOMAIN FIREBASE_DATABASE_URL=$STAGING_FIREBASE_DATABASE_URL FIREBASE_PROJECT_ID=$STAGING_FIREBASE_PROJECT_ID
 
       - name: Minio Deploy
         uses: hkdobrev/minio-deploy-action@v1
@@ -43,7 +43,7 @@ jobs:
           target_dir: '/'
 
       - name: Build Demo
-        run: ./node_modules/.bin/webpack --config webpack/build.config.js --env API_HOST=$DEMO_API_HOST  FIREBASE_API_KEY=$DEMO_FIREBASE_API_KEY FIREBASE_AUTH_DOMAIN=$DEMO_FIREBASE_AUTH_DOMAIN FIREBASE_DATABASE_URL=$DEMO_FIREBASE_DATABASE_URL FIREBASE_PROJECT_ID=$DEMO_FIREBASE_PROJECT_ID
+        run: ./node_modules/.bin/webpack --config webpack/build.config.js --env API_HOST=$DEMO_API_HOST FIREBASE_API_KEY=$DEMO_FIREBASE_API_KEY FIREBASE_AUTH_DOMAIN=$DEMO_FIREBASE_AUTH_DOMAIN FIREBASE_DATABASE_URL=$DEMO_FIREBASE_DATABASE_URL FIREBASE_PROJECT_ID=$DEMO_FIREBASE_PROJECT_ID
 
       - name: Minio Deploy Demo
         uses: hkdobrev/minio-deploy-action@v1
