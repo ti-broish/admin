@@ -25,10 +25,10 @@ export default props => {
 
     const altIfNull = (val, alt) => val? val : alt;
 
-    const apiKey = altIfNull(FIREBASE_API_KEY, "AIzaSyB5Zi-TCtek2d1rrxPCUykHc7hUGruY7aU");
-    const authDomain = altIfNull(FIREBASE_AUTH_DOMAIN, "ti-broish.firebaseapp.com");
-    const databaseURL = altIfNull(FIREBASE_DATABASE_URL, "https://ti-broish.firebaseio.com");
-    const projectId = altIfNull(FIREBASE_PROJECT_ID, "ti-broish");
+    const apiKey = altIfNull(process.env.FIREBASE_API_KEY, "AIzaSyB5Zi-TCtek2d1rrxPCUykHc7hUGruY7aU");
+    const authDomain = altIfNull(process.env.FIREBASE_AUTH_DOMAIN, "ti-broish.firebaseapp.com");
+    const databaseURL = altIfNull(process.env.FIREBASE_DATABASE_URL, "https://ti-broish.firebaseio.com");
+    const projectId = altIfNull(process.env.FIREBASE_PROJECT_ID, "ti-broish");
     console.log(apiKey);
     console.log(authDomain);
     console.log(databaseURL);
@@ -66,7 +66,11 @@ export default props => {
     };
 
     const apiHost = () => {
-        return API_HOST || 'https://d1tapi.dabulgaria.bg';
+        if(!process.env.API_HOST) {
+            return 'https://d1tapi.dabulgaria.bg';
+        } else {
+            return process.env.API_HOST;
+        }
     };
 
     const authGet = async (path) => {
