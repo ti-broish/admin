@@ -521,7 +521,7 @@ export default props => {
                 </tr>,
                 <tr>
                     <td></td>
-                    <td style={{borderBottom: '1px solid #ccc'}}>общо М + БГ</td>
+                    <td style={{borderBottom: '1px solid #ccc'}}>общо Б + МГ</td>
                     <td>
                         <input type="text"
                             className={status.invalid? 'invalid' : status.changed? 'changed' : ''}

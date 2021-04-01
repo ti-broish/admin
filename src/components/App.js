@@ -29,10 +29,6 @@ export default props => {
     const authDomain = altIfNull(process.env.FIREBASE_AUTH_DOMAIN, "ti-broish.firebaseapp.com");
     const databaseURL = altIfNull(process.env.FIREBASE_DATABASE_URL, "https://ti-broish.firebaseio.com");
     const projectId = altIfNull(process.env.FIREBASE_PROJECT_ID, "ti-broish");
-    console.log(apiKey);
-    console.log(authDomain);
-    console.log(databaseURL);
-    console.log(projectId);
 
     useEffect(() => {
         firebase.initializeApp({ apiKey, authDomain, databaseURL, projectId });
