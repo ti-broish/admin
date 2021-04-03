@@ -95,18 +95,33 @@ const CancelButton = styled(VerificationPanelButton)`
 `;
 
 export default props => {
-    return(
-        !props.isOpen? null : [
+  return(
+    !props.isOpen? null : [
             <ModalOverlay onClick={props.cancelHandler}/>,
             <ConfirmationModal>
                 <h1>{props.title}</h1>
                 <hr/>
                 <p>{props.message}</p>
-                {!props.warningMessage? null : 
+                {!props.warningMessage? null :
                     <p style={{color: '#f9d71c', fontWeight: 'bold'}}>
                         <FontAwesomeIcon icon={faExclamationTriangle}/>
                         {props.warningMessage}
                     </p>
+                }
+                {!props.messageHandler ? null :
+                  <div>
+                    <label htmlFor="violation">Съобщение към сигнала</label>
+                    <textarea
+                      name="violation"
+                      id="violation"
+                      cols="30"
+                      rows="10"
+                      style={{ width: '100%' }}
+                      onChange={props.messageHandler}
+                      value={props.messageValue}
+                    >
+                  </textarea>
+                  </div>
                 }
                 <AcceptButton onClick={props.confirmHandler}>{props.confirmButtonName}</AcceptButton>
                 <CancelButton onClick={props.cancelHandler}>{props.cancelButtonName}</CancelButton>

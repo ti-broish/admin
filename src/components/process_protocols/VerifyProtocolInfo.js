@@ -177,6 +177,16 @@ const RejectButton = styled(VerificationPanelButton)`
     }
 `;
 
+const ApproveAndSendViolationButton = styled(VerificationPanelButton)`
+    background-color: #f19c48;
+    border-bottom: 5px solid #eeaa67;
+    color: white;
+
+    &:hover {
+        background-color: #ef8a25;
+    }
+`;
+
 const ProtocolDetailsTable = styled.table`
     table-layout: fixed;
 
@@ -307,6 +317,7 @@ export default props => {
         electionRegion: null,
         municipality: null,
         town: null,
+        townId: null,
         cityRegion: null,
         address: null,
         isMachine: false,
@@ -355,6 +366,8 @@ export default props => {
         invalidVotesCount: zeroIfEmpty(props.protocol.results.invalidVotesCount),
     });
 
+    const [violationMessage, setViolationMessage] = useState('');
+
     useEffect(() => {
         if(formData.sectionId.length === 9) {
             updateSectionData();
@@ -367,6 +380,7 @@ export default props => {
             electionRegion: null,
             municipality: null,
             town: null,
+            townId: null,
             cityRegion: null,
             address: null,
             isMachine: false,
@@ -381,6 +395,7 @@ export default props => {
             electionRegion: electionRegion.name,
             municipality: town.municipality? town.municipality.name : null,
             town: town.name,
+            townId: town.id,
             cityRegion: !cityRegion? null : cityRegion.name,
             address: place,
             isMachine: res.data.isMachine,
@@ -588,6 +603,27 @@ export default props => {
         props.processingDone(`Протокол ${props.protocol.id} ОДОБРЕН`);
     };
 
+    const approveProtocolAndSendViolation = async () => {
+        props.setLoading(true);
+        const data = {
+            description: violationMessage,
+            town: {
+                id: sectionData.townId,
+                name: sectionData.town
+            }
+        };
+        await authPost(`/protocols/${props.protocol.id}/approve-with-violation`, data);
+        props.setLoading(false);
+        props.processingDone(`Протокол ${props.protocol.id} ОДОБРЕН и СИГНАЛ ИЗПРАТЕН`);
+    };
+
+    const rejectProtocol = async () => {
+        props.setLoading(true);
+        await authPost(`/protocols/${props.protocol.id}/reject`);
+        props.setLoading(false);
+        props.processingDone(`Протокол ${props.protocol.id} ОТХВЪРЛЕН`);
+    };
+
     const openConfirmModal = () => {
         setModalState({
             isOpen: true,
@@ -613,11 +649,18 @@ export default props => {
         });
     };
 
-    const rejectProtocol = async () => {
-        props.setLoading(true);
-        await authPost(`/protocols/${props.protocol.id}/reject`);
-        props.setLoading(false);
-        props.processingDone(`Протокол ${props.protocol.id} ОТХВЪРЛЕН`);
+    const openApproveAndSendViolationModal = () => {
+        setModalState({
+            isOpen: true,
+            title: 'Сигурни ли сте?',
+            message: 'Сигурни ли сте, че искате да потвърдите този протокол?',
+            messageValue: violationMessage,
+            messageHandler: (e) => setViolationMessage(e.target.value),
+            confirmButtonName: 'Потвърди и изпрати сигнал',
+            cancelButtonName: 'Върни се',
+            confirmHandler: approveProtocolAndSendViolation,
+            cancelHandler: () => setModalState({isOpen: false})
+        });
     };
 
     const replaceProtocol = async () => {
@@ -693,6 +736,7 @@ export default props => {
                 confirmHandler={modalState.confirmHandler}
                 cancelHandler={modalState.cancelHandler}
                 warningMessage={modalState.warningMessage}
+                messageHandler={modalState.messageHandler}
             />
             <FontAwesomeIcon icon={faChevronDown}/>
             <ProtocolPhotos protocol={props.protocol} reorderPictures={props.reorderPictures}/>
@@ -872,6 +916,9 @@ export default props => {
                     <RejectButton onClick={openRejectModal}>
                         Отхвърли
                     </RejectButton>
+                    <ApproveAndSendViolationButton onClick={openApproveAndSendViolationModal}>
+                        Потвърди + Сигнал до юрист
+                    </ApproveAndSendViolationButton>
                 </ProtocolDetails>
             </ProtocolInfoSection>
         </div>
