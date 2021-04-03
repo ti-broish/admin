@@ -78,7 +78,7 @@ export default props => {
                 <CommentForm newComment={newComment} section={props.section}/>
                 {data.items.length === 0? null : 
                     data.items.slice(0, 5).map(comment => [
-                        <Comment comment={comment}/>,
+                        <Comment key={comment.id} comment={comment}/>,
                         <hr/>
                     ])
                 }
