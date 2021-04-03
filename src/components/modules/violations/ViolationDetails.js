@@ -3,7 +3,7 @@ import React, { useState, useEffect, useContext } from 'react';
 import { useHistory, useParams } from 'react-router-dom';
 
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faChevronLeft, faTimes, faCheck, faEdit, faUpload, faEyeSlash } from '@fortawesome/free-solid-svg-icons';
+import { faChevronLeft, faTimes, faCheck, faEdit, faUpload, faEyeSlash, faDove } from '@fortawesome/free-solid-svg-icons';
 
 import { ContentPanel } from '../Modules';
 import { AuthContext } from '../../App';
@@ -13,6 +13,17 @@ import { TableStyle } from '../Profile';
 
 import styled from 'styled-components';
 import CommentSection from './CommentSection';
+
+import { formatDateShort, formatTime } from '../../Util';
+
+const UpdatesTable = styled(TableStyle)`
+    td, td:first-child {
+        color: #333;
+        font-weight: normal;
+        text-align: center;
+        font-size: 12px;
+    }
+`;
 
 const BackButton = styled.button`
     cursor: pointer;
@@ -42,15 +53,15 @@ const ViolationStatus = styled.span`
 
 const FancyButton = styled.button`
     border: none;
-    padding: 5px 10px;
-    font-size: 18px;
+    padding: 5px 0px;
+    font-size: 12px;
     cursor: pointer;
     border-radius: 5px;
     box-sizing: border-box;
     display: inline-block;
     font-weight: bold;
-    margin: 0 5px;
-    min-width: 200px;
+    margin: 0 2px;
+    min-width: 130px;
     position: relative;
     color: white;
 
@@ -83,7 +94,7 @@ const FancyButtonGreen = styled(FancyButton)`
     }
 `;
 
-const FancyButtonBlue = styled(FancyButton)`
+export const FancyButtonBlue = styled(FancyButton)`
     background-color: #36a2e3;
     border-bottom: 5px solid #1e70b9;
 
@@ -98,7 +109,7 @@ const FancyButtonBlue = styled(FancyButton)`
 `;
 
 const FancyButtonYellow = styled(FancyButton)`
-    background-color: #ffe300;
+    background-color: #f9d71c;
     border-bottom: 5px solid #c1b718;
 
     &:hover {
@@ -124,7 +135,7 @@ const FancyButtonRed = styled(FancyButton)`
 `;
 
 export default props => {
-    const { authGet, authPost, user, authPatch } = useContext(AuthContext);
+    const { authGet, authPost, user, authPatch, authDelete } = useContext(AuthContext);
     const { violation } = useParams();
     const history = useHistory();
     const [data, setData] = useState(null);
@@ -139,13 +150,23 @@ export default props => {
     }, []);
 
     const assignYourself = () => {
-        setButtonLoading({...buttonLoading, assign: true});
-        authPost(`/violations/${violation}/assignees`, {id: user.id}).then(res => {
-            setButtonLoading({...buttonLoading, assign: false});
-            if(res.data.status === 'Accepted') {
-                setData({...data, assignees: [user], status: 'processing'});
-            }
-        });
+        if(iAmAssignee) {
+            setButtonLoading({...buttonLoading, assign: true});
+            authDelete(`/violations/${violation}/assignees/${user.id}`).then(res => {
+                setButtonLoading({...buttonLoading, assign: false});
+                if(res.data.status === 'Accepted') {
+                    setData({...data, assignees: []});
+                }
+            });
+        } else {
+            setButtonLoading({...buttonLoading, assign: true});
+            authPost(`/violations/${violation}/assignees`, {id: user.id}).then(res => {
+                setButtonLoading({...buttonLoading, assign: false});
+                if(res.data.status === 'Accepted') {
+                    setData({...data, assignees: [user], status: 'processing'});
+                }
+            });
+        }
     };
 
     const goBack = () => {
@@ -188,7 +209,7 @@ export default props => {
     
     const iAmAssignee = data && data.assignees.length !== 0 && data.assignees[0].id === user.id;
 
-    const assignPossible = () => data.assignees.length === 0 && data.status === 'received' && !buttonLoading.assign;
+    const assignPossible = () => (data.assignees.length === 0  || iAmAssignee) && !buttonLoading.assign;
     const processPossible = () => iAmAssignee && data.status === 'processing' && !buttonLoading.process;
     const rejectPossible =  () => iAmAssignee && data.status === 'processing' && !buttonLoading.reject;
     const publishPossible =  () => !buttonLoading.publish;
@@ -210,23 +231,23 @@ export default props => {
                     ]}
                     </h2>
                     <FancyButtonYellow onClick={assignYourself} disabled={!assignPossible()}>
-                        {buttonLoading.assign? 'Момент...' : [
-                            <FontAwesomeIcon icon={faEdit}/>,
-                            ' Обработвай'
-                        ]}
+                        {buttonLoading.assign? 'Момент...' : 
+                            iAmAssignee? [
+                                <FontAwesomeIcon icon={faDove}/>,
+                                ' Освободи'
+                            ] : [
+                                <FontAwesomeIcon icon={faEdit}/>,
+                                ' Обработвай'
+                            ]
+                        }
                     </FancyButtonYellow>
                     <FancyButtonGreen onClick={processViolation} disabled={!processPossible()}>
                         {buttonLoading.process? 'Момент...' : [
                             <FontAwesomeIcon icon={faCheck}/>,
-                            ' Закрий сигнал'
+                            ' Приключи'
                         ]}
                     </FancyButtonGreen>
-                    <FancyButtonRed onClick={rejectViolation} disabled={!rejectPossible()}>
-                        {buttonLoading.reject? 'Момент...' : [
-                            <FontAwesomeIcon icon={faTimes}/>,
-                            ' Отхвърли сигнал'
-                        ]}
-                    </FancyButtonRed>
+                    
                     <FancyButtonBlue onClick={publishViolation} disabled={!publishPossible()}>
                         {buttonLoading.publish? 'Момент...' :
                             data.isPublished? [
@@ -237,6 +258,15 @@ export default props => {
                                 ' Публикувай'
                         ]}
                     </FancyButtonBlue>
+                    <FancyButtonRed onClick={rejectViolation} disabled={!rejectPossible()}>
+                        {buttonLoading.reject? 'Момент...' : [
+                            <FontAwesomeIcon icon={faTimes}/>,
+                            ' Отхвърли'
+                        ]}
+                    </FancyButtonRed>
+                    <hr/>
+                    <h2>Описание</h2>
+                    <p>{data.description}</p>
                     <hr/>
                     <h2>Изпратен от</h2>
                     <TableStyle>
@@ -283,9 +313,31 @@ export default props => {
                                 <hr/>
                             </div>
                     }
-                    <h2>Описание</h2>
-                    <p>{data.description}</p>
-                    
+                    <h2>История</h2>
+                    <div style={{ height: '100px', overflowY: 'auto', border: '1px solid #bbb'}}>
+                    <UpdatesTable>
+                        <thead>
+                            <tr>
+                                <th>Дата</th>
+                                <th>Час</th>
+                                <th>Потребител</th>
+                                <th>Действие</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                        {
+                            data.updates.map(update =>
+                                <tr>
+                                    <td>{formatDateShort(update.timestamp)}</td>
+                                    <td>{formatTime(update.timestamp)}</td>
+                                    <td>{update.actor.firstName} {update.actor.lastName}</td>
+                                    <td>{update.type}</td>
+                                </tr>
+                            )
+                        }
+                        </tbody>
+                    </UpdatesTable>
+                    </div>
                 </div>
             }
             <hr/>

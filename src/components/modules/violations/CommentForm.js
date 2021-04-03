@@ -1,3 +1,4 @@
+import { faGraduationCap } from '@fortawesome/free-solid-svg-icons';
 import React, { useState, useContext } from 'react';
 
 import { useParams } from 'react-router-dom';
@@ -6,10 +7,70 @@ import { AuthContext } from '../../App';
 
 const CommentFormStyle = styled.form`
     width: 100%;
+
+    input[type=radio] {
+        margin-left: 15px;
+        margin-right: 5px;
+
+        &:first-of-type {
+            margin-left: 0;
+        }
+    }
+
+    textarea {
+        width: 100%;
+        font-size: 18px;
+        padding: 20px;
+        border: 1px solid #eee;
+        margin: 20px 0;
+        box-sizing: border-box;
+    }
+`;
+
+const FancyButton = styled.input`
+    border: none;
+    padding: 5px 10px;
+    font-size: 15px;
+    cursor: pointer;
+    border-radius: 5px;
+    box-sizing: border-box;
+    display: inline-block;
+    font-weight: bold;
+    margin: 0 2px;
+    position: relative;
+    color: white;
+
+    &:active:enabled {
+        top: 5px;
+        border-bottom: 0;
+    }
+
+    &:disabled {
+        cursor: auto;
+        color: white;
+    }
+
+    &:first-of-type {
+        margin-left: 0;
+    }
+`;
+
+export const FancyButtonBlue = styled(FancyButton)`
+    background-color: #36a2e3;
+    border-bottom: 5px solid #1e70b9;
+
+    &:hover {
+        background-color: #48b4f4;
+    }
+
+    &:disabled {
+        background-color: #b6e4ff;
+        border-bottom-color: #b9d4ec;
+    }
 `;
 
 export default props => {
-    const [comment, setComment] = useState('');
+    const [formData, setFormData] = useState({type: 'internal'});
     const [loading, setLoading] = useState(false);
     const { violation } = useParams();
 
@@ -18,21 +79,40 @@ export default props => {
     const handleSubmit = e => {
         e.preventDefault();
 
+        console.log(formData);
+
         setLoading(true);
-        authPost(`/violations/${violation}/comments`, {text: comment}).then(res => {
+        authPost(`/violations/${violation}/comments`, formData).then(res => {
             setLoading(false);
             props.newComment(res.data);
-        });
+            setFormData({text: '', type: 'internal'})
+        }).catch(err => setLoading(false));
     };
 
     const handleChange = e => {
-        setComment(e.target.value);
+        setFormData({...formData, [e.target.name]: e.target.value});
     };
 
     return (
         <CommentFormStyle onSubmit={handleSubmit}>
-            <input type="text" value={comment} onChange={handleChange}/>
-            <input type='submit' value={loading? 'Изпращане...' : 'Изпрати коментар'}/>
+            <label style={{fontWeight: 'bold', margin: '10px 0', display: 'block'}}>Изпрати до:</label>
+            <input type="radio" checked={formData.type === 'sentToCIK'} name="type" id="sentToCIK" value="sentToCIK" onChange={handleChange}/>
+            <label for="sentToCIK">ЦИК</label>
+            <input type="radio" checked={formData.type === 'sentToRIK'} name="type" id="sentToRIK" value="sentToRIK" onChange={handleChange}/>
+            <label for="sentToRIK">РИК</label>
+            <input type="radio" checked={formData.type === 'sentToMVR'} name="type" id="sentToMVR" value="sentToMVR" onChange={handleChange}/>
+            <label for="sentToMVR">МВР</label>
+            <input type="radio" checked={formData.type === 'sentToProsecutor'} name="type" id="sentToProsecutor" value="sentToProsecutor" onChange={handleChange}/>
+            <label for="sentToProsecutor">Дежурен прокурор</label>
+            <input type="radio" checked={formData.type === 'sentToAuthor'} name="type" id="sentToAuthor" value="sentToAuthor" onChange={handleChange}/>
+            <label for="sentToAuthor">Застъпник</label>
+            <input type="radio" checked={formData.type === 'internal'} name="type" id="internal" value="internal" onChange={handleChange}/>
+            <label for="internal">Не изпращай</label>
+            <br/>
+            <textarea type="text" name="text" rows={4} placeholder={'Напишете коментар към сигнала'} value={formData.text} onChange={handleChange}/>
+            <FancyButtonBlue type='submit' disabled={loading} value={loading? 'Изпращане...' : 'Изпрати коментар'}/>
+            <FancyButtonBlue style={{visibility: 'hidden'}}/>
+            <hr/>
         </CommentFormStyle>
     );
 };

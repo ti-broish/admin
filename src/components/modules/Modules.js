@@ -12,6 +12,7 @@ import ProtocolDetails from './protocols/ProtocolDetails';
 
 import ViolationList from './violations/ViolationList';
 import ViolationDetails from './violations/ViolationDetails';
+import AllComments from './violations/AllComments';
 
 import styled from 'styled-components';
 import Sections from './Sections';
@@ -36,7 +37,8 @@ const ContentHalf = styled.div`
 
 export const ContentPanel = styled.div`
     background-color: white;
-    margin: 30px 15%;
+    margin: 30px auto;
+    max-width: 800px;
     border-radius: 15px;
     //box-shadow: 0px 0px 5px #aaa;
     border: 1px solid #eee;
@@ -60,6 +62,7 @@ export default props => {
                 <Route path='/sections' component={Sections}/>
                 <Route path='/protocol/:protocol' component={ProtocolDetails}/>
                 <Route path='/protocols' component={ProtocolsHome}/>
+                <Route path='/violation/:violation/comments' component={AllComments}/>
                 <Route path='/violation/:violation' component={ViolationDetails}/>
                 <Route path='/violations' component={ViolationList}/>
                 <Route path='/users' component={Admin}/>
