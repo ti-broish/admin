@@ -75,7 +75,7 @@ export default props => {
         !data? <Loading/> :
             <div>
                 {data.items.length === 0? <p>Все още няма коментари</p> : null}
-                <CommentForm newComment={newComment}/>
+                <CommentForm newComment={newComment} section={props.section}/>
                 {data.items.length === 0? null : 
                     data.items.slice(0, 5).map(comment => [
                         <Comment comment={comment}/>,

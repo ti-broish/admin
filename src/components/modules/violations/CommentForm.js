@@ -1,5 +1,5 @@
 import { faGraduationCap } from '@fortawesome/free-solid-svg-icons';
-import React, { useState, useContext } from 'react';
+import React, { useState, useContext, useMemo } from 'react';
 
 import { useParams } from 'react-router-dom';
 import styled from 'styled-components';
@@ -69,22 +69,36 @@ export const FancyButtonBlue = styled(FancyButton)`
     }
 `;
 
+const generateEmailSubject = (section) => {
+    if (section) {
+        return `Сигнал за нередност в изборна секция №${section.id}`
+    }
+    return 'Сигнал за нередност'
+}
+
 export default props => {
     const [formData, setFormData] = useState({type: 'internal'});
     const [loading, setLoading] = useState(false);
     const { violation } = useParams();
 
     const { authPost } = useContext(AuthContext);
+    const foreignAreaSection = useMemo(() => {
+        return props.section && props.section.id && props.section.id.slice(0, 2) === '32'
+    }, [props.section])
 
     const handleSubmit = e => {
         e.preventDefault();
-
-        console.log(formData);
 
         setLoading(true);
         authPost(`/violations/${violation}/comments`, formData).then(res => {
             setLoading(false);
             props.newComment(res.data);
+            if (formData.type === 'sentToCIK') {
+                window.open(`mailto:cik@cik.bg?body=${encodeURIComponent(formData.text)}&subject=${encodeURIComponent(generateEmailSubject(props.section))}`);
+            } else if (formData.type === 'sentToRIK') {
+                const sectionArea = props.section.id.slice(0, 2);
+                window.open(`mailto:rik${sectionArea}@cik.bg?body=${encodeURIComponent(formData.text)}&subject=${encodeURIComponent(generateEmailSubject(props.section))}`);
+            }
             setFormData({text: '', type: 'internal'})
         }).catch(err => setLoading(false));
     };
@@ -98,7 +112,7 @@ export default props => {
             <label style={{fontWeight: 'bold', margin: '10px 0', display: 'block'}}>Изпрати до:</label>
             <input type="radio" checked={formData.type === 'sentToCIK'} name="type" id="sentToCIK" value="sentToCIK" onChange={handleChange}/>
             <label for="sentToCIK">ЦИК</label>
-            <input type="radio" checked={formData.type === 'sentToRIK'} name="type" id="sentToRIK" value="sentToRIK" onChange={handleChange}/>
+            <input type="radio" disabled={foreignAreaSection} checked={formData.type === 'sentToRIK'} name="type" id="sentToRIK" value="sentToRIK" onChange={handleChange}/>
             <label for="sentToRIK">РИК</label>
             <input type="radio" checked={formData.type === 'sentToMVR'} name="type" id="sentToMVR" value="sentToMVR" onChange={handleChange}/>
             <label for="sentToMVR">МВР</label>

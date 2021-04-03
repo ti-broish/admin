@@ -213,7 +213,7 @@ export default props => {
     const processPossible = () => iAmAssignee && data.status === 'processing' && !buttonLoading.process;
     const rejectPossible =  () => iAmAssignee && data.status === 'processing' && !buttonLoading.reject;
     const publishPossible =  () => !buttonLoading.publish;
-
+    
     return (
         <ContentPanel>
             <h1>
@@ -341,7 +341,7 @@ export default props => {
                 </div>
             }
             <hr/>
-            <CommentSection/>
+            <CommentSection section={data && data.section}/>
         </ContentPanel>
     );
 };
