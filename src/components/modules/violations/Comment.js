@@ -40,8 +40,6 @@ export const CommentStyle = styled.div`
 `;
 
 export default props => {
-    console.log(props.comment);
-
     const formatCommentType = commentType => {
         switch(commentType) {
             case 'internal': return 'Вътрешен'; break;
