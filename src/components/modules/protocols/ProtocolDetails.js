@@ -5,6 +5,7 @@ import { ContentPanel } from '../Modules';
 import { useHistory, useParams } from 'react-router-dom';
 
 import { AuthContext } from '../../App';
+import ImageGallery from '../../ImageGallery';
 import Loading from '../../layout/Loading';
 import { TableStyle } from '../Profile';
 
@@ -94,11 +95,11 @@ export default props => {
                         </TableStyle>
                         <hr/>
                         <h1>Снимки</h1>
-                        {
-                            data.pictures.map(picture =>
-                                <a href={picture.url}>{picture.id}</a>
-                            )
-                        }
+                        <ImageGallery 
+                            items={data.pictures.map(picture => ({
+                                original: picture.url
+                            }))}
+                        />
                     </div>
             }
         </ContentPanel>

@@ -7,6 +7,7 @@ import { faChevronLeft, faTimes, faCheck, faEdit, faUpload, faEyeSlash, faDove }
 
 import { ContentPanel } from '../Modules';
 import { AuthContext } from '../../App';
+import ImageGallery from '../../ImageGallery';
 import Loading from '../../layout/Loading';
 
 import { TableStyle } from '../Profile';
@@ -142,6 +143,8 @@ export default props => {
     const [buttonLoading, setButtonLoading] = useState({
         assign: false, process: false, reject: false
     });
+
+    console.log({ data })
 
     useEffect(() => {
         authGet(`/violations/${violation}`).then(res => {
@@ -342,6 +345,16 @@ export default props => {
             }
             <hr/>
             <CommentSection section={data && data.section}/>
+            {data && data.pictures && data.pictures.length > 0 && 
+                <>
+                    <h2>Снимки</h2>
+                    <ImageGallery 
+                        items={data.pictures.map(picture => ({
+                            original: picture.url
+                        }))}
+                    />
+                </>
+            }
         </ContentPanel>
     );
 };
