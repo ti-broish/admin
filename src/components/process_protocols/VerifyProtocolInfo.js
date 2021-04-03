@@ -119,13 +119,13 @@ const BackButton = styled.button`
 const VerificationPanelButton = styled.button`
     border: none;
     padding: 5px 10px;
-    font-size: 26px;
+    font-size: 18px;
     cursor: pointer;
     border-radius: 5px;
     box-sizing: border-box;
     display: inline-block;
     font-weight: bold;
-    width: calc(50% - 20px);
+    width: calc(32% - 18px);
     margin: 0 10px;
     position: relative;
 
@@ -617,6 +617,13 @@ export default props => {
         props.processingDone(`Протокол ${props.protocol.id} ОДОБРЕН и СИГНАЛ ИЗПРАТЕН`);
     };
 
+    const resendProtocol = async () => {
+        props.setLoading(true);
+        await authPost(`/protocols/${props.protocol.id}/resend`);
+        props.setLoading(false);
+        props.processingDone(`Протокол ${props.protocol.id} ЗАЯВЕН ЗА КОРЕКЦИЯ`);
+    };
+
     const rejectProtocol = async () => {
         props.setLoading(true);
         await authPost(`/protocols/${props.protocol.id}/reject`);
@@ -659,6 +666,18 @@ export default props => {
             confirmButtonName: 'Потвърди и изпрати сигнал',
             cancelButtonName: 'Върни се',
             confirmHandler: approveProtocolAndSendViolation,
+            cancelHandler: () => setModalState({isOpen: false})
+        });
+    };
+    
+    const openResendModal = () => {
+        setModalState({
+            isOpen: true,
+            title: 'Сигурни ли сте?',
+            message: 'Сигурни ли сте, че искате да отвхрълите този протокол и да поискате повторно изпращане от застъпникa?',
+            confirmButtonName: 'Върни протокола',
+            cancelButtonName: 'Върни се',
+            confirmHandler: resendProtocol,
             cancelHandler: () => setModalState({isOpen: false})
         });
     };
@@ -913,12 +932,11 @@ export default props => {
                                 Потвърди
                             </AcceptButton>
                     }
-                    <RejectButton onClick={openRejectModal}>
-                        Отхвърли
-                    </RejectButton>
                     <ApproveAndSendViolationButton onClick={openApproveAndSendViolationModal}>
                         Потвърди + Сигнал до юрист
                     </ApproveAndSendViolationButton>
+                    <CorrectButton onClick={openResendModal}>Върни</CorrectButton>
+                    <RejectButton onClick={rejectProtocol}>Отхвърли</RejectButton>
                 </ProtocolDetails>
             </ProtocolInfoSection>
         </div>
