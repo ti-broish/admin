@@ -111,17 +111,17 @@ export default props => {
         <CommentFormStyle onSubmit={handleSubmit}>
             <label style={{fontWeight: 'bold', margin: '10px 0', display: 'block'}}>Изпрати до:</label>
             <input type="radio" checked={formData.type === 'sentToCIK'} name="type" id="sentToCIK" value="sentToCIK" onChange={handleChange}/>
-            <label for="sentToCIK">ЦИК</label>
+            <label htmlFor="sentToCIK">ЦИК</label>
             <input type="radio" disabled={foreignAreaSection} checked={formData.type === 'sentToRIK'} name="type" id="sentToRIK" value="sentToRIK" onChange={handleChange}/>
-            <label for="sentToRIK">РИК</label>
+            <label htmlFor="sentToRIK">РИК</label>
             <input type="radio" checked={formData.type === 'sentToMVR'} name="type" id="sentToMVR" value="sentToMVR" onChange={handleChange}/>
-            <label for="sentToMVR">МВР</label>
+            <label htmlFor="sentToMVR">МВР</label>
             <input type="radio" checked={formData.type === 'sentToProsecutor'} name="type" id="sentToProsecutor" value="sentToProsecutor" onChange={handleChange}/>
-            <label for="sentToProsecutor">Дежурен прокурор</label>
+            <label htmlFor="sentToProsecutor">Дежурен прокурор</label>
             <input type="radio" checked={formData.type === 'sentToAuthor'} name="type" id="sentToAuthor" value="sentToAuthor" onChange={handleChange}/>
-            <label for="sentToAuthor">Застъпник</label>
+            <label htmlFor="sentToAuthor">Застъпник</label>
             <input type="radio" checked={formData.type === 'internal'} name="type" id="internal" value="internal" onChange={handleChange}/>
-            <label for="internal">Не изпращай</label>
+            <label htmlFor="internal">Не изпращай</label>
             <br/>
             <textarea type="text" name="text" rows={4} placeholder={'Напишете коментар към сигнала'} value={formData.text} onChange={handleChange}/>
             <FancyButtonBlue type='submit' disabled={loading} value={loading? 'Изпращане...' : 'Изпрати коментар'}/>
