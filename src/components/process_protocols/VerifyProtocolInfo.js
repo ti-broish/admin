@@ -219,6 +219,11 @@ const svgIcon = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><
 const PartyResultsTable = styled.table`
     table-layout: fixed;
     width: 100%;
+    border-collapse: collapse;
+  
+    tr:nth-child(odd) td {
+        background: #ECECEC;
+    }
 
     button { 
         width: 100%; 
