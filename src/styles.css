@@ -21,3 +21,5 @@
     font-weight: 900;
     font-style: normal;
 }
+
+@import "~react-image-gallery/styles/css/image-gallery.css";
