@@ -694,7 +694,8 @@ export default props => {
                         nonMachineVotesCount: results[key].nonMachineVotesCount,
                     };
                 })
-            }
+            },
+            pictures: props.protocol.pictures
         };
 
         props.setLoading(true);

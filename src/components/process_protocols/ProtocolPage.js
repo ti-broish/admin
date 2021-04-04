@@ -15,6 +15,7 @@ const ProtocolPageImage = styled.img`
             return `
                 width: ${w * ratio * scale}px !important; 
                 height: ${w * scale}px !important;
+                position: absolute;
                 //padding: 0 ${((w * (1 - ratio)) / 2) * scale}px;
             `;
         } else {

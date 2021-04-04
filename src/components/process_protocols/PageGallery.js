@@ -34,9 +34,16 @@ const GalleryPhotoButton = styled.button`
     padding: 3px;
     vertical-align: top;
     box-sizing: border-box;
+    position: relative;
+
+    &:focus {
+        outline: none;
+    }
 
     img {
         box-sizing: border-box;
+        top: 0;
+        left: 0;
         //width: 100%;
         ${props => props.selected? 
             `border: 2px solid yellow;` : 
