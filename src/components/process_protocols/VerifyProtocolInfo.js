@@ -366,7 +366,7 @@ export default props => {
         invalidVotesCount: zeroIfEmpty(props.protocol.results.invalidVotesCount),
     });
 
-    const [violationMessage, setViolationMessage] = useState('');
+    const violationMessage = useRef('')
 
     useEffect(() => {
         if(formData.sectionId.length === 9) {
@@ -606,7 +606,7 @@ export default props => {
     const approveProtocolAndSendViolation = async () => {
         props.setLoading(true);
         const data = {
-            description: violationMessage,
+            description: violationMessage.current,
             town: {
                 id: sectionData.townId,
                 name: sectionData.town
@@ -655,7 +655,7 @@ export default props => {
             title: 'Сигурни ли сте?',
             message: 'Сигурни ли сте, че искате да потвърдите този протокол?',
             messageValue: violationMessage,
-            messageHandler: (e) => setViolationMessage(e.target.value),
+            messageHandler: (e) => violationMessage.current = e.target.value,
             confirmButtonName: 'Потвърди и изпрати сигнал',
             cancelButtonName: 'Върни се',
             confirmHandler: approveProtocolAndSendViolation,
