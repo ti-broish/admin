@@ -933,7 +933,7 @@ export default props => {
                             </AcceptButton>
                     }
                     <ApproveAndSendViolationButton onClick={openApproveAndSendViolationModal}>
-                        Потвърди + Сигнал до юрист
+                        Потвърди + Сигнал&nbsp;до&nbsp;юрист
                     </ApproveAndSendViolationButton>
                     <CorrectButton onClick={openResendModal}>Върни</CorrectButton>
                     <RejectButton onClick={rejectProtocol}>Отхвърли</RejectButton>
