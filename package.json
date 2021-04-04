@@ -28,7 +28,7 @@
     "ejs": "^3.1.5",
     "ejs-loader": "^0.5.0",
     "firebase": "^8.3.0",
-    "html-webpack-plugin": "^4.5.1",
+    "html-webpack-plugin": "^4.5.2",
     "normalize.css": "^8.0.1",
     "react": "^17.0.1",
     "react-dom": "^17.0.1",
