@@ -313,7 +313,7 @@ export default props => {
         let lastInput = null;
 
         const traverseNodeTree = node => {
-            if(node === document.activeElement && lastInput != null) 
+            if(node === document.activeElement && lastInput != null)
                 lastInput.focus();
             else {
                 if(node.tagName === 'INPUT') lastInput = node;
@@ -408,12 +408,12 @@ export default props => {
     for(let i = 0; i < 9; i ++) {
         const char1 = props.protocol.section.id[i];
         const char2 = formData.sectionId[i];
-    
+
         if(typeof char1 == 'undefined' || typeof char2 == 'undefined')
-            fieldStatus[`sectionId${i+1}`] = { invalid: true };   
+            fieldStatus[`sectionId${i+1}`] = { invalid: true };
         else if(char1.toString() !== char2.toString())
             fieldStatus[`sectionId${i+1}`] = { changed: true };
-        else 
+        else
             fieldStatus[`sectionId${i+1}`] = { unchanged: true };
     }
 
@@ -432,7 +432,7 @@ export default props => {
                     fieldStatus[`party${party.id}${resultSuffix}`] = { invalid: true };
                 else if(originalResult.toString() !== resultsData[`${party.id}${resultSuffix}`].toString())
                     fieldStatus[`party${party.id}${resultSuffix}`] = { changed: true };
-                else 
+                else
                     fieldStatus[`party${party.id}${resultSuffix}`] = { unchanged: true };
             };
 
@@ -450,7 +450,7 @@ export default props => {
             fieldStatus[fieldName] = { invalid: true };
         else if(formData[fieldName] !== zeroIfEmpty(props.protocol.results[fieldName]))
             fieldStatus[fieldName] = { changed: true };
-        else 
+        else
             fieldStatus[fieldName] = { unchanged: true };
     };
 
@@ -466,8 +466,8 @@ export default props => {
             !sectionData.isMachine
             ?
                 <tr>
-                    <td>{party.id.toString() === '0'? null : 
-                        party.color? 
+                    <td>{party.id.toString() === '0'? null :
+                        party.color?
                             <PartyNumber color={party.color}>{party.id}</PartyNumber> :
                             <PartyNumber color={'white'} textColor={'555'}>{party.id}</PartyNumber>
                     }
@@ -484,14 +484,14 @@ export default props => {
                 </tr>
             : [
                 <tr>
-                    <td>{party.id.toString() === '0'? null : 
-                        party.color? 
+                    <td>{party.id.toString() === '0'? null :
+                        party.color?
                             <PartyNumber color={party.color}>{party.id}</PartyNumber> :
                             <PartyNumber color={'white'} textColor={'555'}>{party.id}</PartyNumber>
                     }
                     </td>
                     <td rowspan="3" style={{
-                        verticalAlign: 'top', 
+                        verticalAlign: 'top',
                         paddingTop: '5px',
                         borderBottom: '1px solid rgb(204, 204, 204)',
                     }}>
@@ -583,6 +583,31 @@ export default props => {
         props.processingDone(`Протокол ${props.protocol.id} ОДОБРЕН`);
     };
 
+    const openConfirmModal = () => {
+        setModalState({
+            isOpen: true,
+            title: 'Сигурни ли сте?',
+            message: 'Сигурни ли сте, че искате да потвърдите този протокол?',
+            warningMessage: performSumCheck(),
+            confirmButtonName: 'Потвърди',
+            cancelButtonName: 'Върни се',
+            confirmHandler: replaceProtocol,
+            cancelHandler: () => setModalState({isOpen: false})
+        });
+    };
+
+    const openRejectModal = () => {
+        setModalState({
+            isOpen: true,
+            title: 'Сигурни ли сте?',
+            message: 'Сигурни ли сте, че искате да отвхрълите този протокол?',
+            confirmButtonName: 'Отхвърли протокола',
+            cancelButtonName: 'Върни се',
+            confirmHandler: rejectProtocol,
+            cancelHandler: () => setModalState({isOpen: false})
+        });
+    };
+
     const rejectProtocol = async () => {
         props.setLoading(true);
         await authPost(`/protocols/${props.protocol.id}/reject`);
@@ -608,14 +633,14 @@ export default props => {
             }
         });
 
-        const postBody = { 
+        const postBody = {
             section: { id: formData.sectionId },
-            results: { 
+            results: {
                 invalidVotesCount: parseInt(formData.invalidVotesCount, 10),
                 validVotesCount: parseInt(formData.validVotesCount, 10),
                 votersCount: parseInt(formData.votersCount, 10),
                 results: Object.keys(results).map(key => {
-                    return { party: parseInt(key, 10), 
+                    return { party: parseInt(key, 10),
                         validVotesCount: results[key].validVotesCount,
                         machineVotesCount: results[key].machineVotesCount,
                         nonMachineVotesCount: results[key].nonMachineVotesCount,
@@ -682,10 +707,10 @@ export default props => {
                                 <SectionInput>
                                     <div>
                                         <div className={getBoxClass(1)}>
-                                            <input 
+                                            <input
                                                 type="text"
-                                                style={{width: '333px'}} 
-                                                value={formData.sectionId} 
+                                                style={{width: '333px'}}
+                                                value={formData.sectionId}
                                                 maxLength={9}
                                                 name="sectionId"
                                                 onChange={handleProtocolNumberChange}
@@ -772,7 +797,7 @@ export default props => {
                                     type="text"
                                     value={formData.validVotesCount}
                                     name="validVotesCount"
-                                    className={fieldStatus['validVotesCount'].invalid? 'invalid' : fieldStatus['validVotesCount'].changed? 'changed' : ''}  
+                                    className={fieldStatus['validVotesCount'].invalid? 'invalid' : fieldStatus['validVotesCount'].changed? 'changed' : ''}
                                     onChange={handleNumberChange}
                                 />
                             </td>
@@ -820,27 +845,18 @@ export default props => {
                     <h1>7. РАЗПРЕДЕЛЕНИЕ НА ГЛАСОВЕТЕ ПО КАНДИДАТСКИ ЛИСТИ</h1>
                     <PartyResultsTable isMachine={sectionData.isMachine}>
                         <tbody>
-                        {parties.map(party => 
+                        {parties.map(party =>
                             !((allParties? true : party.isFeatured) && party.id.toString() !== '0')
-                            ? null 
+                            ? null
                             : partyRow(party))}
                         </tbody>
                     </PartyResultsTable>
                     <hr/>
                     {
                         invalidFields || changedFields?
-                            <AcceptButton 
+                            <AcceptButton
                                 disabled={invalidFields}
-                                onClick={() => setModalState({
-                                    isOpen: true,
-                                    title: 'Сигурни ли сте?',
-                                    message: 'Сигурни ли сте, че искате да потвърдите този протокол?',
-                                    warningMessage: performSumCheck(),
-                                    confirmButtonName: 'Потвърди',
-                                    cancelButtonName: 'Върни се',
-                                    confirmHandler: replaceProtocol,
-                                    cancelHandler: () => setModalState({isOpen: false})
-                                })}
+                                onClick={openConfirmModal}
                             >
                                 Потвърди
                             </AcceptButton> :
@@ -848,7 +864,7 @@ export default props => {
                                 Потвърди
                             </AcceptButton>
                     }
-                    <RejectButton onClick={rejectProtocol}>
+                    <RejectButton onClick={openRejectModal}>
                         Отхвърли
                     </RejectButton>
                 </ProtocolDetails>
