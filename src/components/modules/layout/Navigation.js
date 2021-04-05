@@ -93,11 +93,11 @@ export default props => {
                         <FontAwesomeIcon icon={faSatelliteDish}/> Сигнали
                     </NavLink>
                 }
-                { !requireRoles(['admin'])? null :
+                {/* { !requireRoles(['admin'])? null :
                     <NavLink to='/users'>
                         <FontAwesomeIcon icon={faUsersCog}/> Администрация
                     </NavLink>
-                }
+                } */}
                 {/*
                 <NavLink to='/posts'>
                     <FontAwesomeIcon icon={faNewspaper}/> Статии
