@@ -38,7 +38,7 @@ export default props => {
                             <tbody>
                                 <tr>
                                     <td>Номер</td>
-                                    <td>{data.section.code}</td>
+                                    <td>{data.section.id}</td>
                                 </tr>
                                 <tr>
                                     <td>Адрес</td>

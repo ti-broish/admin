@@ -13,6 +13,8 @@ import Modules from './modules/Modules';
 import styled from 'styled-components';
 import ProcessProtocols from './process_protocols/ProcessProtocols';
 
+import { apiKey, authDomain, databaseURL, projectId } from "../../config/keys";
+
 const AppStyle = styled.div`
     font-family: Montserrat, sans-serif;
 `;
@@ -22,11 +24,6 @@ export const AuthContext = React.createContext();
 export default props => {
 
     const [state, setState] = useState({user: null, loading: true, token: '', parties: []});
-
-    const apiKey = process.env.FIREBASE_API_KEY;
-    const authDomain = process.env.FIREBASE_AUTH_DOMAIN;
-    const databaseURL = process.env.FIREBASE_DATABASE_URL;
-    const projectId = process.env.FIREBASE_PROJECT_ID;
 
     useEffect(() => {
         firebase.initializeApp({ apiKey, authDomain, databaseURL, projectId });
