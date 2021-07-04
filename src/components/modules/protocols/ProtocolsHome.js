@@ -1,25 +1,25 @@
-import React, { useEffect, useContext, useState } from "react";
+import React, { useEffect, useContext, useState } from 'react';
 
-import { Link, useLocation, useHistory } from "react-router-dom";
+import { Link, useLocation, useHistory } from 'react-router-dom';
 
-import { AuthContext } from "../../App";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { AuthContext } from '../../App';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import {
   faChevronLeft,
   faChevronRight,
   faFastForward,
   faFastBackward,
-} from "@fortawesome/free-solid-svg-icons";
+} from '@fortawesome/free-solid-svg-icons';
 
-import styled from "styled-components";
-import Loading from "../../layout/Loading";
+import styled from 'styled-components';
+import Loading from '../../layout/Loading';
 
-import ProtocolFilter from "./ProtocolFilter";
+import ProtocolFilter from './ProtocolFilter';
 
-import firebase from "firebase/app";
-import "firebase/auth";
+import firebase from 'firebase/app';
+import 'firebase/auth';
 
-import axios from "axios";
+import axios from 'axios';
 
 const TableViewContainer = styled.div`
   padding: 40px;
@@ -97,20 +97,20 @@ export default (props) => {
   const history = useHistory();
 
   useEffect(() => {
-    let url = "/protocols";
+    let url = '/protocols';
 
-    const page = query.get("page");
-    const limit = query.get("limit");
-    const country = query.get("country");
-    const electionRegion = query.get("electionRegion");
-    const assignee = query.get("assignee");
-    const section = query.get("section");
-    const municipality = query.get("municipality");
-    const town = query.get("town");
-    const cityRegion = query.get("cityRegion");
-    const status = query.get("status");
-    const organization = query.get("organization");
-    const origin = query.get("origin");
+    const page = query.get('page');
+    const limit = query.get('limit');
+    const country = query.get('country');
+    const electionRegion = query.get('electionRegion');
+    const assignee = query.get('assignee');
+    const section = query.get('section');
+    const municipality = query.get('municipality');
+    const town = query.get('town');
+    const cityRegion = query.get('cityRegion');
+    const status = query.get('status');
+    const organization = query.get('organization');
+    const origin = query.get('origin');
 
     if (
       page ||
@@ -125,8 +125,9 @@ export default (props) => {
       status ||
       organization ||
       origin
-    ) url += "?";
-    
+    )
+      url += '?';
+
     if (country) url += `country=${country}`;
     if (electionRegion) url += `&electionRegion=${electionRegion}`;
     if (municipality) url += `&municipality=${municipality}`;
@@ -146,47 +147,47 @@ export default (props) => {
       setData(res.data);
     });
   }, [
-    query.get("page"),
-    query.get("country"),
-    query.get("electionRegion"),
-    query.get("assignee"),
-    query.get("section"),
-    query.get("municipality"),
-    query.get("town"),
-    query.get("cityRegion"),
-    query.get("status"),
-    query.get("organization"),
-    query.get("origin"),
+    query.get('page'),
+    query.get('country'),
+    query.get('electionRegion'),
+    query.get('assignee'),
+    query.get('section'),
+    query.get('municipality'),
+    query.get('town'),
+    query.get('cityRegion'),
+    query.get('status'),
+    query.get('organization'),
+    query.get('origin'),
   ]);
 
   const origin = (apiOrigin) => {
     switch (apiOrigin) {
-      case "ti-broish":
-        return "Ти Броиш";
+      case 'ti-broish':
+        return 'Ти Броиш';
       default:
         return apiOrigin;
     }
   };
-  
+
   const status = (apiStatus) => {
     switch (apiStatus) {
-      case "received":
+      case 'received':
         return (
-          <ProtocolStatus style={{ color: "#6c6cff" }}>Получен</ProtocolStatus>
+          <ProtocolStatus style={{ color: '#6c6cff' }}>Получен</ProtocolStatus>
         );
-      case "rejected":
+      case 'rejected':
         return (
-          <ProtocolStatus style={{ color: "#ff3939" }}>
+          <ProtocolStatus style={{ color: '#ff3939' }}>
             Отхвърлен
           </ProtocolStatus>
         );
-      case "approved":
+      case 'approved':
         return (
-          <ProtocolStatus style={{ color: "#46df00" }}>Одобрен</ProtocolStatus>
+          <ProtocolStatus style={{ color: '#46df00' }}>Одобрен</ProtocolStatus>
         );
-      case "replaced":
+      case 'replaced':
         return (
-          <ProtocolStatus style={{ color: "#ecd40e" }}>
+          <ProtocolStatus style={{ color: '#ecd40e' }}>
             Редактиран
           </ProtocolStatus>
         );
@@ -203,26 +204,26 @@ export default (props) => {
 
     return (
       <PaginationLinks>
-        <Link className={firstAvail ? "" : "disabled"} to={data.links.first}>
+        <Link className={firstAvail ? '' : 'disabled'} to={data.links.first}>
           <FontAwesomeIcon icon={faFastBackward} /> Първа
         </Link>
-        <Link className={prevAvail ? "" : "disabled"} to={data.links.previous}>
+        <Link className={prevAvail ? '' : 'disabled'} to={data.links.previous}>
           <FontAwesomeIcon icon={faChevronLeft} /> Предишна
         </Link>
         <div
           style={{
-            margin: "0 5px",
-            display: "inline-block",
-            color: "#444",
-            width: "60px",
+            margin: '0 5px',
+            display: 'inline-block',
+            color: '#444',
+            width: '60px',
           }}
         >
           {data.meta.currentPage} / {data.meta.totalPages}
         </div>
-        <Link className={nextAvail ? "" : "disabled"} to={data.links.next}>
+        <Link className={nextAvail ? '' : 'disabled'} to={data.links.next}>
           Следваща <FontAwesomeIcon icon={faChevronRight} />
         </Link>
-        <Link className={lastAvail ? "" : "disabled"} to={data.links.last}>
+        <Link className={lastAvail ? '' : 'disabled'} to={data.links.last}>
           Последна <FontAwesomeIcon icon={faFastForward} />
         </Link>
       </PaginationLinks>
@@ -234,50 +235,48 @@ export default (props) => {
   };
 
   return (
-    <>
-      <TableViewContainer>
-        <h1>Протоколи</h1>
-        <ProtocolFilter/>
-        <hr />
-        {!data ? (
-          <Loading />
-        ) : (
-          [
-            renderLinks(),
-            <ProtocolTable>
-              <thead>
-                <tr key={'header'}>
-                  <th>№ на секция</th>
-                  <th>Произход</th>
-                  <th>Адрес</th>
-                  <th>Статус</th>
+    <TableViewContainer>
+      <h1>Протоколи</h1>
+      <ProtocolFilter />
+      <hr />
+      {!data ? (
+        <Loading />
+      ) : (
+        <>
+          {renderLinks()}
+          <ProtocolTable>
+            <thead>
+              <tr>
+                <th>№ на секция</th>
+                <th>Произход</th>
+                <th>Адрес</th>
+                <th>Статут</th>
+              </tr>
+            </thead>
+            <tbody>
+              {loading ? (
+                <tr>
+                  <td colspan="4">
+                    <Loading />
+                  </td>
                 </tr>
-              </thead>
-              <tbody>
-                {loading ? (
-                  <tr key={'loading'}>
-                    <td colSpan="4">
-                      <Loading />
+              ) : (
+                data.items.map((protocol, i) => (
+                  <tr key={i} onClick={() => openProtocol(protocol.id)}>
+                    <td style={{ textAlign: 'right' }}>
+                      {protocol.section.id}
                     </td>
+                    <td>{origin(protocol.origin)}</td>
+                    <td>{protocol.section.place}</td>
+                    <td>{status(protocol.status)}</td>
                   </tr>
-                ) : (
-                  data.items.map((protocol, i) => (
-                    <tr key={i} onClick={() => openProtocol(protocol.id)}>
-                      <td style={{ textAlign: "right" }}>
-                        {protocol.section.id}
-                      </td>
-                      <td>{origin(protocol.origin)}</td>
-                      <td>{protocol.section.place}</td>
-                      <td>{status(protocol.status)}</td>
-                    </tr>
-                  ))
-                )}
-              </tbody>
-            </ProtocolTable>,
-            renderLinks(),
-          ]
-        )}
-      </TableViewContainer>
-    </>
+                ))
+              )}
+            </tbody>
+          </ProtocolTable>
+          {renderLinks()}
+        </>
+      )}
+    </TableViewContainer>
   );
 };
