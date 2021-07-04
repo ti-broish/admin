@@ -90,12 +90,12 @@ export default (props) => {
   useEffect(() => {
     let url = '/users';
     const page = query.get('page');
-    const limit = query.get('limit');
+    // const limit = query.get('limit');
 
-    if (page || limit) url += '?';
+    if (page) url += '?';
 
     if (page) url += `page=${page}`;
-    if (limit) url += `limit=${limit}`;
+    // if (limit) url += `limit=${limit}`;
 
     setLoading(true);
     authGet(url).then((res) => {

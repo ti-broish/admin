@@ -139,7 +139,7 @@ export default (props) => {
     if (organization) url += `&organization=${organization}`;
     if (origin) url += `&origin=${origin}`;
     if (page) url += `page=${page}`;
-    if (limit) url += `limit=${limit}`;
+    // if (limit) url += `limit=${limit}`;
 
     setLoading(true);
     authGet(url).then((res) => {
