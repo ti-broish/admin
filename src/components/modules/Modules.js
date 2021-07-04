@@ -3,7 +3,10 @@ import React from 'react';
 import Navigation from './layout/Navigation';
 
 import { Switch, Route, Redirect } from 'react-router-dom';
-import Admin from './Admin';
+
+import Admin from './admin/Admin';
+import AdminDetails from './admin/AdminDetails'
+
 import Posts from './Posts';
 import Profile from './Profile';
 
@@ -52,10 +55,11 @@ export const ContentPanel = styled.div`
 `;
 
 export default props => {
-    return([
+    return(
+        <>
         <NavigationHalf>
             <Navigation/>
-        </NavigationHalf>,
+        </NavigationHalf>
         <ContentHalf>
             <Switch>
                 <Route path='/profile' component={Profile}/>
@@ -65,10 +69,11 @@ export default props => {
                 <Route path='/violation/:violation/comments' component={AllComments}/>
                 <Route path='/violation/:violation' component={ViolationDetails}/>
                 <Route path='/violations' component={ViolationList}/>
-                {/* <Route path='/users' component={Admin}/> */}
+                <Route path='/user/:user' component={AdminDetails}/> 
+                <Route path='/users' component={Admin}/> 
                 <Route path='/posts' component={Posts}/>
                 <Redirect to='/profile'/>
             </Switch>
         </ContentHalf>
-    ]);
+    </>);
 };
