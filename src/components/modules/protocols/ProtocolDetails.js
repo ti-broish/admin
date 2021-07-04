@@ -5,9 +5,13 @@ import { ContentPanel } from '../Modules';
 import { useHistory, useParams } from 'react-router-dom';
 
 import { AuthContext } from '../../App';
-import ImageGallery from '../../ImageGallery';
+import ImageGallery from '../../utils/ImageGallery';
 import Loading from '../../layout/Loading';
 import { TableStyle } from '../Profile';
+
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faChevronLeft } from '@fortawesome/free-solid-svg-icons';
+import { BackButton } from '../violations/ViolationDetails';
 
 export default (props) => {
   const { authGet } = useContext(AuthContext);
@@ -27,14 +31,26 @@ export default (props) => {
 
   return (
     <ContentPanel>
-      <button onClick={goBack}>Назад</button>
-      <h1>Протокол {protocol}</h1>
+      <h1>
+        <BackButton onClick={goBack}>
+          <FontAwesomeIcon icon={faChevronLeft} />
+        </BackButton>
+        <span
+          style={{
+            verticalAlign: 'top',
+            paddingTop: '9px',
+            display: 'inline-block',
+          }}
+        >
+          Протокол {protocol}
+        </span>
+      </h1>
       <hr />
       {!data ? (
         <Loading />
       ) : (
         <div>
-          <h1>Секция</h1>
+          <h2>Секция</h2>
           <TableStyle>
             <tbody>
               <tr>
@@ -48,7 +64,7 @@ export default (props) => {
             </tbody>
           </TableStyle>
           <hr />
-          <h1>Протокол</h1>
+          <h2>Протокол</h2>
           <TableStyle>
             <tbody>
               <tr>
@@ -78,7 +94,7 @@ export default (props) => {
             </tbody>
           </TableStyle>
           <hr />
-          <h1>Резултати</h1>
+          <h2>Резултати</h2>
           <TableStyle>
             <tbody>
               {data.results.results.map((result, idx) => (
@@ -93,7 +109,7 @@ export default (props) => {
             </tbody>
           </TableStyle>
           <hr />
-          <h1>Снимки</h1>
+          <h2>Снимки</h2>
           <ImageGallery
             items={data.pictures.map((picture) => ({
               original: picture.url,

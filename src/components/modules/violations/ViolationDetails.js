@@ -15,7 +15,7 @@ import {
 
 import { ContentPanel } from '../Modules';
 import { AuthContext } from '../../App';
-import ImageGallery from '../../ImageGallery';
+import ImageGallery from '../../utils/ImageGallery';
 import Loading from '../../layout/Loading';
 
 import { TableStyle } from '../Profile';
@@ -23,7 +23,7 @@ import { TableStyle } from '../Profile';
 import styled from 'styled-components';
 import CommentSection from './CommentSection';
 
-import { formatDateShort, formatTime } from '../../Util';
+import { formatDateShort, formatTime } from '../../utils/Util';
 
 const UpdatesTable = styled(TableStyle)`
   td,
@@ -35,7 +35,7 @@ const UpdatesTable = styled(TableStyle)`
   }
 `;
 
-const BackButton = styled.button`
+export const BackButton = styled.button`
   cursor: pointer;
   border: none;
   border-radius: 6px;
@@ -158,8 +158,6 @@ export default (props) => {
     reject: false,
   });
 
-  console.log({ data });
-
   useEffect(() => {
     authGet(`/violations/${violation}`).then((res) => {
       setData(res.data);
@@ -270,51 +268,73 @@ export default (props) => {
       ) : (
         <div>
           <h2 style={{ color: '#666' }}>
-            {data.assignees.length === 0
-              ? 'Свободен за обработка'
-              : [
-                  `Обработва се от ${data.assignees[0].firstName} ${data.assignees[0].lastName}`,
-                  !iAmAssignee ? null : (
-                    <span style={{ color: 'red' }}> (Вие)</span>
-                  ),
-                ]}
+            {data.assignees.length === 0 ? (
+              'Свободен за обработка'
+            ) : (
+              <>
+                `Обработва се от ${data.assignees[0].firstName} $
+                {data.assignees[0].lastName}`, !iAmAssignee ? null : (
+                <span style={{ color: 'red' }}> (Вие)</span>
+                ),
+              </>
+            )}
           </h2>
           <FancyButtonYellow
             onClick={assignYourself}
             disabled={!assignPossible()}
           >
-            {buttonLoading.assign
-              ? 'Момент...'
-              : iAmAssignee
-              ? [<FontAwesomeIcon icon={faDove} />, ' Освободи']
-              : [<FontAwesomeIcon icon={faEdit} />, ' Обработвай']}
+            {buttonLoading.assign ? (
+              'Момент...'
+            ) : iAmAssignee ? (
+              <>
+                <FontAwesomeIcon icon={faDove} />, ' Освободи'{' '}
+              </>
+            ) : (
+              <>
+                <FontAwesomeIcon icon={faEdit} />, ' Обработвай'{' '}
+              </>
+            )}
           </FancyButtonYellow>
           <FancyButtonGreen
             onClick={processViolation}
             disabled={!processPossible()}
           >
-            {buttonLoading.process
-              ? 'Момент...'
-              : [<FontAwesomeIcon icon={faCheck} />, ' Приключи']}
+            {buttonLoading.process ? (
+              'Момент...'
+            ) : (
+              <>
+                <FontAwesomeIcon icon={faCheck} />, ' Приключи'{' '}
+              </>
+            )}
           </FancyButtonGreen>
 
           <FancyButtonBlue
             onClick={publishViolation}
             disabled={!publishPossible()}
           >
-            {buttonLoading.publish
-              ? 'Момент...'
-              : data.isPublished
-              ? [<FontAwesomeIcon icon={faEyeSlash} />, ' Скрий']
-              : [<FontAwesomeIcon icon={faUpload} />, ' Публикувай']}
+            {buttonLoading.publish ? (
+              'Момент...'
+            ) : data.isPublished ? (
+              <>
+                <FontAwesomeIcon icon={faEyeSlash} />, ' Скрий'
+              </>
+            ) : (
+              <>
+                <FontAwesomeIcon icon={faUpload} />, ' Публикувай'
+              </>
+            )}
           </FancyButtonBlue>
           <FancyButtonRed
             onClick={rejectViolation}
             disabled={!rejectPossible()}
           >
-            {buttonLoading.reject
-              ? 'Момент...'
-              : [<FontAwesomeIcon icon={faTimes} />, ' Отхвърли']}
+            {buttonLoading.reject ? (
+              'Момент...'
+            ) : (
+              <>
+                <FontAwesomeIcon icon={faTimes} />, ' Отхвърли'{' '}
+              </>
+            )}
           </FancyButtonRed>
           <hr />
           <h2>Описание</h2>

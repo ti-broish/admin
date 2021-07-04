@@ -268,7 +268,7 @@ export default (props) => {
             <tbody>
               {loading ? (
                 <tr key="loading">
-                  <td colspan="6">
+                  <td colSpan="6">
                     <Loading />
                   </td>
                 </tr>
@@ -310,7 +310,7 @@ export default (props) => {
               )}
             </tbody>
           </ViolationTable>
-          ,{renderLinks()}
+          {renderLinks()}
         </>
       )}
     </TableViewContainer>

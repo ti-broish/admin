@@ -16,6 +16,8 @@ import AdminOverview from './AdminOverview';
 
 import Loading from '../../layout/Loading';
 
+import Tooltip from '../../utils/Tooltip';
+
 const TableViewContainer = styled.div`
   padding: 40px;
 
@@ -76,6 +78,28 @@ const UserTable = styled.table`
   }
 `;
 
+const RoleIcon = styled.span`
+  background-color: #4aa2ff;
+  border-radius: 50%;
+  color: white;
+  font-weight: bold;
+  height: 34px;
+  display: block;
+  width: 34px;
+  box-sizing: border-box;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+  &:hover {
+    background-color: #5da2ec;
+  }
+`;
+
+const RolesContainer = styled.div`
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr 1fr;
+`;
 const useQuery = () => {
   return new URLSearchParams(useLocation().search);
 };
@@ -142,6 +166,54 @@ export default (props) => {
     history.push(`/user/${id}`);
   };
 
+  const roles = (roles) => {
+    return roles.length === 0 ? (
+      <i>Без Роля</i>
+    ) : (
+      roles.map((role, idx) => {
+        return createRoleItem(role, idx);
+      })
+    );
+  };
+
+  const createRoleItem = (role, idx) => {
+    let roleName = role[0];
+    let color = '#9e9e9e';
+    switch (role) {
+      case 'user':
+        roleName = 'Потребител';
+        color = '#4caf50';
+        break;
+      case 'validator':
+        roleName = 'Валидатор';
+        color = '#6c6cff';
+        break;
+      case 'lawyer':
+        roleName = 'Юрист';
+        color = '#00bcd4';
+        break;
+      case 'streamer':
+        roleName = 'Оператор';
+        color = '#ff9800';
+        break;
+      case 'admin':
+        roleName = 'Администратор';
+        color = '#ff3a39';
+        break;
+      default:
+        break;
+    }
+    return roleCircle(roleName, idx, color);
+  };
+
+  const roleCircle = (roleName, idx, color) => {
+    return (
+      <Tooltip key={idx} text={roleName}>
+        <RoleIcon style={{ backgroundColor: color }}>{roleName[0]}</RoleIcon>
+      </Tooltip>
+    );
+  };
+
   return (
     <>
       <TableViewContainer>
@@ -182,7 +254,9 @@ export default (props) => {
                       <td>{user.pin}</td>
                       <td>{user.hasAgreedToKeepData ? 'Да' : 'Не'}</td>
                       {/* <td>{user.registeredAt}</td> */}
-                      <td>{user.roles.join(', ')}</td>
+                      <td>
+                        <RolesContainer>{roles(user.roles)}</RolesContainer>
+                      </td>
                     </tr>
                   ))
                 )}
