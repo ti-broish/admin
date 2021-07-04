@@ -191,6 +191,16 @@ export default (props) => {
             Редактиран
           </ProtocolStatus>
         );
+      case 'published':
+        return (
+          <ProtocolStatus style={{ color: '#00bcd4' }}>
+            Публикуван
+          </ProtocolStatus>
+        );
+      case 'ready':
+        return (
+          <ProtocolStatus style={{ color: '#009688' }}>Готов</ProtocolStatus>
+        );
       default:
         return apiStatus;
     }
@@ -256,7 +266,7 @@ export default (props) => {
             <tbody>
               {loading ? (
                 <tr>
-                  <td colspan="4">
+                  <td colSpan="4">
                     <Loading />
                   </td>
                 </tr>
