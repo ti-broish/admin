@@ -3,16 +3,16 @@ import { Link } from "react-router-dom";
 
 import { AuthContext } from "../../App";
 
-import Statuses from "../filters/Statuses";
-import SectionNumber from "../filters/SectionNumber";
-import Origins from "../filters/Origins";
-import SendBy from "../filters/SendBy";
+import Statuses from "../filter_components/Statuses";
+import SectionNumber from "../filter_components/SectionNumber";
+import Origins from "../filter_components/Origins";
+import SendBy from "../filter_components/SendBy";
 
-import Countries from "../filters/Countries";
-import MIRs from "../filters/MIRs";
-import Municipalities from "../filters/Municipalities";
-import Towns from "../filters/Towns";
-import Regions from "../filters/Regions";
+import Countries from "../filter_components/Countries";
+import MIRs from "../filter_components/MIRs";
+import Municipalities from "../filter_components/Municipalities";
+import Towns from "../filter_components/Towns";
+import Regions from "../filter_components/Regions";
 
 import styled from "styled-components";
 
