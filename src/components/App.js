@@ -23,7 +23,7 @@ export const AuthContext = React.createContext();
 
 export default props => {
 
-    const [state, setState] = useState({user: null, loading: true, token: '', parties: []});
+    const [state, setState] = useState({user: null, loading: true, token: '', parties: [], countries: [], organizations: []});
 
     useEffect(() => {
         firebase.initializeApp({ apiKey, authDomain, databaseURL, projectId });
@@ -41,9 +41,18 @@ export default props => {
                     headers: { 'Authorization': `Bearer ${idToken}` }
                 });
 
-                setState({user: res.data, loading: false, token: idToken, parties: res2.data});
+                const res3 = await axios.get(`${apiHost()}/countries`, { 
+                    headers: { 'Authorization': `Bearer ${idToken}` }
+                });
+
+                const res4 = await axios.get(`${apiHost()}/organizations`, { 
+                    headers: { 'Authorization': `Bearer ${idToken}` }
+                })
+
+
+                setState({user: res.data, loading: false, token: idToken, parties: res2.data, countries: res3.data, organizations: res4.data});
             } else {
-                setState({user: null, loading: false, token: '', parties: []});
+                setState({user: null, loading: false, token: '', parties: [], countries: [], organizations: []});
             }
         });
     }, []);
@@ -111,7 +120,7 @@ export default props => {
         <AppStyle>
         <BrowserRouter>
             <AuthContext.Provider value={{
-                user: state.user, token: state.token, parties: state.parties, 
+                user: state.user, token: state.token, parties: state.parties, countries: state.countries, organizations: state.organizations,
                 logIn, logOut, authGet, authPost, authDelete, authPut, authPatch}}>
             {
                 state.loading

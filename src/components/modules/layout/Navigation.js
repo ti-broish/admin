@@ -102,7 +102,7 @@ export default props => {
                 <NavLink to='/posts'>
                     <FontAwesomeIcon icon={faNewspaper}/> Статии
                 </NavLink>*/}
-                <NavLink onClick={logOut}>
+                <NavLink to='' onClick={logOut}>
                     <FontAwesomeIcon icon={faSignOutAlt}/> Изход
                 </NavLink>
             </NavLinks>

@@ -1,25 +1,32 @@
 @font-face {
-    font-family: 'Montserrat';
-    src: local('Montserrat'), local('Montserrat'),
-    url(./fonts/montserrat/Montserrat-Regular.ttf) format('woff');
-    font-weight: normal;
-    font-style: normal;
+  font-family: "Montserrat";
+  src: local("Montserrat"), local("Montserrat"),
+    url(./fonts/montserrat/Montserrat-Regular.ttf) format("woff");
+  font-weight: normal;
+  font-style: normal;
 }
 
 @font-face {
-    font-family: 'Montserrat';
-    src: local('Montserrat'), local('Montserrat'),
-    url(./fonts/montserrat/Montserrat-Bold.ttf) format('woff');
-    font-weight: bold;
-    font-style: normal;
+  font-family: "Montserrat";
+  src: local("Montserrat"), local("Montserrat"),
+    url(./fonts/montserrat/Montserrat-Bold.ttf) format("woff");
+  font-weight: bold;
+  font-style: normal;
 }
 
 @font-face {
-    font-family: 'Montserrat';
-    src: local('Montserrat'), local('Montserrat'),
-    url(./fonts/montserrat/Montserrat-Black.ttf) format('woff');
-    font-weight: 900;
-    font-style: normal;
+  font-family: "Montserrat";
+  src: local("Montserrat"), local("Montserrat"),
+    url(./fonts/montserrat/Montserrat-Black.ttf) format("woff");
+  font-weight: 900;
+  font-style: normal;
+}
+
+select {
+  background: white;
+  border: 1px solid #ccc;
+  height: 35px;
+  width: 230px;
 }
 
 @import "~react-image-gallery/styles/css/image-gallery.css";
