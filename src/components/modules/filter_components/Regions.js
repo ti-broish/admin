@@ -1,11 +1,13 @@
-import React from "react";
+import React from 'react';
 
 export default (props) => {
-
   let regions = [];
 
   if (!props.isAbroad) {
-    regions = [{ code: "00", name: "Всички", isAbroad: false }, ...props.regions];
+    regions = [
+      { code: '00', name: 'Всички', isAbroad: false },
+      ...props.regions,
+    ];
   } else {
     regions = props.regions;
   }
@@ -14,13 +16,21 @@ export default (props) => {
     props.setCityRegion(event.target.value);
   };
 
-  const filters = regions.map(({ name, code }) => {
+  const filters = regions.map(({ name, code }, idx) => {
     return (
-      <option key={code} value={code}>
+      <option key={idx} value={code}>
         {name}
       </option>
     );
   });
 
-  return <select value={props.cityRegion} disabled={props.isAbroad || props.disabled} onChange={changeHandler}>{filters}</select>;
+  return (
+    <select
+      value={props.cityRegion}
+      disabled={props.isAbroad || props.disabled}
+      onChange={changeHandler}
+    >
+      {filters}
+    </select>
+  );
 };

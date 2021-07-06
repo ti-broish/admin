@@ -1,22 +1,22 @@
-import React, { useState, useEffect, useContext } from "react";
+import React, { useState, useEffect, useContext } from 'react';
 
-import { Link } from "react-router-dom";
+import { Link } from 'react-router-dom';
 
-import { AuthContext } from "../../App";
+import { AuthContext } from '../../App';
 
-import Statuses from "../filter_components/Statuses";
-import SectionNumber from "../filter_components/SectionNumber";
-import Published from "../filter_components/Published";
+import Statuses from '../filter_components/Statuses';
+import SectionNumber from '../filter_components/SectionNumber';
+import Published from '../filter_components/Published';
 
-import Countries from "../filter_components/Countries";
-import MIRs from "../filter_components/MIRs";
-import Municipalities from "../filter_components/Municipalities";
-import Towns from "../filter_components/Towns";
-import Regions from "../filter_components/Regions";
+import Countries from '../filter_components/Countries';
+import MIRs from '../filter_components/MIRs';
+import Municipalities from '../filter_components/Municipalities';
+import Towns from '../filter_components/Towns';
+import Regions from '../filter_components/Regions';
 
-import styled from "styled-components";
+import styled from 'styled-components';
 
-const FilterlTable = styled.table`
+const FilterTable = styled.table`
   width: 100%;
   border-collapse: collapse;
 
@@ -55,33 +55,33 @@ const ButtonStyle = styled.button`
 export default function ViolationFilter(props) {
   const { authGet } = useContext(AuthContext);
 
-  const [section, setSection] = useState("");
+  const [section, setSection] = useState('');
 
   const [disabled, setDisabled] = useState(true); //sets callback function for disabling field
   const [published, setPublished] = useState('');
 
-  const [country, setCountry] = useState("00");
-  const [selectedCountry, setSelectedCountry] = useState("");
+  const [country, setCountry] = useState('00');
+  const [selectedCountry, setSelectedCountry] = useState('');
 
   const [mirs, setMirs] = useState([]); //sets all MIRs in Bulgaria
-  const [electionRegion, setElectionRegion] = useState("00"); //gets the chosen MIR
-  const [selectedElectionRegion, setSelectedElectionRegion] = useState("");
+  const [electionRegion, setElectionRegion] = useState('00'); //gets the chosen MIR
+  const [selectedElectionRegion, setSelectedElectionRegion] = useState('');
 
   const [municipalities, setMunicipalities] = useState([]); //sets the municipalities in one MIR
-  const [municipality, setMunicipality] = useState("00"); //gets the chosen municipality
-  const [selectedMunicipality, setSelectedMunicipality] = useState("");
+  const [municipality, setMunicipality] = useState('00'); //gets the chosen municipality
+  const [selectedMunicipality, setSelectedMunicipality] = useState('');
 
   const [towns, setTowns] = useState([]); //sets all towns in one municipality
-  const [town, setTown] = useState("00");
-  const [selectedTown, setSelectedTown] = useState("");
+  const [town, setTown] = useState('00');
+  const [selectedTown, setSelectedTown] = useState('');
 
   const [regions, setRegions] = useState([]); //sets the election regions in one town
-  const [cityRegion, setCityRegion] = useState("00");
+  const [cityRegion, setCityRegion] = useState('00');
 
   const [isAbroad, setIsAbroad] = useState(false); //sets if country is Bulgaria or not
 
   const [statuses, setStatuses] = useState([]);
-  const [status, setStatus] = useState("");
+  const [status, setStatus] = useState('');
 
   let url = '';
 
@@ -93,27 +93,27 @@ export default function ViolationFilter(props) {
     town: town,
     cityRegion: cityRegion,
     status: status,
-    published: published
+    published: published,
   };
 
   for (const [key, value] of Object.entries(params)) {
-    if (value !== "00" && value !== "") {
+    if (value !== '00' && value !== '') {
       url += `&${key}=${value}`;
     } else {
-      url.replace(`&${key}=${value}`, "");
+      url.replace(`&${key}=${value}`, '');
     }
   }
 
   useEffect(async () => {
     //gets all the MIRs
-    const resElectionRegions = await authGet("/election_regions");
+    const resElectionRegions = await authGet('/election_regions');
 
-    const resStatuses = await authGet("/violations/statuses");
+    const resStatuses = await authGet('/violations/statuses');
     setStatuses(resStatuses.data);
 
     //if country is NOT Bulgaria: gets all the cities in the foreign country
-    if (country !== "00") {
-      setElectionRegion("32");
+    if (country !== '00') {
+      setElectionRegion('32');
 
       const resForeignTowns = await authGet(`/towns?country=${country}`);
       //sets the cities in the foreign country and sets MIR to the last one which is "Abroad"
@@ -131,31 +131,33 @@ export default function ViolationFilter(props) {
   }, [country, municipality, electionRegion, town]);
 
   const clearHandler = () => {
-    setStatus("");
-    setSelectedCountry("");
-    setCountry("00");
-    setSelectedElectionRegion("");
+    setStatus('');
+    setSelectedCountry('');
+    setCountry('00');
+    setSelectedElectionRegion('');
     setIsAbroad(false);
     setDisabled(true);
-    setSelectedMunicipality("Всички");
-    setSelectedTown("Всички");
-    setCityRegion("");
-    setMunicipality("00");
-    setElectionRegion("00");
-    setTown("");
-    setSection("");
-    setPublished('')
+    setSelectedMunicipality('Всички');
+    setSelectedTown('Всички');
+    setCityRegion('');
+    setMunicipality('00');
+    setElectionRegion('00');
+    setTown('');
+    setSection('');
+    setPublished('');
   };
 
   return (
-    <FilterlTable>
+    <FilterTable>
       <tbody>
         <tr>
           <td>
-            N на секция:<br></br> <SectionNumber section={section} setSection={setSection}/>
+            N на секция:<br></br>{' '}
+            <SectionNumber section={section} setSection={setSection} />
           </td>
           <td>
-            Публикуван:<br></br> <Published published={published} setPublished={setPublished}/>
+            Публикуван:<br></br>{' '}
+            <Published published={published} setPublished={setPublished} />
           </td>
           <td>
             Статус:<br></br>
@@ -249,6 +251,6 @@ export default function ViolationFilter(props) {
           </td>
         </tr>
       </tbody>
-    </FilterlTable>
+    </FilterTable>
   );
 }

@@ -106,7 +106,7 @@ export default (props) => {
   useEffect(() => {
     let url = '/violations';
     const page = query.get('page');
-    const limit = query.get('limit');
+    // const limit = query.get('limit');
     const country = query.get('country');
     const electionRegion = query.get('electionRegion');
     const assignee = query.get('assignee');
@@ -119,7 +119,6 @@ export default (props) => {
 
     if (
       page ||
-      limit ||
       country ||
       electionRegion ||
       assignee ||
@@ -142,7 +141,7 @@ export default (props) => {
     if (status) url += `&status=${status}`;
     if (published) url += `&published=${published}`;
     if (page) url += `page=${page}`;
-    if (limit) url += `limit=${limit}`;
+    // if (limit) url += `limit=${limit}`;
 
     setLoading(true);
     authGet(url).then((res) => {
@@ -256,7 +255,7 @@ export default (props) => {
           <ViolationTable>
             <thead>
               <tr>
-                <th>Назначен</th>
+                {/* <th>Назначен</th> */}
                 <th>№ на секция</th>
                 <th>Град</th>
                 <th>Автор</th>
@@ -278,13 +277,13 @@ export default (props) => {
                     key={violation.id}
                     onClick={() => openViolation(violation.id)}
                   >
-                    <td
+                    {/* <td
                       style={
                         violation.assignees.length === 0 ? {} : { padding: 0 }
                       }
                     >
                       {assignees(violation.assignees)}
-                    </td>
+                    </td> */}
                     <td>
                       {!violation.section ? (
                         <i>Не е посочена секция</i>

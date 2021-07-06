@@ -1,11 +1,11 @@
-import React from "react";
+import React from 'react';
 
 export default (props) => {
   let municipalities = [];
 
   if (!props.isAbroad) {
     municipalities = [
-      { code: "00", name: "Всички", isAbroad: false },
+      { code: '00', name: 'Всички', isAbroad: false },
       ...props.municipalities,
     ];
   } else {
@@ -13,13 +13,11 @@ export default (props) => {
   }
 
   const municipalityHandler = (event) => {
+    props.setSelectedMunicipality(event.target.value);
 
-    props.setSelectedMunicipality(event.target.value)
-    
-    var selectMunicipality = document.getElementById("selectMunicipality");
+    var selectMunicipality = document.getElementById('selectMunicipality');
     var selectedValue =
       selectMunicipality.options[selectMunicipality.selectedIndex].value;
-
     municipalities.map(({ code, name }) => {
       if (selectedValue === name) {
         props.setMunicipality(code);
@@ -28,9 +26,9 @@ export default (props) => {
   };
   const filters = municipalities
     .sort((a, b) => (a.code > b.code ? 1 : -1))
-    .map(({ code, name }) => {
+    .map(({ code, name }, idx) => {
       return (
-        <option key={code} value={name}>
+        <option key={idx} value={name}>
           {name}
         </option>
       );

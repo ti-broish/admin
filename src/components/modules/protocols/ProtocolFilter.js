@@ -1,22 +1,22 @@
-import React, { useState, useEffect, useContext } from "react";
-import { Link } from "react-router-dom";
+import React, { useState, useEffect, useContext } from 'react';
+import { Link } from 'react-router-dom';
 
-import { AuthContext } from "../../App";
+import { AuthContext } from '../../App';
 
-import Statuses from "../filter_components/Statuses";
-import SectionNumber from "../filter_components/SectionNumber";
-import Origins from "../filter_components/Origins";
-import SendBy from "../filter_components/SendBy";
+import Statuses from '../filter_components/Statuses';
+import SectionNumber from '../filter_components/SectionNumber';
+import Origins from '../filter_components/Origins';
+import SendBy from '../filter_components/SendBy';
 
-import Countries from "../filter_components/Countries";
-import MIRs from "../filter_components/MIRs";
-import Municipalities from "../filter_components/Municipalities";
-import Towns from "../filter_components/Towns";
-import Regions from "../filter_components/Regions";
+import Countries from '../filter_components/Countries';
+import MIRs from '../filter_components/MIRs';
+import Municipalities from '../filter_components/Municipalities';
+import Towns from '../filter_components/Towns';
+import Regions from '../filter_components/Regions';
 
-import styled from "styled-components";
+import styled from 'styled-components';
 
-const FilterlTable = styled.table`
+const FilterTable = styled.table`
   width: 100%;
   border-collapse: collapse;
 
@@ -55,39 +55,39 @@ const ButtonStyle = styled.button`
 export default (props) => {
   const { authGet } = useContext(AuthContext);
 
-  const [section, setSection] = useState("");
+  const [section, setSection] = useState('');
 
-  const [organization, setOrganization] = useState("");
+  const [organization, setOrganization] = useState('');
 
-  const [country, setCountry] = useState("00");
-  const [selectedCountry, setSelectedCountry] = useState("");
+  const [country, setCountry] = useState('00');
+  const [selectedCountry, setSelectedCountry] = useState('');
 
   const [disabled, setDisabled] = useState(true); //sets callback function for disabling field
 
   const [mirs, setMirs] = useState([]); //sets all MIRs in Bulgaria
-  const [electionRegion, setElectionRegion] = useState("00");
-  const [selectedElectionRegion, setSelectedElectionRegion] = useState("");
+  const [electionRegion, setElectionRegion] = useState('00');
+  const [selectedElectionRegion, setSelectedElectionRegion] = useState('');
 
   const [municipalities, setMunicipalities] = useState([]); //sets the municipalities in one MIR
-  const [municipality, setMunicipality] = useState("00"); //gets the chosen municipality
-  const [selectedMunicipality, setSelectedMunicipality] = useState("");
+  const [municipality, setMunicipality] = useState('00'); //gets the chosen municipality
+  const [selectedMunicipality, setSelectedMunicipality] = useState('');
 
   const [towns, setTowns] = useState([]); //sets all towns in one municipality
-  const [town, setTown] = useState("00");
-  const [selectedTown, setSelectedTown] = useState("");
+  const [town, setTown] = useState('00');
+  const [selectedTown, setSelectedTown] = useState('');
 
   const [regions, setRegions] = useState([]); //sets the election regions in one town
-  const [cityRegion, setCityRegion] = useState("00");
+  const [cityRegion, setCityRegion] = useState('00');
 
   const [statuses, setStatuses] = useState([]);
-  const [status, setStatus] = useState("");
+  const [status, setStatus] = useState('');
 
   const [origins, setOrigins] = useState([]);
-  const [origin, setOrigin] = useState("");
+  const [origin, setOrigin] = useState('');
 
   const [isAbroad, setIsAbroad] = useState(false); //sets if country is Bulgaria or not
 
-  let url = "";
+  let url = '';
 
   let params = {
     country: country,
@@ -102,26 +102,26 @@ export default (props) => {
   };
 
   for (const [key, value] of Object.entries(params)) {
-    if (value !== "00" && value !== "" && value) {
+    if (value !== '00' && value !== '' && value) {
       url += `&${key}=${value}`;
     } else {
-      url.replace(`&${key}=${value}`, "");
+      url.replace(`&${key}=${value}`, '');
     }
   }
 
   useEffect(async () => {
     //gets all the MIRs
-    const resElectionRegions = await authGet("/election_regions");
+    const resElectionRegions = await authGet('/election_regions');
 
-    const resStatuses = await authGet("/protocols/statuses");
+    const resStatuses = await authGet('/protocols/statuses');
     setStatuses(resStatuses.data);
 
-    const resOrigins = await authGet("/protocols/origins");
+    const resOrigins = await authGet('/protocols/origins');
     setOrigins(resOrigins.data);
 
     //if country is NOT Bulgaria: gets all the cities in the foreign country
-    if (country !== "00") {
-      setElectionRegion("32");
+    if (country !== '00') {
+      setElectionRegion('32');
 
       const resForeignTowns = await authGet(`/towns?country=${country}`);
       //sets the cities in the foreign country and sets MIR to the last one which is "Abroad"
@@ -139,37 +139,37 @@ export default (props) => {
   }, [country, municipality, electionRegion, town]);
 
   const clearAll = () => {
-    setOrganization("");
-    setOrigin("");
-    setStatus("");
-    setSelectedCountry("");
-    setCountry("00");
-    setSelectedElectionRegion("");
+    setOrganization('');
+    setOrigin('');
+    setStatus('');
+    setSelectedCountry('');
+    setCountry('00');
+    setSelectedElectionRegion('');
     setIsAbroad(false);
     setDisabled(true);
-    setSelectedMunicipality("Всички");
-    setSelectedTown("Всички");
-    setCityRegion("");
-    setMunicipality("00");
-    setElectionRegion("00");
-    setTown("");
-    setSection("");
+    setSelectedMunicipality('Всички');
+    setSelectedTown('Всички');
+    setCityRegion('');
+    setMunicipality('00');
+    setElectionRegion('00');
+    setTown('');
+    setSection('');
   };
 
   return (
-    <FilterlTable>
+    <FilterTable>
       <tbody>
         <tr>
           <td>
-            N на секция:<br></br>{" "}
+            N на секция:<br></br>{' '}
             <SectionNumber section={section} setSection={setSection} />
           </td>
           <td>
-            Произход:<br></br>{" "}
+            Произход:<br></br>{' '}
             <Origins origin={origin} origins={origins} setOrigin={setOrigin} />
           </td>
           <td>
-            Подаден от:<br></br>{" "}
+            Подаден от:<br></br>{' '}
             <SendBy
               organization={organization}
               setOrganization={setOrganization}
@@ -270,6 +270,6 @@ export default (props) => {
           </td>
         </tr>
       </tbody>
-    </FilterlTable>
+    </FilterTable>
   );
 };

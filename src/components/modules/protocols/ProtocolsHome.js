@@ -100,7 +100,7 @@ export default (props) => {
     let url = '/protocols';
 
     const page = query.get('page');
-    const limit = query.get('limit');
+    // const limit = query.get('limit');
     const country = query.get('country');
     const electionRegion = query.get('electionRegion');
     const assignee = query.get('assignee');
@@ -114,7 +114,6 @@ export default (props) => {
 
     if (
       page ||
-      limit ||
       country ||
       electionRegion ||
       assignee ||
