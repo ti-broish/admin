@@ -1,6 +1,9 @@
 import React, { useState } from "react";
 
 export default (props) => {
+
+  const [entry, setEntry] = useState('');
+
   const statuses = [
     { all: "Всички"},
     { published: "Да" },
@@ -9,11 +12,14 @@ export default (props) => {
 
   const changeHandler = (event) => {
     if (event.target.value === 'published') {
-      props.setIsPublished(true);
+      props.setPublished(true);
+      setEntry('published');
     } else if (event.target.value === 'notPublished') {
-      props.setIsPublished(false);
+      props.setPublished(false);
+      setEntry('notPublished');
     } else {
-      props.setIsPublished('');
+      props.setPublished('');
+      setEntry('all');
     }
   };
 
@@ -26,7 +32,7 @@ export default (props) => {
   });
 
   return (
-    <select onChange={changeHandler}>
+    <select value={entry} onChange={changeHandler}>
       {filters}
     </select>
   );
