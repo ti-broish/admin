@@ -181,6 +181,10 @@ export default function ViolationFilter(props) {
               setElectionRegion={setElectionRegion}
               selectedCountry={selectedCountry}
               setSelectedCountry={setSelectedCountry}
+              setMunicipality={setMunicipality}
+              setTown={setTown}
+              setCityRegion={setCityRegion}
+              setSelectedElectionRegion={setSelectedElectionRegion}
             />
           </td>
           <td>
