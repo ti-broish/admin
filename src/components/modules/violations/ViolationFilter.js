@@ -58,7 +58,7 @@ export default function ViolationFilter(props) {
   const [section, setSection] = useState("");
 
   const [disabled, setDisabled] = useState(true); //sets callback function for disabling field
-  const [isPublished, setIsPublished] = useState('');
+  const [published, setPublished] = useState('');
 
   const [country, setCountry] = useState("00");
   const [selectedCountry, setSelectedCountry] = useState("");
@@ -93,11 +93,11 @@ export default function ViolationFilter(props) {
     town: town,
     cityRegion: cityRegion,
     status: status,
-    isPublished: isPublished
+    published: published
   };
 
   for (const [key, value] of Object.entries(params)) {
-    if (value !== "00" && value !== "" && value) {
+    if (value !== "00" && value !== "") {
       url += `&${key}=${value}`;
     } else {
       url.replace(`&${key}=${value}`, "");
@@ -144,7 +144,7 @@ export default function ViolationFilter(props) {
     setElectionRegion("00");
     setTown("");
     setSection("");
-    setIsPublished('')
+    setPublished('')
   };
 
   return (
@@ -155,7 +155,7 @@ export default function ViolationFilter(props) {
             N на секция:<br></br> <SectionNumber section={section} setSection={setSection}/>
           </td>
           <td>
-            Публикуван:<br></br> <Published isPublished={isPublished} setIsPublished={setIsPublished}/>
+            Публикуван:<br></br> <Published published={published} setPublished={setPublished}/>
           </td>
           <td>
             Статус:<br></br>
