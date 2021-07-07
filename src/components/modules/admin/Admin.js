@@ -90,7 +90,6 @@ const RoleIcon = styled.span`
   display: flex;
   justify-content: center;
   align-items: center;
-
   &:hover {
     background-color: #5da2ec;
   }
@@ -99,6 +98,7 @@ const RoleIcon = styled.span`
 const RolesContainer = styled.div`
   display: grid;
   grid-template-columns: 1fr 1fr 1fr 1fr;
+  row-gap: 5px;
 `;
 const useQuery = () => {
   return new URLSearchParams(useLocation().search);

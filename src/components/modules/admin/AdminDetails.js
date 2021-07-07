@@ -9,25 +9,99 @@ import { BackButton } from '../violations/ViolationDetails';
 
 import Loading from '../../layout/Loading';
 
+import styled from 'styled-components';
+
+const CheckboxList = styled.div`
+  list-style: none;
+  padding: 0;
+
+  li {
+    margin-bottom: 0.5rem;
+  }
+
+  .checkbox-list-item {
+    display: flex;
+    justify-content: space-between;
+
+    label {
+      vertical-align: text-bottom;
+      margin-left: 0.5rem;
+    }
+  }
+`;
+
+const ButtonStyle = styled.button`
+  background-color: #4892e1;
+  color: white;
+  border: none;
+  padding: 7px 13px;
+  font-size: 20px;
+  cursor: pointer;
+  font-weight: bold;
+  border-radius: 5px;
+  border-bottom: 3px solid #2a68aa;
+  margin-top: 0px;
+  width: 10rem;
+
+  &:hover {
+    background-color: #5da2ec;
+  }
+
+  &:active {
+    background-color: #1d5a9b;
+    border-bottom: none;
+    margin-top: 3px;
+  }
+`;
+
 export default (props) => {
-  const { authGet } = useContext(AuthContext);
+  const { authGet, authPatch } = useContext(AuthContext);
   const { userId } = useParams();
   const history = useHistory();
   const [userData, setUserData] = useState(null);
   const [roles, setRoles] = useState(null);
+  const [rolesUpdateSuccessful, setRolesUpdateSuccessful] = useState(undefined);
 
-  useEffect(() => {
-    authGet(`/users/${userId}`).then((res) => {
-      setUserData(res.data);
-    });
+  useEffect(async () => {
+    const resUser = await authGet(`/users/${userId}`);
+    setUserData(resUser.data);
 
-    authGet(`/users/roles`).then((res) => {
-      setRoles(res.roles);
-    });
+    const resRoles = await authGet(`/users/roles`);
+    let rolesData = resRoles.data;
+    if (resUser.data && rolesData) {
+      rolesData = rolesData.map((role) => ({
+        ...role,
+        isChecked: resUser.data.roles.includes(role.role),
+      }));
+    }
+    setRoles(rolesData);
   }, []);
 
   const goBack = () => {
     history.goBack();
+  };
+
+  const saveRoles = () => {
+    setRolesUpdateSuccessful(undefined);
+
+    if (roles) {
+      const rolesToSave = roles
+        .filter((role) => role.isChecked)
+        .map((role) => role.role);
+
+      authPatch(`/users/${userData.id}`, {
+        roles: rolesToSave,
+      }).then((res) => {
+        setRolesUpdateSuccessful(res.status === 200);
+      });
+    }
+  };
+
+  const handleOnChange = (role) => {
+    const updatedCheckedState = roles.map((item) =>
+      item.role === role.role ? { ...item, isChecked: !item.isChecked } : item
+    );
+    setRoles(updatedCheckedState);
   };
 
   return (
@@ -85,6 +159,49 @@ export default (props) => {
       )}
       <hr />
       <h2>Роли</h2>
+      {!roles ? (
+        <Loading />
+      ) : (
+        <>
+          <ul style={{ padding: 0 }}>
+            <CheckboxList>
+              {roles.map((role, index) => {
+                return (
+                  <li key={index}>
+                    <div className="checkbox-list-item">
+                      <div>
+                        <input
+                          type="checkbox"
+                          id={`custom-checkbox-${index}`}
+                          name={role.roleLocalized}
+                          value={role.roleLocalized}
+                          checked={role.isChecked}
+                          onChange={() => handleOnChange(role)}
+                        />
+                        <label htmlFor={`custom-checkbox-${index}`}>
+                          {role.roleLocalized}
+                        </label>
+                      </div>
+                    </div>
+                  </li>
+                );
+              })}
+            </CheckboxList>
+          </ul>
+
+          <ButtonStyle onClick={saveRoles}>Запис</ButtonStyle>
+          {rolesUpdateSuccessful ===
+          undefined ? null : rolesUpdateSuccessful ? (
+            <p style={{ fontSize: '12px', color: 'green' }}>
+              Ролите бяха актуализирани успешно
+            </p>
+          ) : (
+            <p style={{ fontSize: '12px', color: 'red' }}>
+              Грешка при актуализацията на ролите (Опитайте отново)
+            </p>
+          )}
+        </>
+      )}
     </ContentPanel>
   );
 };
