@@ -10,8 +10,13 @@ export default class ValidationFormState {
             this.formData = {
                 sectionId: protocol.section.id,
                 votersCount: zeroIfEmpty(protocol.results.votersCount),
-                validVotesCount: zeroIfEmpty(protocol.results.validVotesCount),
+                additionalVotersCount: zeroIfEmpty(protocol.results.additionalVotersCount),
+                paperBallotsOutsideOfBox: zeroIfEmpty(protocol.results.paperBallotsOutsideOfBox),
+                votesCount: zeroIfEmpty(protocol.results.votesCount), 
+                paperVotesCount: zeroIfEmpty(protocol.results.paperVotesCount),
+                machineVotesCount: zeroIfEmpty(protocol.results.machineVotesCount),
                 invalidVotesCount: zeroIfEmpty(protocol.results.invalidVotesCount),
+                validVotesCount: zeroIfEmpty(protocol.results.validVotesCount),
             }
     
             this.initResults(protocol, parties, allParties);
@@ -37,7 +42,7 @@ export default class ValidationFormState {
         }
     }
 
-    getFieldStatus(protocol, parties, allParties, sectionData) {
+    getFieldStatus(protocol, parties, allParties, sectionData, protocolType) {
         const zeroIfEmpty = value => value? value : '';//0;
         const emptyStrIfNull = value => (value || value === 0)? value : '';
 
@@ -92,9 +97,27 @@ export default class ValidationFormState {
                 fieldStatus[fieldName] = { unchanged: true };
         };
 
-        addStatusForResultField('votersCount');
-        addStatusForResultField('validVotesCount');
-        addStatusForResultField('invalidVotesCount');
+        if(protocolType === 'machine') {
+            addStatusForResultField('votersCount');
+            addStatusForResultField('additionalVotersCount');
+            addStatusForResultField('votesCount');
+        } else if(protocolType === 'paper-machine') {
+            addStatusForResultField('votersCount');
+            addStatusForResultField('additionalVotersCount');
+            addStatusForResultField('paperBallotsOutsideOfBox');
+            addStatusForResultField('votesCount');
+            addStatusForResultField('paperVotesCount');
+            addStatusForResultField('machineVotesCount');
+            addStatusForResultField('invalidVotesCount');
+            addStatusForResultField('validVotesCount');
+        } else if(protocolType === 'paper') {
+            addStatusForResultField('votersCount');
+            addStatusForResultField('additionalVotersCount');
+            addStatusForResultField('paperBallotsOutsideOfBox');
+            addStatusForResultField('votesCount');
+            addStatusForResultField('invalidVotesCount');
+            addStatusForResultField('validVotesCount');
+        }
 
         let invalidFields = false;
         let changedFields = false;
@@ -105,6 +128,8 @@ export default class ValidationFormState {
             if(fieldStatus[key].changed)
                 changedFields = true;
         }
+
+        console.log(fieldStatus);
 
         return { fieldStatus, invalidFields, changedFields };
     }

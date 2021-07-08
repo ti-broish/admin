@@ -64,6 +64,16 @@ const SectionInput = styled.div`
     }
 `;
 
+const ChooseProtocolType = styled.div`
+    input {
+        margin-right: 5px;
+    }
+
+    label {
+        margin-right: 25px;
+    }
+`;
+
 export default props => {
 
     const getBoxClass = boxNum => {
@@ -109,7 +119,7 @@ export default props => {
                 </tr>
             </tbody>
             </table>
-            <p style={{fontSize: '20px'}}>
+            <p style={{fontSize: '14px', margin: '0'}}>
                 {!props.sectionData.country? null : <>Държава:  <b>{props.sectionData.country}</b>, </>}
                 {!props.sectionData.electionRegion? null : <>Изборен район: <b>{props.sectionData.electionRegion}</b>, </>}
                 <br/>
@@ -122,15 +132,39 @@ export default props => {
             <table>
                 <tbody>
                 <tr>
-                    <td style={{paddingTop: '20px'}}>Изпратен от (организация)</td>
+                    <td style={{paddingTop: '20px'}}>Изпратен от (организация):</td>
                     <td style={{paddingTop: '20px'}}>{props.protocol.author.organization.name}</td>
-                </tr>
-                <tr>
-                    <td>Машинна секция</td>
-                    <td>{props.sectionData.isMachine? 'Да' : 'Не'}</td>
                 </tr>
             </tbody>
             </table>
+            <h5 style={{margin: '10px 0'}}>Чернова ли е протоколът?</h5>
+            <ChooseProtocolType>
+                <input type="radio" id="isNotFinal" name="isFinal" value="false" onClick={() => props.setIsFinal(false)}/>
+                <label for="isNotFinal">Чернова</label>
+                <input type="radio" id="isFinal" name="isFinal" value="true" onClick={() => props.setIsFinal(true)}/>
+                <label for="isFinal">Белова</label>
+            </ChooseProtocolType>
+            <h5 style={{margin: '10px 0'}}>Изберете вид протокол</h5>
+            <ChooseProtocolType>
+                <input type="radio" id="machine" name="protocolType" value="machine" onClick={() => props.setProtocolType('machine')}/>
+                <label for="machine">Машинен</label>
+                <input type="radio" id="paper" name="protocolType" value="paper" onClick={() => props.setProtocolType('paper')}/>
+                <label for="paper">Хартиен</label>
+                <input type="radio" id="paper-machine" name="protocolType" value="paper-machine" onClick={() => props.setProtocolType('paper-machine')}/>
+                <label for="paper-machine">Хартиено-машинен</label>
+            </ChooseProtocolType>
+            {
+                props.protocolType === 'machine' || props.protocolType === 'paper-machine'?
+                    <>
+                    <h5 style={{margin: '10px 0'}}>Брой машини</h5>
+                    <ChooseProtocolType>
+                        <input type="radio" id="1machine" name="machineCount" value="1machine" onClick={() => props.setMachineCount(1)}/>
+                        <label for="1machine">1 машина</label>
+                        <input type="radio" id="2machines" name="machineCount" value="2machines" onClick={() => props.setMachineCount(2)}/>
+                        <label for="2machines">2 машини</label>
+                    </ChooseProtocolType>
+                    </> : null
+            }
             <hr/>
         </>
     );

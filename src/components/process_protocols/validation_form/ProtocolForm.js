@@ -204,7 +204,11 @@ export default props => {
             <ProtocolDetailsTable>
             <tbody>
                 <tr>
-                    <td>2. Брой на гласувалите избиратели според положените подписи в избирателния списък (вкл. под чертата)</td>
+                    <td>
+                        1. Брой на избирателите в избирателния списък при предаването му на СИК,
+                        включително и вписаните в допълнителната страница (под чертата) на избирателния
+                        списък в изборния ден
+                    </td>
                     <td>
                         <input
                             type="text"
@@ -215,79 +219,150 @@ export default props => {
                         />
                     </td>
                 </tr>
-            </tbody>
-            </ProtocolDetailsTable>
-            <h1>СЛЕД КАТО ОТВОРИ ИЗБИРАТЕЛНАТА КУТИЯ, СИК УСТАНОВИ</h1>
-            <ProtocolDetailsTable>
-                <tbody>
                 <tr>
-                    <td>5. Брой намерени в избирателната кутия недействителни гласове (бюлетини)</td>
+                    <td>
+                        2. Брой на избирателите, вписани в допълнителната страница (под чертата) на
+                        избирателния списък в изборния ден
+                    </td>
                     <td>
                         <input
                             type="text"
-                            value={props.formState.formData.invalidVotesCount}
-                            name="invalidVotesCount"
-                            className={props.fieldStatus['invalidVotesCount'].invalid? 'invalid' : props.fieldStatus['invalidVotesCount'].changed? 'changed' : ''}
+                            name="additionalVotersCount"
+                            className={props.fieldStatus['additionalVotersCount'].invalid? 'invalid' : props.fieldStatus['additionalVotersCount'].changed? 'changed' : ''}
+                            value={props.formState.formData.additionalVotersCount}
                             onChange={props.handleNumberChange}
                         />
                     </td>
                 </tr>
+                {/*
                 <tr>
-                    <td>6.1. Брой на действителните гласове, подадени за кандидатските листи на партии, коалиции и ИК</td>
+                    <td>
+                        3. Брой на гласувалите избиратели според положените подписи в
+                        избирателния списък (вкл. под чертата)
+                    </td>
                     <td>
                         <input
                             type="text"
-                            value={props.formState.formData.validVotesCount}
-                            name="validVotesCount"
-                            className={props.fieldStatus['validVotesCount'].invalid? 'invalid' : props.fieldStatus['validVotesCount'].changed? 'changed' : ''}
+                            name="votersCount"
+                            className={props.fieldStatus['votersCount'].invalid? 'invalid' : props.fieldStatus['votersCount'].changed? 'changed' : ''}
+                            value={props.formState.formData.votersCount}
+                            onChange={props.handleNumberChange}
+                        />
+                    </td>
+                </tr>
+                */}
+            </tbody>
+            </ProtocolDetailsTable>
+            {
+                props.protocolType === 'paper' || props.protocolType === 'paper-machine'?
+                    <>
+                        <h1>ДАННИ ИЗВЪН ИЗБИРАТЕЛНИЯ СПИСЪК</h1>
+                        <ProtocolDetailsTable>
+                        <tbody>
+                            <tr>
+                                <td>4. Бюлетини извън избирателната кутия (4а + 4б)</td>
+                                <td>
+                                    <input
+                                        type="text"
+                                        name="paperBallotsOutsideOfBox"
+                                        className={props.fieldStatus['paperBallotsOutsideOfBox'].invalid? 'invalid' : props.fieldStatus['paperBallotsOutsideOfBox'].changed? 'changed' : ''}
+                                        value={props.formState.formData.paperBallotsOutsideOfBox}
+                                        onChange={props.handleNumberChange}
+                                    />
+                                </td>
+                            </tr>
+                        </tbody>
+                        </ProtocolDetailsTable>
+                    </> : null
+            }
+            <h1>СЛЕД КАТО ОТВОРИ ИЗБИРАТЕЛНАТА КУТИЯ, СИК УСТАНОВИ:</h1>
+            <ProtocolDetailsTable>
+                <tbody>
+                <tr>
+                    <td>5. {
+                        props.protocolType === 'machine'?
+                            'Общ брой на потвърдените гласове' :
+                        props.protocolType === 'paper'?
+                            'Брой на намерените в избирателната кутия бюлетини' :
+                        props.protocolType === 'paper-machine'?
+                            'Общ брой на намерените в избирателната кутия бюлетини и потвърдените гласове от машинното гласуване' : null  
+                        
+                    }</td>
+                    <td>
+                        <input
+                            type="text"
+                            value={props.formState.formData.votesCount}
+                            name="votesCount"
+                            className={props.fieldStatus['votesCount'].invalid? 'invalid' : props.fieldStatus['votesCount'].changed? 'changed' : ''}
                             onChange={props.handleNumberChange}
                         />
                     </td>
                 </tr>
                 {
-                    !props.sectionData.isMachine? null : <>
-                        <tr>
-                            <td>6.2а. Брой на намерените в избирателна кутия дейстивтелни гласове "Не подрекпям никого"</td>
-                            <td>
-                                <input type="text"
-                                    className={props.fieldStatus[`party0nm`].invalid? 'invalid' : props.fieldStatus[`party0nm`].changed? 'changed' : ''}
-                                    data-party-id={'0nm'}
-                                    value={props.formState.resultsData['0nm']}
-                                    onChange={props.handleResultsChange}
-                                />
-                            </td>
-                        </tr>
-                        <tr>
-                            <td>6.2б. Брой гласували за "Не подкрепям никого" от машинното гласуване</td>
-                            <td>
-                                <input type="text"
-                                    className={props.fieldStatus[`party0m`].invalid? 'invalid' : props.fieldStatus[`party0m`].changed? 'changed' : ''}
-                                    data-party-id={'0m'}
-                                    value={props.formState.resultsData['0m']}
-                                    onChange={props.handleResultsChange}
-                                />
-                            </td>
-                        </tr>
-                    </>
+                    props.protocolType === 'paper-machine'?
+                        <>
+                            <tr>
+                                <td>5.1. Брой на намерените в избирателните кутии бюлетини</td>
+                                <td>
+                                    <input
+                                        type="text"
+                                        value={props.formState.formData.paperVotesCount}
+                                        name="paperVotesCount"
+                                        className={props.fieldStatus['paperVotesCount'].invalid? 'invalid' : props.fieldStatus['paperVotesCount'].changed? 'changed' : ''}
+                                        onChange={props.handleNumberChange}
+                                    />
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>5.2. Брой на потвърдените гласове от машинното гласуване</td>
+                                <td>
+                                    <input
+                                        type="text"
+                                        value={props.formState.formData.machineVotesCount}
+                                        name="machineVotesCount"
+                                        className={props.fieldStatus['machineVotesCount'].invalid? 'invalid' : props.fieldStatus['machineVotesCount'].changed? 'changed' : ''}
+                                        onChange={props.handleNumberChange}
+                                    />
+                                </td>
+                            </tr>
+                        </> : null
                 }
-                <tr>
-                    <td>6.2. Брой на действителните гласове "Не подкрепям никого"</td>
-                    <td>
-                        <input type="text"
-                            className={props.fieldStatus[`party0`].invalid? 'invalid' : props.fieldStatus[`party0`].changed? 'changed' : ''}
-                            data-party-id={'0'}
-                            value={props.formState.resultsData['0']}
-                            onChange={props.handleResultsChange}
-                        />
-                    </td>
-                </tr>
+                {
+                    props.protocolType === 'paper-machine' || props.protocolType === 'paper'?
+                        <>
+                            <tr>
+                                <td>6. Брой на намерените в избирателната кутия недействителни гласове (бюлетини)</td>
+                                <td>
+                                    <input
+                                        type="text"
+                                        value={props.formState.formData.invalidVotesCount}
+                                        name="invalidVotesCount"
+                                        className={props.fieldStatus['invalidVotesCount'].invalid? 'invalid' : props.fieldStatus['invalidVotesCount'].changed? 'changed' : ''}
+                                        onChange={props.handleNumberChange}
+                                    />
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>7. Общ брой на намерените в избирателната кутия действителни гласове (бюлетини)</td>
+                                <td>
+                                    <input
+                                        type="text"
+                                        value={props.formState.formData.validVotesCount}
+                                        name="validVotesCount"
+                                        className={props.fieldStatus['validVotesCount'].invalid? 'invalid' : props.fieldStatus['validVotesCount'].changed? 'changed' : ''}
+                                        onChange={props.handleNumberChange}
+                                    />
+                                </td>
+                            </tr>
+                        </> : null
+                }
                 </tbody>
             </ProtocolDetailsTable>
             <hr/>
             <h1>7. РАЗПРЕДЕЛЕНИЕ НА ГЛАСОВЕТЕ ПО КАНДИДАТСКИ ЛИСТИ</h1>
             <PartyResultsTable isMachine={props.sectionData.isMachine}>
                 <tbody>
-                {props.parties.filter(party => (props.allParties? true : party.isFeatured) && party.id.toString() !== '0')
+                {props.parties.filter(party => (props.allParties? true : party.isFeatured))
                     .map(partyRow)}
                 </tbody>
             </PartyResultsTable>

@@ -1,7 +1,7 @@
 import React, { useContext, useState, useEffect, useRef } from 'react';
 import ReactDOM from 'react-dom';
 import ProtocolPhotos from './protocol_photos/ProtocolPhotos';
-import MachineProtocolForm from './validation_form/MachineProtocolForm';
+import ProtocolForm from './validation_form/ProtocolForm';
 import ValidationFormState from './validation_form/ValidationFormState';
 
 import useKeypress from 'react-use-keypress';
@@ -147,9 +147,21 @@ export default props => {
         isMachine: false,
     });
 
+    const [protocolType, setProtocolType] = useState('unset');
+    const [machineCount, setMachineCount] = useState(0);
+    const [isFinal, setIsFinal] = useState(false);
+
     const [formState, setFormState] = useState(new ValidationFormState({ protocol: props.protocol, parties, allParties }));
-    const { fieldStatus, invalidFields, changedFields } = formState.getFieldStatus(props.protocol, parties, allParties, sectionData);
+    const { fieldStatus, invalidFields, changedFields } = formState.getFieldStatus(props.protocol, parties, allParties, sectionData, protocolType);
     const ref = useRef();
+
+    useEffect(() => {
+        setFormState(new ValidationFormState({ protocol: props.protocol, parties, allParties }));
+    }, [protocolType]);
+
+    useEffect(() => {
+        setFormState(new ValidationFormState({ protocol: props.protocol, parties, allParties }));
+    }, [machineCount]);
 
     useKeypress(['ArrowUp'], event => {
         let lastInput = null;
@@ -290,10 +302,18 @@ export default props => {
 
         const postBody = {
             section: { id: formState.formData.sectionId },
-            results: {
-                invalidVotesCount: parseInt(formState.formData.invalidVotesCount, 10),
-                validVotesCount: parseInt(formState.formData.validVotesCount, 10),
-                votersCount: parseInt(formState.formData.votersCount, 10),
+            hasPaperBallots: protocolType === 'paper' || protocolType === 'paper-machine',
+            machinesCount: machineCount,
+            isFinal: isFinal,
+            votersCount: parseInt(formState.formData.votersCount, 10),
+            additionalVotersCount: parseInt(formState.formData.additionalVotersCount, 10),
+            paperBallotsOutsideOfBox: parseInt(formState.formData.paperBallotsOutsideOfBox, 10),
+            votesCount: parseInt(formState.formData.votesCount, 10),
+            paperVotesCount: parseInt(formState.formData.paperVotesCount, 10),
+            machineVotesCount: parseInt(formState.formData.machineVotesCount, 10),
+            invalidVotesCount: parseInt(formState.formData.invalidVotesCount, 10),
+            validVotesCount: parseInt(formState.formData.validVotesCount, 10),
+            results: {        
                 results: Object.keys(results).map(key => {
                     return { party: parseInt(key, 10),
                         validVotesCount: results[key].validVotesCount,
@@ -302,7 +322,7 @@ export default props => {
                     };
                 })
             },
-            pictures: props.protocol.pictures
+            pictures: props.protocol.pictures,
         };
 
         props.setLoading(true);
@@ -362,17 +382,28 @@ export default props => {
                         sectionData={sectionData}
                         protocol={props.protocol}
                         formState={formState}
+                        protocolType={protocolType}
+                        setProtocolType={setProtocolType}
+                        machineCount={machineCount}
+                        setMachineCount={setMachineCount}
                     />
-                    <MachineProtocolForm
-                        fieldStatus={fieldStatus}
-                        handleNumberChange={handleNumberChange}
-                        handleResultsChange={handleResultsChange}
-                        formState={formState}
-                        sectionData={sectionData}
-                        parties={parties}
-                        allParties={allParties}
-                    />
-                    <hr/>
+                    {
+                        protocolType === 'unset' ||
+                        (protocolType === 'machine' && machineCount === 0) ||
+                        (protocolType === 'paper-machine' && machineCount === 0)? null :
+                            <ProtocolForm
+                                fieldStatus={fieldStatus}
+                                handleNumberChange={handleNumberChange}
+                                handleResultsChange={handleResultsChange}
+                                formState={formState}
+                                sectionData={sectionData}
+                                parties={parties}
+                                allParties={allParties}
+                                protocolType={protocolType}
+                                setIsFinal={setIsFinal}
+                            />
+                    }
+                    {protocolType !== 'unset'? <hr/> : null}
                     {
                         invalidFields || changedFields?
                             <AcceptButton
