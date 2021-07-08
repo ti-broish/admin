@@ -122,6 +122,10 @@ const formatDateShort = (dateTime) => {
   );
 };
 
+const mapRoleLocalization = (roles, roleValue) => {
+  return roles?.find((role) => role.role === roleValue).roleLocalized;
+};
+
 const checkPaths = (path1, path2) => {
   if (!path1 || !path2) return false;
 
@@ -141,4 +145,5 @@ module.exports = {
   formatSecs,
   format,
   checkPaths,
+  mapRoleLocalization,
 };

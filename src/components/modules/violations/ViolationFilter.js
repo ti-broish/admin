@@ -5,7 +5,7 @@ import { Link } from 'react-router-dom';
 import { AuthContext } from '../../App';
 
 import Statuses from '../filter_components/Statuses';
-import SectionNumber from '../filter_components/SectionNumber';
+import TextInput from '../filter_components/TextInput';
 import Published from '../filter_components/Published';
 
 import Countries from '../filter_components/Countries';
@@ -153,7 +153,7 @@ export default function ViolationFilter(props) {
         <tr>
           <td>
             N на секция:<br></br>{' '}
-            <SectionNumber section={section} setSection={setSection} />
+            <TextInput textInput={section} setTextInput={setSection} />
           </td>
           <td>
             Публикуван:<br></br>{' '}

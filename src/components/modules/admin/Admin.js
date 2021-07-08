@@ -12,11 +12,13 @@ import {
 
 import styled from 'styled-components';
 
-import AdminOverview from './AdminOverview';
+import AdminFilter from './AdminFilter';
 
 import Loading from '../../layout/Loading';
 
 import Tooltip from '../../utils/Tooltip';
+
+import { mapRoleLocalization } from '../../utils/Util';
 
 const TableViewContainer = styled.div`
   padding: 40px;
@@ -110,15 +112,28 @@ export default (props) => {
   const [loading, setLoading] = useState(false);
   const query = useQuery();
   const history = useHistory();
+  const rolesState = useContext(AuthContext).roles;
 
   useEffect(() => {
     let url = '/users';
     const page = query.get('page');
+    const firstName = query.get('firstName');
+    const lastName = query.get('lastName');
+    const email = query.get('email');
+    const role = query.get('role');
+    const organization = query.get('organization');
     // const limit = query.get('limit');
 
-    if (page) url += '?';
+    if (page || firstName || lastName || email || role || organization)
+      url += '?';
 
     if (page) url += `page=${page}`;
+    if (firstName) url += `firstName=${firstName}`;
+    if (lastName) url += `lastName=${lastName}`;
+    if (email) url += `email=${email}`;
+    if (role) url += `role=${role}`;
+    if (organization) url += `organization=${organization}`;
+
     // if (limit) url += `limit=${limit}`;
 
     setLoading(true);
@@ -126,7 +141,14 @@ export default (props) => {
       setLoading(false);
       setData(res.data);
     });
-  }, [query.get('page')]);
+  }, [
+    query.get('firstName'),
+    query.get('lastName'),
+    query.get('email'),
+    query.get('page'),
+    query.get('role'),
+    query.get('organization'),
+  ]);
 
   const renderLinks = () => {
     const firstAvail = data.meta.currentPage !== 1;
@@ -177,27 +199,22 @@ export default (props) => {
   };
 
   const createRoleItem = (role, idx) => {
-    let roleName = role[0];
+    let roleName = mapRoleLocalization(rolesState, role) ?? role[0];
     let color = '#9e9e9e';
     switch (role) {
       case 'user':
-        roleName = 'Потребител';
         color = '#4caf50';
         break;
       case 'validator':
-        roleName = 'Валидатор';
         color = '#6c6cff';
         break;
       case 'lawyer':
-        roleName = 'Юрист';
         color = '#00bcd4';
         break;
       case 'streamer':
-        roleName = 'Оператор';
         color = '#ff9800';
         break;
       case 'admin':
-        roleName = 'Администратор';
         color = '#ff3a39';
         break;
       default:
@@ -218,6 +235,7 @@ export default (props) => {
     <>
       <TableViewContainer>
         <h1>Административна секция</h1>
+        <AdminFilter />
         <hr />
         {!data ? (
           <Loading />
