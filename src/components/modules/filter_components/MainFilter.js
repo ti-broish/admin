@@ -1,19 +1,19 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect } from 'react';
 
-import firebase from "firebase/app";
-import "firebase/auth";
+import firebase from 'firebase/app';
+import 'firebase/auth';
 
-import axios from "axios";
+import axios from 'axios';
 
-import SectionNumber from "../filters/SectionNumber";
+import TextInput from '../filters/TextInput';
 
-import Countries from "../filters/Countries";
-import MIRs from "../filters/MIRs";
-import Municipalities from "../filters/Municipalities";
-import Towns from "../filters/Towns";
-import Regions from "../filters/Regions";
+import Countries from '../filters/Countries';
+import MIRs from '../filters/MIRs';
+import Municipalities from '../filters/Municipalities';
+import Towns from '../filters/Towns';
+import Regions from '../filters/Regions';
 
-import styled from "styled-components";
+import styled from 'styled-components';
 
 const FilterlTable = styled.table`
   width: 100%;
@@ -52,22 +52,21 @@ const ButtonStyle = styled.button`
 `;
 
 export default (props) => {
-
   const [disabled, setDisabled] = useState(true); //sets callback function for disabling field
 
-  const [country, setCountry] = useState("00");
+  const [country, setCountry] = useState('00');
 
-  const [mirs, setMirs] = useState([]); //sets all MIRs in Bulgaria 
-  const [chosenMir, setChosenMir] = useState("00"); //gets the chosen MIR
+  const [mirs, setMirs] = useState([]); //sets all MIRs in Bulgaria
+  const [chosenMir, setChosenMir] = useState('00'); //gets the chosen MIR
 
   const [municipalities, setMunicipalities] = useState([]); //sets the municipalities in one MIR
-  const [chosenMunicipality, setChosenMunicipality] = useState("00"); //gets the chosen municipality
+  const [chosenMunicipality, setChosenMunicipality] = useState('00'); //gets the chosen municipality
 
   const [towns, setTowns] = useState([]); //sets all towns in one municipality
 
   const [regions, setRegions] = useState([]); //sets the election regions in one town
 
-  const [status, setStatus] = useState(""); 
+  const [status, setStatus] = useState('');
   const [isAbroad, setIsAbroad] = useState(false); //sets if country is Bulgaria or not
 
   const submitHandler = () => {
@@ -76,7 +75,7 @@ export default (props) => {
 
   const apiHost = () => {
     if (!process.env.API_HOST) {
-      return "https://d1tapi.dabulgaria.bg";
+      return 'https://d1tapi.dabulgaria.bg';
     } else {
       return process.env.API_HOST;
     }
@@ -95,8 +94,8 @@ export default (props) => {
             headers: { Authorization: `Bearer ${idToken}` },
           });
 
-          //if country is NOT Bulgaria: gets all the cities in the foreign country 
-          if (country !== "00") {
+          //if country is NOT Bulgaria: gets all the cities in the foreign country
+          if (country !== '00') {
             const res2 = await axios.get(
               `${apiHost()}/towns?country=${country}`,
               {
@@ -127,7 +126,7 @@ export default (props) => {
       <tbody>
         <tr>
           <td>
-            N на секция:<br></br> <SectionNumber />
+            N на секция:<br></br> <TextInput />
           </td>
           <td>
             Произход:<br></br> <Origins />
