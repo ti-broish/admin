@@ -178,7 +178,7 @@ export default props => {
     return(
         <PhotoGallery>
             {
-                !selectedPhoto && selectedPhoto !== 0? null : [
+                !selectedPhoto && selectedPhoto !== 0? null : <>
                     <SelectedPageControls>
                         <span style={{verticalAlign: 'top', padding: '10px'}}>
                             Снимка №{selectedPhoto+1}
@@ -198,12 +198,13 @@ export default props => {
                         <SelectedPageButton disabled={!movePageForwardPossible} onClick={movePageForward}>
                             <FontAwesomeIcon icon={faStepForward}/>
                         </SelectedPageButton>
-                    </SelectedPageControls>,
+                    </SelectedPageControls>
                     <PageNavCompensator/>
-                ]
+                </>
             }
             {props.protocol.pictures.map((picture, i) => 
                 <GalleryPhotoButton 
+                    key={i}
                     selected={selectedPhoto === i} 
                     onClick={() => setSelectedPhoto(i)}
                     onDoubleClick={() => props.setPage(i)}

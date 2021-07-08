@@ -2,6 +2,7 @@ import React, { useContext, useState, useEffect, useRef } from 'react';
 import ReactDOM from 'react-dom';
 import ProtocolPhotos from './protocol_photos/ProtocolPhotos';
 import MachineProtocolForm from './validation_form/MachineProtocolForm';
+import ValidationFormState from './validation_form/ValidationFormState';
 
 import useKeypress from 'react-use-keypress';
 
@@ -41,68 +42,6 @@ const SectionHeader = styled.div`
     //padding: 10px;
     background-color: rgb(56,222,203);
     color: white;
-`;
-
-const SectionInput = styled.div`
-    width: 100%;
-
-    span {
-        font-size: 12px;
-        text-align: center;
-        display: inline-block;
-        padding: 3px 0;
-        border-left: 1px solid #eee;
-        border-bottom: 1px solid #eee;
-        box-sizing: border-box;
-        color: #333;
-        //font-weight: bold;
-
-        &.last {
-            border-right: 1px solid #eee;
-        }
-    }
-
-    .box {
-        width: 36px;
-        height: 44px;
-        border: 1px solid #eee;
-        display: inline-block;
-        box-sizing: border-box;
-        vertical-align: top;
-        border-right: none;
-
-        &.last {
-            border-right: 1px solid #eee;
-        }
-
-        &.invalid {
-            background-color: #ff8f8f;
-        }
-
-        &.changed {
-            background-color: #fdfd97;
-        }
-    }
-
-    input {
-        letter-spacing: 14.4px;
-        box-sizing: border-box;
-        border: none;
-        font-size: 36px;
-        font-family: 'Courier New', monospace;
-        padding: 2px  0 0 6px;
-        z-index: 30;
-        display: inline-block;
-        position: relative;
-        background: none;
-        color: #333;
-
-        &:focus {
-            border: none;
-            background: none;
-            outline: none;
-        }
-    }
 `;
 
 const BackButton = styled.button`
@@ -190,9 +129,11 @@ const ApproveAndSendViolationButton = styled(VerificationPanelButton)`
 
 import { AuthContext } from '../App';
 import ConfirmationModal from './ConfirmationModal';
+import SectionDetails from './validation_form/SectionDetails';
 
 export default props => {
     const { parties, authPost, authGet } = useContext(AuthContext);
+
     const [allParties, setAllParties] = useState(true);//Math.random() < 0.5);
     const [modalState, setModalState] = useState({isOpen: false});
     const [sectionData, setSectionData] = useState({
@@ -206,6 +147,8 @@ export default props => {
         isMachine: false,
     });
 
+    const [formState, setFormState] = useState(new ValidationFormState({ protocol: props.protocol, parties, allParties }));
+    const { fieldStatus, invalidFields, changedFields } = formState.getFieldStatus(props.protocol, parties, allParties, sectionData);
     const ref = useRef();
 
     useKeypress(['ArrowUp'], event => {
@@ -239,23 +182,13 @@ export default props => {
         traverseNodeTree(ref.current);
     });
 
-    const zeroIfEmpty = value => value? value : '';//0;
-    const emptyStrIfNull = value => (value || value === 0)? value : '';
-
-    const [formData, setFormData] = useState({
-        sectionId: props.protocol.section.id,
-        votersCount: zeroIfEmpty(props.protocol.results.votersCount),
-        validVotesCount: zeroIfEmpty(props.protocol.results.validVotesCount),
-        invalidVotesCount: zeroIfEmpty(props.protocol.results.invalidVotesCount),
-    });
-
     const violationMessage = useRef('')
 
     useEffect(() => {
-        if(formData.sectionId.length === 9) {
+        if(formState.formData.sectionId.length === 9) {
             updateSectionData();
         }
-    }, [formData.sectionId])
+    }, [formState.formData.sectionId])
 
     const updateSectionData = async () => {
         setSectionData({
@@ -269,7 +202,7 @@ export default props => {
             isMachine: false,
         });
 
-        const res = await authGet(`/sections/${formData.sectionId}`);
+        const res = await authGet(`/sections/${formState.formData.sectionId}`);
 
         const { town, electionRegion, cityRegion, place} = res.data;
 
@@ -285,122 +218,19 @@ export default props => {
         });
     };
 
-    const initResults = () => {
-        const resultsObj = { '0': '' };
-
-        for(const party of parties) {
-            if((allParties? true : party.isFeatured) || party.id.toString() === '0')
-                resultsObj[party.id] = '';
-                resultsObj[`${party.id}m`] = '';
-                resultsObj[`${party.id}nm`] = '';
-        }
-
-        for(const result of props.protocol.results.results) {
-            resultsObj[result.party.id] = emptyStrIfNull(result.validVotesCount);
-            resultsObj[`${result.party.id}m`] = emptyStrIfNull(result.machineVotesCount);
-            resultsObj[`${result.party.id}nm`] = emptyStrIfNull(result.nonMachineVotesCount);
-        }
-
-        return resultsObj;
-    };
-
-    const [resultsData, setResultsData] = useState(initResults());
-
-    const fieldStatus = {};
-
-    for(let i = 0; i < 9; i ++) {
-        const char1 = props.protocol.section.id[i];
-        const char2 = formData.sectionId[i];
-
-        if(typeof char1 == 'undefined' || typeof char2 == 'undefined')
-            fieldStatus[`sectionId${i+1}`] = { invalid: true };
-        else if(char1.toString() !== char2.toString())
-            fieldStatus[`sectionId${i+1}`] = { changed: true };
-        else
-            fieldStatus[`sectionId${i+1}`] = { unchanged: true };
-    }
-
-    for(const party of parties) {
-        if((allParties? true : party.isFeatured) || party.id.toString() === '0') {
-
-            const updateFieldStatus = (apiKey, resultSuffix) => {
-                let originalResult = '';
-                for(const result of props.protocol.results.results) {
-                    if(result.party.id === party.id) {
-                        originalResult = emptyStrIfNull(result[apiKey]);
-                    }
-                }
-
-                if(resultsData[`${party.id}${resultSuffix}`] === '')
-                    fieldStatus[`party${party.id}${resultSuffix}`] = { invalid: true };
-                else if(originalResult.toString() !== resultsData[`${party.id}${resultSuffix}`].toString())
-                    fieldStatus[`party${party.id}${resultSuffix}`] = { changed: true };
-                else
-                    fieldStatus[`party${party.id}${resultSuffix}`] = { unchanged: true };
-            };
-
-            updateFieldStatus('validVotesCount', '');
-
-            if(sectionData.isMachine) {
-                updateFieldStatus('machineVotesCount', 'm');
-                updateFieldStatus('nonMachineVotesCount', 'nm');
-            }
-        }
-    }
-
-    const addStatusForResultField = fieldName => {
-        if(formData[fieldName] === '')
-            fieldStatus[fieldName] = { invalid: true };
-        else if(formData[fieldName] !== zeroIfEmpty(props.protocol.results[fieldName]))
-            fieldStatus[fieldName] = { changed: true };
-        else
-            fieldStatus[fieldName] = { unchanged: true };
-    };
-
-    addStatusForResultField('votersCount');
-    addStatusForResultField('validVotesCount');
-    addStatusForResultField('invalidVotesCount');
-
     const handleProtocolNumberChange = e => {
-        setFormData({...formData, sectionId: e.target.value});
+        setFormState(formState.updateProtocolNumber(e.target.value));
     };
 
     const handleResultsChange = e => {
-        const key = `${e.target.dataset.partyId}`;
-        const newValue = filterNumberFieldInput(e.target.value, resultsData[key]);
-        setResultsData({...resultsData, [key]: newValue});
+        const key = e.target.name;//`${e.target.dataset.partyId}`;
+        setFormState(formState.updateResultsData(key, e.target.value));
     };
 
     const handleNumberChange = e => {
-        const newValue = filterNumberFieldInput(e.target.value, formData[e.target.name]);
-        setFormData({...formData, [e.target.name]: newValue});
+        const key = e.target.name;
+        setFormState(formState.updateFormData(key, e.target.value));
     };
-
-    const filterNumberFieldInput = (newValue, oldValue) => {
-        let isNum = /^\d+$/.test(newValue);
-        if(isNum) {
-            return newValue;
-        } else if(newValue === '') {
-            return '';
-        } else {
-            return oldValue;
-        }
-    };
-
-    const getBoxClass = boxNum => {
-        const status = fieldStatus[`sectionId${boxNum}`];
-        return status.invalid? 'box invalid' : status.changed? 'box changed' : 'box';
-    };
-
-    let invalidFields = false;
-    let changedFields = false;
-
-    for(const key of Object.keys(fieldStatus)) {
-        if(fieldStatus[key].invalid)
-            invalidFields = true;
-        if(fieldStatus[key].changed)
-            changedFields = true;
-    }
 
     const approveProtocol = async () => {
         props.setLoading(true);
@@ -455,44 +285,15 @@ export default props => {
         });
     };
 
-    const openApproveAndSendViolationModal = () => {
-        setModalState({
-            isOpen: true,
-            title: 'Сигурни ли сте?',
-            message: 'Сигурни ли сте, че искате да потвърдите този протокол?',
-            messageValue: violationMessage,
-            messageHandler: (e) => violationMessage.current = e.target.value,
-            confirmButtonName: 'Потвърди и изпрати сигнал',
-            cancelButtonName: 'Върни се',
-            confirmHandler: approveProtocolAndSendViolation,
-            cancelHandler: () => setModalState({isOpen: false})
-        });
-    };
-
     const replaceProtocol = async () => {
-        const results = {};
-
-        Object.keys(resultsData).forEach(key => {
-            if(key[key.length - 2] === 'n') {
-                let newKey = key.slice(0, key.length - 2);
-                if(!results[newKey]) results[newKey] = {};
-                results[newKey].nonMachineVotesCount = !sectionData.isMachine? null : parseInt(resultsData[key], 10);
-            } else if(key[key.length - 1] === 'm') {
-                let newKey = key.slice(0, key.length - 1);
-                if(!results[newKey]) results[newKey] = {};
-                results[newKey].machineVotesCount = !sectionData.isMachine? null : parseInt(resultsData[key], 10);
-            } else {
-                if(!results[key]) results[key] = {};
-                results[key].validVotesCount = parseInt(resultsData[key], 10);
-            }
-        });
+        const results = formState.generateResults(sectionData.isMachine);
 
         const postBody = {
-            section: { id: formData.sectionId },
+            section: { id: formState.formData.sectionId },
             results: {
-                invalidVotesCount: parseInt(formData.invalidVotesCount, 10),
-                validVotesCount: parseInt(formData.validVotesCount, 10),
-                votersCount: parseInt(formData.votersCount, 10),
+                invalidVotesCount: parseInt(formState.formData.invalidVotesCount, 10),
+                validVotesCount: parseInt(formState.formData.validVotesCount, 10),
+                votersCount: parseInt(formState.formData.votersCount, 10),
                 results: Object.keys(results).map(key => {
                     return { party: parseInt(key, 10),
                         validVotesCount: results[key].validVotesCount,
@@ -517,15 +318,15 @@ export default props => {
 
     const performSumCheck = () => {
         let sum = 0;
-        for(const key of Object.keys(resultsData)) {
-            if(key[0] !== '0' && key[key.length-1] !== 'm' && !isNaN(resultsData[key]))
-                sum += parseInt(resultsData[key], 10);
+        for(const key of Object.keys(formState.resultsData)) {
+            if(key[0] !== '0' && key[key.length-1] !== 'm' && !isNaN(formState.resultsData[key]))
+                sum += parseInt(formState.resultsData[key], 10);
         }
 
-        if(sum !== parseInt(formData.validVotesCount, 10)) {
+        if(sum !== parseInt(formState.formData.validVotesCount, 10)) {
             return [`
                 Сборът на гласовете в т. 7 (${sum}) не се равнява на числото 
-                въведено в т. 6.1 (${formData.validVotesCount}).`,
+                въведено в т. 6.1 (${formState.formData.validVotesCount}).`,
                 <br/>,<br/>,
                 `Ако грешката идва от протокола, моля не го поправяйте!
             `];
@@ -555,71 +356,18 @@ export default props => {
                     <h1 style={{display: 'inline-block'}}>Секция {props.protocol.section.id}</h1>
                 </SectionHeader>
                 <ProtocolDetails>
-                    <table>
-                    <tbody>
-                        <tr>
-                            <td>Номер на секция</td>
-                            <td style={{paddingBottom: '20px'}}>
-                                <SectionInput>
-                                    <div>
-                                        <div className={getBoxClass(1)}>
-                                            <input
-                                                type="text"
-                                                style={{width: '333px'}}
-                                                value={formData.sectionId}
-                                                maxLength={9}
-                                                name="sectionId"
-                                                onChange={handleProtocolNumberChange}
-                                            />
-                                        </div>
-                                        <div className={getBoxClass(2)}/>
-                                        <div className={getBoxClass(3)}/>
-                                        <div className={getBoxClass(4)}/>
-                                        <div className={getBoxClass(5)}/>
-                                        <div className={getBoxClass(6)}/>
-                                        <div className={getBoxClass(7)}/>
-                                        <div className={getBoxClass(8)}/>
-                                        <div className={getBoxClass(9) + ' last'}/>
-                                        <br/>
-                                        <span style={{width: '72px'}}>Район</span>
-                                        <span style={{width: '72px'}}>Община</span>
-                                        <span style={{width: '72px'}}>Адм. ед.</span>
-                                        <span className='last' style={{width: '108px'}}>Секция</span>
-                                    </div>
-                                </SectionInput>
-                            </td>
-                        </tr>
-                    </tbody>
-                    </table>
-                    <p style={{fontSize: '20px'}}>
-                        {!sectionData.country? null : ['Държава: ', <b>{sectionData.country}</b>, ', ']}
-                        {!sectionData.electionRegion? null : ['Изборен район: ', <b>{sectionData.electionRegion}</b>, ', ']}
-                        <br/>
-                        {!sectionData.municipality? null : ['Община: ', <b>{sectionData.municipality}</b>, ', ']}
-                        {!sectionData.town? null : ['Населено място: ', <b>{sectionData.town}</b>, ', ']}
-                        <br/>
-                        {!sectionData.cityRegion? null : ['Район: ', <b>{sectionData.cityRegion}</b>, ', ']}
-                        {!sectionData.address? null : ['Локация: ', <b>{sectionData.address}</b>]}
-                    </p>
-                    <table>
-                        <tbody>
-                        <tr>
-                            <td style={{paddingTop: '20px'}}>Изпратен от (организация)</td>
-                            <td style={{paddingTop: '20px'}}>{props.protocol.author.organization.name}</td>
-                        </tr>
-                        <tr>
-                            <td>Машинна секция</td>
-                            <td>{sectionData.isMachine? 'Да' : 'Не'}</td>
-                        </tr>
-                    </tbody>
-                    </table>
-                    <hr/>
+                    <SectionDetails
+                        fieldStatus={fieldStatus}
+                        handleProtocolNumberChange={handleProtocolNumberChange}
+                        sectionData={sectionData}
+                        protocol={props.protocol}
+                        formState={formState}
+                    />
                     <MachineProtocolForm
                         fieldStatus={fieldStatus}
                         handleNumberChange={handleNumberChange}
                         handleResultsChange={handleResultsChange}
-                        formData={formData}
-                        resultsData={resultsData}
+                        formState={formState}
                         sectionData={sectionData}
                         parties={parties}
                         allParties={allParties}

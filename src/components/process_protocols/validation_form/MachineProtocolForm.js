@@ -120,14 +120,15 @@ const svgIcon = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><
 
 export default props => {
 
-    const partyRow = party => {
+    const partyRow = (party, i) => {
         const status = props.fieldStatus[`party${party.id}`];
         const statusM = props.fieldStatus[`party${party.id}m`];
         const statusNM = props.fieldStatus[`party${party.id}nm`];
+
         return(
             !props.sectionData.isMachine
             ?
-                <tr>
+                <tr key={i}>
                     <td>{party.id.toString() === '0'? null :
                         party.color?
                             <PartyNumber color={party.color}>{party.id}</PartyNumber> :
@@ -138,21 +139,21 @@ export default props => {
                     <td>
                         <input type="text"
                             className={status.invalid? 'invalid' : status.changed? 'changed' : ''}
-                            data-party-id={party.id}
-                            value={props.resultsData[party.id]}
+                            name={party.id}
+                            value={props.formState.resultsData[party.id]}
                             onChange={props.handleResultsChange}
                         />
                     </td>
                 </tr>
-            : [
-                <tr>
+            : <>
+                <tr key={i*3}>
                     <td>{party.id.toString() === '0'? null :
                         party.color?
                             <PartyNumber color={party.color}>{party.id}</PartyNumber> :
                             <PartyNumber color={'white'} textColor={'555'}>{party.id}</PartyNumber>
                     }
                     </td>
-                    <td rowspan="3" style={{
+                    <td rowSpan="3" style={{
                         verticalAlign: 'top',
                         paddingTop: '5px',
                         borderBottom: '1px solid rgb(204, 204, 204)',
@@ -163,37 +164,37 @@ export default props => {
                     <td>
                         <input type="text"
                             className={statusNM.invalid? 'invalid' : statusNM.changed? 'changed' : ''}
-                            data-party-id={`${party.id}nm`}
-                            value={props.resultsData[`${party.id}nm`]}
+                            name={`${party.id}nm`}
+                            value={props.formState.resultsData[`${party.id}nm`]}
                             onChange={props.handleResultsChange}
                         />
                     </td>
-                </tr>,
-                <tr>
+                </tr>
+                <tr key={i*3+1}>
                     <td></td>
                     <td>от маш. гласове</td>
                     <td>
                         <input type="text"
                             className={statusM.invalid? 'invalid' : statusM.changed? 'changed' : ''}
-                            data-party-id={`${party.id}m`}
-                            value={props.resultsData[`${party.id}m`]}
+                            name={`${party.id}m`}
+                            value={props.formState.resultsData[`${party.id}m`]}
                             onChange={props.handleResultsChange}
                         />
                     </td>
-                </tr>,
-                <tr>
+                </tr>
+                <tr key={i*3+2}>
                     <td></td>
                     <td style={{borderBottom: '1px solid #ccc'}}>общо Б + МГ</td>
                     <td>
                         <input type="text"
                             className={status.invalid? 'invalid' : status.changed? 'changed' : ''}
-                            data-party-id={party.id}
-                            value={props.resultsData[party.id]}
+                            name={party.id}
+                            value={props.formState.resultsData[party.id]}
                             onChange={props.handleResultsChange}
                         />
                     </td>
                 </tr>
-            ]
+            </>
         );
     };
 
@@ -209,7 +210,7 @@ export default props => {
                             type="text"
                             name="votersCount"
                             className={props.fieldStatus['votersCount'].invalid? 'invalid' : props.fieldStatus['votersCount'].changed? 'changed' : ''}
-                            value={props.formData.votersCount}
+                            value={props.formState.formData.votersCount}
                             onChange={props.handleNumberChange}
                         />
                     </td>
@@ -224,7 +225,7 @@ export default props => {
                     <td>
                         <input
                             type="text"
-                            value={props.formData.invalidVotesCount}
+                            value={props.formState.formData.invalidVotesCount}
                             name="invalidVotesCount"
                             className={props.fieldStatus['invalidVotesCount'].invalid? 'invalid' : props.fieldStatus['invalidVotesCount'].changed? 'changed' : ''}
                             onChange={props.handleNumberChange}
@@ -236,7 +237,7 @@ export default props => {
                     <td>
                         <input
                             type="text"
-                            value={props.formData.validVotesCount}
+                            value={props.formState.formData.validVotesCount}
                             name="validVotesCount"
                             className={props.fieldStatus['validVotesCount'].invalid? 'invalid' : props.fieldStatus['validVotesCount'].changed? 'changed' : ''}
                             onChange={props.handleNumberChange}
@@ -244,30 +245,30 @@ export default props => {
                     </td>
                 </tr>
                 {
-                    !props.sectionData.isMachine? null : [
+                    !props.sectionData.isMachine? null : <>
                         <tr>
                             <td>6.2а. Брой на намерените в избирателна кутия дейстивтелни гласове "Не подрекпям никого"</td>
                             <td>
                                 <input type="text"
                                     className={props.fieldStatus[`party0nm`].invalid? 'invalid' : props.fieldStatus[`party0nm`].changed? 'changed' : ''}
                                     data-party-id={'0nm'}
-                                    value={props.resultsData['0nm']}
+                                    value={props.formState.resultsData['0nm']}
                                     onChange={props.handleResultsChange}
                                 />
                             </td>
-                        </tr>,
+                        </tr>
                         <tr>
                             <td>6.2б. Брой гласували за "Не подкрепям никого" от машинното гласуване</td>
                             <td>
                                 <input type="text"
                                     className={props.fieldStatus[`party0m`].invalid? 'invalid' : props.fieldStatus[`party0m`].changed? 'changed' : ''}
                                     data-party-id={'0m'}
-                                    value={props.resultsData['0m']}
+                                    value={props.formState.resultsData['0m']}
                                     onChange={props.handleResultsChange}
                                 />
                             </td>
                         </tr>
-                    ]
+                    </>
                 }
                 <tr>
                     <td>6.2. Брой на действителните гласове "Не подкрепям никого"</td>
@@ -275,7 +276,7 @@ export default props => {
                         <input type="text"
                             className={props.fieldStatus[`party0`].invalid? 'invalid' : props.fieldStatus[`party0`].changed? 'changed' : ''}
                             data-party-id={'0'}
-                            value={props.resultsData['0']}
+                            value={props.formState.resultsData['0']}
                             onChange={props.handleResultsChange}
                         />
                     </td>
@@ -286,10 +287,8 @@ export default props => {
             <h1>7. РАЗПРЕДЕЛЕНИЕ НА ГЛАСОВЕТЕ ПО КАНДИДАТСКИ ЛИСТИ</h1>
             <PartyResultsTable isMachine={props.sectionData.isMachine}>
                 <tbody>
-                {props.parties.map(party =>
-                    !((props.allParties? true : party.isFeatured) && party.id.toString() !== '0')
-                    ? null
-                    : partyRow(party))}
+                {props.parties.filter(party => (props.allParties? true : party.isFeatured) && party.id.toString() !== '0')
+                    .map(partyRow)}
                 </tbody>
             </PartyResultsTable>
         </div>

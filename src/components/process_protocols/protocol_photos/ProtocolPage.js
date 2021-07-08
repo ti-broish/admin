@@ -89,8 +89,8 @@ export default props => {
         props.imageLoaded(ev.target.naturalWidth / ratio * aspectRatio);
     };
 
-    return([
-        !loading || !props.isCurrentPage? null : 
+    return(<>
+        {!loading || !props.isCurrentPage? null : 
             <div style={{marginTop: '236px', textAlign: 'center'}}>
                 <SpinnerCircularFixed 
                     speed={400}
@@ -98,7 +98,9 @@ export default props => {
                     secondaryColor={'#aaa'}
                     thickness={70}
                 />
-            </div>,
+            </div>
+        }
+        {
         !props.isCurrentPage && !props.preload? null :
             <ProtocolPageImage 
                 rotation={props.rotation}
@@ -109,5 +111,5 @@ export default props => {
                 onLoad={imageLoaded}
                 ref={ref}
             />
-    ]);
+        }</>);
 };
