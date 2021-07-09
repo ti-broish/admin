@@ -93,16 +93,22 @@ const PartyResultsTable = styled.table`
         cursor: pointer;
     }
 
-    ${props => props.isMachine? `
-        td:nth-child(1) { width: 8%; }
-        td:nth-child(2) { width: 42%; }
-        td:nth-child(3) { width: 30%; }
-        td:nth-child(4) { width: 20%; }
-    ` : `
-        td:nth-child(1) { width: 8%; }
-        td:nth-child(2) { width: 72%; }
-        td:nth-child(3) { width: 20%; }
-    `}
+    ${props => props.colCount === 1? `
+        td:nth-child(1), th:nth-child(1) { width: 8%; }
+        td:nth-child(2), th:nth-child(2) { width: 72%; }
+        td:nth-child(3), th:nth-child(3) { width: 20%; }
+    ` : props.colCount === 2? `
+        td:nth-child(1), th:nth-child(1) { width: 8%; }
+        td:nth-child(2), th:nth-child(2) { width: 72%; }
+        td:nth-child(3), th:nth-child(3) { width: 10%; }
+        td:nth-child(4), th:nth-child(4) { width: 10%; }
+    ` : props.colCount === 3? `
+        td:nth-child(1), th:nth-child(1) { width: 8%; }
+        td:nth-child(2), th:nth-child(2) { width: 71%; }
+        td:nth-child(3), th:nth-child(3) { width: 7%; }
+        td:nth-child(4), th:nth-child(4) { width: 7%; }
+        td:nth-child(5), th:nth-child(5) { width: 7%; }
+    ` : ``}
 `;
 
 const PartyNumber = styled.span`
@@ -121,81 +127,56 @@ const svgIcon = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><
 export default props => {
 
     const partyRow = (party, i) => {
-        const status = props.fieldStatus[`party${party.id}`];
-        const statusM = props.fieldStatus[`party${party.id}m`];
-        const statusNM = props.fieldStatus[`party${party.id}nm`];
-
         return(
-            !props.sectionData.isMachine
-            ?
-                <tr key={i}>
-                    <td>{party.id.toString() === '0'? null :
-                        party.color?
-                            <PartyNumber color={party.color}>{party.id}</PartyNumber> :
-                            <PartyNumber color={'white'} textColor={'555'}>{party.id}</PartyNumber>
-                    }
-                    </td>
-                    <td>{party.displayName}</td>
-                    <td>
-                        <input type="text"
-                            className={status.invalid? 'invalid' : status.changed? 'changed' : ''}
-                            name={party.id}
-                            value={props.formState.resultsData[party.id]}
-                            onChange={props.handleResultsChange}
-                        />
-                    </td>
-                </tr>
-            : <>
-                <tr key={i*3}>
-                    <td>{party.id.toString() === '0'? null :
-                        party.color?
-                            <PartyNumber color={party.color}>{party.id}</PartyNumber> :
-                            <PartyNumber color={'white'} textColor={'555'}>{party.id}</PartyNumber>
-                    }
-                    </td>
-                    <td rowSpan="3" style={{
-                        verticalAlign: 'top',
-                        paddingTop: '5px',
-                        borderBottom: '1px solid rgb(204, 204, 204)',
-                    }}>
-                        {party.displayName}
-                    </td>
-                    <td>от бюлетини</td>
-                    <td>
-                        <input type="text"
-                            className={statusNM.invalid? 'invalid' : statusNM.changed? 'changed' : ''}
-                            name={`${party.id}nm`}
-                            value={props.formState.resultsData[`${party.id}nm`]}
-                            onChange={props.handleResultsChange}
-                        />
-                    </td>
-                </tr>
-                <tr key={i*3+1}>
-                    <td></td>
-                    <td>от маш. гласове</td>
-                    <td>
-                        <input type="text"
-                            className={statusM.invalid? 'invalid' : statusM.changed? 'changed' : ''}
-                            name={`${party.id}m`}
-                            value={props.formState.resultsData[`${party.id}m`]}
-                            onChange={props.handleResultsChange}
-                        />
-                    </td>
-                </tr>
-                <tr key={i*3+2}>
-                    <td></td>
-                    <td style={{borderBottom: '1px solid #ccc'}}>общо Б + МГ</td>
-                    <td>
-                        <input type="text"
-                            className={status.invalid? 'invalid' : status.changed? 'changed' : ''}
-                            name={party.id}
-                            value={props.formState.resultsData[party.id]}
-                            onChange={props.handleResultsChange}
-                        />
-                    </td>
-                </tr>
-            </>
+            <tr key={i}>
+                <td>{party.id.toString() === '0'? null :
+                    party.color?
+                        <PartyNumber color={party.color}>{party.id}</PartyNumber> :
+                        <PartyNumber color={'white'} textColor={'555'}>{party.id}</PartyNumber>
+                }
+                </td>
+                <td>{party.displayName}</td>
+                {
+                    props.protocolType === 'paper' || props.protocolType === 'paper-machine'?
+                        <td>
+                            <input type="text"
+                                className={props.fieldStatus[`party${party.id}paper`].invalid? 'invalid' : props.fieldStatus[`party${party.id}paper`].changed? 'changed' : ''}
+                                name={`party${party.id}paper`}
+                                value={props.formState.resultsData[`party${party.id}paper`]}
+                                onChange={props.handleResultsChange}
+                            />
+                        </td>: null
+
+                }
+                {
+                    [...Array(props.machineCount).keys()].map(i => 
+                        <td>
+                            <input type="text"
+                                className={props.fieldStatus[`party${party.id}machine${i+1}`].invalid? 'invalid' : props.fieldStatus[`party${party.id}machine${i+1}`].changed? 'changed' : ''}
+                                name={`party${party.id}machine${i+1}`}
+                                value={props.formState.resultsData[`party${party.id}machine${i+1}`]}
+                                onChange={props.handleResultsChange}
+                            />
+                        </td>
+                    )
+                }
+                
+            </tr>
         );
+    };
+
+    const calculateColCount = () => {
+        let count = 0;
+
+        if(props.protocolType === 'paper' || props.protocolType === 'paper-machine') {
+            count += 1;
+        }
+
+        count += props.machineCount;
+
+        console.log(count);
+
+        return count;
     };
 
     return(
@@ -205,9 +186,7 @@ export default props => {
             <tbody>
                 <tr>
                     <td>
-                        1. Брой на избирателите в избирателния списък при предаването му на СИК,
-                        включително и вписаните в допълнителната страница (под чертата) на избирателния
-                        списък в изборния ден
+                        1. Брой на избирателите в избирателния списък при предаването му на СИК
                     </td>
                     <td>
                         <input
@@ -360,7 +339,16 @@ export default props => {
             </ProtocolDetailsTable>
             <hr/>
             <h1>7. РАЗПРЕДЕЛЕНИЕ НА ГЛАСОВЕТЕ ПО КАНДИДАТСКИ ЛИСТИ</h1>
-            <PartyResultsTable isMachine={props.sectionData.isMachine}>
+            <PartyResultsTable colCount={calculateColCount()}>
+                <thead>
+                    <th>#</th>
+                    <th>Име</th>
+                    {
+                        props.protocolType === 'paper' || props.protocolType === 'paper-machine'?
+                            <th>Х</th> : null
+                    }
+                    {[...Array(props.machineCount).keys()].map(i => <th>M{i+1}</th>)}
+                </thead>
                 <tbody>
                 {props.parties.filter(party => (props.allParties? true : party.isFeatured))
                     .map(partyRow)}

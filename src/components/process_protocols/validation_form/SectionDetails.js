@@ -142,7 +142,7 @@ export default props => {
                 <input type="radio" id="isNotFinal" name="isFinal" value="false" onClick={() => props.setIsFinal(false)}/>
                 <label for="isNotFinal">Чернова</label>
                 <input type="radio" id="isFinal" name="isFinal" value="true" onClick={() => props.setIsFinal(true)}/>
-                <label for="isFinal">Белова</label>
+                <label for="isFinal">Оригинал</label>
             </ChooseProtocolType>
             <h5 style={{margin: '10px 0'}}>Изберете вид протокол</h5>
             <ChooseProtocolType>
@@ -158,9 +158,9 @@ export default props => {
                     <>
                     <h5 style={{margin: '10px 0'}}>Брой машини</h5>
                     <ChooseProtocolType>
-                        <input type="radio" id="1machine" name="machineCount" value="1machine" onClick={() => props.setMachineCount(1)}/>
+                        <input type="radio" id="1machine" name="machineCount" value="1machine" onClick={() => props.setMachineCount(1)} checked={props.machineCount ===  1}/>
                         <label for="1machine">1 машина</label>
-                        <input type="radio" id="2machines" name="machineCount" value="2machines" onClick={() => props.setMachineCount(2)}/>
+                        <input type="radio" id="2machines" name="machineCount" value="2machines" onClick={() => props.setMachineCount(2)} checked={props.machineCount ===  2}/>
                         <label for="2machines">2 машини</label>
                     </ChooseProtocolType>
                     </> : null

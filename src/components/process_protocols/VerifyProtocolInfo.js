@@ -150,17 +150,18 @@ export default props => {
     const [protocolType, setProtocolType] = useState('unset');
     const [machineCount, setMachineCount] = useState(0);
     const [isFinal, setIsFinal] = useState(false);
-
-    const [formState, setFormState] = useState(new ValidationFormState({ protocol: props.protocol, parties, allParties }));
-    const { fieldStatus, invalidFields, changedFields } = formState.getFieldStatus(props.protocol, parties, allParties, sectionData, protocolType);
+    
+    const [formState, setFormState] = useState(() => new ValidationFormState({ protocol: props.protocol, parties, protocolType, machineCount }));
+    const { fieldStatus, invalidFields, changedFields } = formState.getFieldStatus(props.protocol, parties, protocolType, machineCount );
     const ref = useRef();
 
     useEffect(() => {
-        setFormState(new ValidationFormState({ protocol: props.protocol, parties, allParties }));
+        setFormState(new ValidationFormState({ protocol: props.protocol, parties, protocolType, machineCount }));
+        setMachineCount(0);
     }, [protocolType]);
 
     useEffect(() => {
-        setFormState(new ValidationFormState({ protocol: props.protocol, parties, allParties }));
+        setFormState(new ValidationFormState({ protocol: props.protocol, parties, protocolType, machineCount }));
     }, [machineCount]);
 
     useKeypress(['ArrowUp'], event => {
@@ -298,8 +299,6 @@ export default props => {
     };
 
     const replaceProtocol = async () => {
-        const results = formState.generateResults(sectionData.isMachine);
-
         const postBody = {
             section: { id: formState.formData.sectionId },
             hasPaperBallots: protocolType === 'paper' || protocolType === 'paper-machine',
@@ -313,17 +312,11 @@ export default props => {
             machineVotesCount: parseInt(formState.formData.machineVotesCount, 10),
             invalidVotesCount: parseInt(formState.formData.invalidVotesCount, 10),
             validVotesCount: parseInt(formState.formData.validVotesCount, 10),
-            results: {        
-                results: Object.keys(results).map(key => {
-                    return { party: parseInt(key, 10),
-                        validVotesCount: results[key].validVotesCount,
-                        machineVotesCount: results[key].machineVotesCount,
-                        nonMachineVotesCount: results[key].nonMachineVotesCount,
-                    };
-                })
-            },
+            results: formState.generateResults(parties, protocolType, machineCount),
             pictures: props.protocol.pictures,
         };
+
+        console.log(postBody);
 
         props.setLoading(true);
         try {
@@ -386,6 +379,7 @@ export default props => {
                         setProtocolType={setProtocolType}
                         machineCount={machineCount}
                         setMachineCount={setMachineCount}
+                        setIsFinal={setIsFinal}
                     />
                     {
                         protocolType === 'unset' ||
@@ -396,11 +390,10 @@ export default props => {
                                 handleNumberChange={handleNumberChange}
                                 handleResultsChange={handleResultsChange}
                                 formState={formState}
-                                sectionData={sectionData}
                                 parties={parties}
                                 allParties={allParties}
                                 protocolType={protocolType}
-                                setIsFinal={setIsFinal}
+                                machineCount={machineCount}
                             />
                     }
                     {protocolType !== 'unset'? <hr/> : null}
