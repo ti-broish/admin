@@ -1,6 +1,6 @@
-import React from "react";
+import React from 'react';
 
-import styled from "styled-components";
+import styled from 'styled-components';
 
 const InputField = styled.input`
   background: white;
@@ -12,14 +12,12 @@ const InputField = styled.input`
 `;
 
 export default (props) => {
+  const { setTextInput } = props;
 
-  const { setSection } = props;
-  
   const changeHandler = (event) => {
     event.preventDefault();
-    setSection(event.target.value);
+    setTextInput(event.target.value);
   };
-  
 
-  return <InputField value={props.section} onChange={changeHandler}/>;
+  return <InputField value={props.textInput} onChange={changeHandler} />;
 };

@@ -1,19 +1,19 @@
-import React, { useState, useEffect, useContext } from "react";
+import React, { useState, useEffect, useContext } from 'react';
 
-import { Link, useHistory, useLocation } from "react-router-dom";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { Link, useHistory, useLocation } from 'react-router-dom';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import {
   faChevronLeft,
   faChevronRight,
   faFastForward,
   faFastBackward,
-} from "@fortawesome/free-solid-svg-icons";
+} from '@fortawesome/free-solid-svg-icons';
 
-import { AuthContext } from "../../App";
-import Loading from "../../layout/Loading";
+import { AuthContext } from '../../App';
+import Loading from '../../layout/Loading';
 
-import styled from "styled-components";
-import ViolationFilter from "./ViolationFilter";
+import styled from 'styled-components';
+import ViolationFilter from './ViolationFilter';
 
 const TableViewContainer = styled.div`
   padding: 40px;
@@ -104,22 +104,21 @@ export default (props) => {
   const history = useHistory();
 
   useEffect(() => {
-    let url = "/violations";
-    const page = query.get("page");
-    const limit = query.get("limit");
-    const country = query.get("country");
-    const electionRegion = query.get("electionRegion");
-    const assignee = query.get("assignee");
-    const section = query.get("section");
-    const municipality = query.get("municipality");
-    const town = query.get("town");
-    const cityRegion = query.get("cityRegion");
-    const status = query.get("status");
-    const published = query.get("published");
+    let url = '/violations';
+    const page = query.get('page');
+    // const limit = query.get('limit');
+    const country = query.get('country');
+    const electionRegion = query.get('electionRegion');
+    const assignee = query.get('assignee');
+    const section = query.get('section');
+    const municipality = query.get('municipality');
+    const town = query.get('town');
+    const cityRegion = query.get('cityRegion');
+    const status = query.get('status');
+    const published = query.get('published');
 
     if (
       page ||
-      limit ||
       country ||
       electionRegion ||
       assignee ||
@@ -130,7 +129,7 @@ export default (props) => {
       status ||
       published
     )
-      url += "?";
+      url += '?';
 
     if (country) url += `country=${country}`;
     if (electionRegion) url += `&electionRegion=${electionRegion}`;
@@ -142,7 +141,7 @@ export default (props) => {
     if (status) url += `&status=${status}`;
     if (published) url += `&published=${published}`;
     if (page) url += `page=${page}`;
-    if (limit) url += `limit=${limit}`;
+    // if (limit) url += `limit=${limit}`;
 
     setLoading(true);
     authGet(url).then((res) => {
@@ -150,41 +149,41 @@ export default (props) => {
       setData(res.data);
     });
   }, [
-    query.get("page"),
-    query.get("country"),
-    query.get("electionRegion"),
-    query.get("assignee"),
-    query.get("section"),
-    query.get("municipality"),
-    query.get("town"),
-    query.get("cityRegion"),
-    query.get("status"),
-    query.get("published"),
+    query.get('page'),
+    query.get('country'),
+    query.get('electionRegion'),
+    query.get('assignee'),
+    query.get('section'),
+    query.get('municipality'),
+    query.get('town'),
+    query.get('cityRegion'),
+    query.get('status'),
+    query.get('published'),
   ]);
 
   const status = (apiStatus) => {
     switch (apiStatus) {
-      case "received":
+      case 'received':
         return (
-          <ViolationStatus style={{ color: "#6c6cff" }}>
+          <ViolationStatus style={{ color: '#6c6cff' }}>
             Получен
           </ViolationStatus>
         );
-      case "rejected":
+      case 'rejected':
         return (
-          <ViolationStatus style={{ color: "#ff3939" }}>
+          <ViolationStatus style={{ color: '#ff3939' }}>
             Отхвърлен
           </ViolationStatus>
         );
-      case "processed":
+      case 'processed':
         return (
-          <ViolationStatus style={{ color: "#46df00" }}>
+          <ViolationStatus style={{ color: '#46df00' }}>
             Обработен
           </ViolationStatus>
         );
-      case "processing":
+      case 'processing':
         return (
-          <ViolationStatus style={{ color: "#ecd40e" }}>
+          <ViolationStatus style={{ color: '#ecd40e' }}>
             Обработва се
           </ViolationStatus>
         );
@@ -212,26 +211,26 @@ export default (props) => {
 
     return (
       <PaginationLinks>
-        <Link className={firstAvail ? "" : "disabled"} to={data.links.first}>
+        <Link className={firstAvail ? '' : 'disabled'} to={data.links.first}>
           <FontAwesomeIcon icon={faFastBackward} /> Първа
         </Link>
-        <Link className={prevAvail ? "" : "disabled"} to={data.links.previous}>
+        <Link className={prevAvail ? '' : 'disabled'} to={data.links.previous}>
           <FontAwesomeIcon icon={faChevronLeft} /> Предишна
         </Link>
         <div
           style={{
-            margin: "0 5px",
-            display: "inline-block",
-            color: "#444",
-            width: "60px",
+            margin: '0 5px',
+            display: 'inline-block',
+            color: '#444',
+            width: '60px',
           }}
         >
           {data.meta.currentPage} / {data.meta.totalPages}
         </div>
-        <Link className={nextAvail ? "" : "disabled"} to={data.links.next}>
+        <Link className={nextAvail ? '' : 'disabled'} to={data.links.next}>
           Следваща <FontAwesomeIcon icon={faChevronRight} />
         </Link>
-        <Link className={lastAvail ? "" : "disabled"} to={data.links.last}>
+        <Link className={lastAvail ? '' : 'disabled'} to={data.links.last}>
           Последна <FontAwesomeIcon icon={faFastForward} />
         </Link>
       </PaginationLinks>
@@ -246,36 +245,46 @@ export default (props) => {
     <TableViewContainer>
       <h1>Обработване на сигнали</h1>
       <ViolationFilter />
+
       <hr />
       {!data ? (
         <Loading />
       ) : (
-        [
-          renderLinks(),
+        <>
+          {renderLinks()}
           <ViolationTable>
             <thead>
-              <th>№ на секция</th>
-              <th>Град</th>
-              <th>Автор</th>
-              <th>Описание</th>
-              <th>Публикуван</th>
-              <th>Статус</th>
+              <tr>
+                {/* <th>Назначен</th> */}
+                <th>№ на секция</th>
+                <th>Град</th>
+                <th>Автор</th>
+                <th>Описание</th>
+                <th>Публикуван</th>
+                <th>Статут</th>
+              </tr>
             </thead>
             <tbody>
               {loading ? (
-                <tr>
-                  <td colspan="6">
+                <tr key="loading">
+                  <td colSpan="6">
                     <Loading />
                   </td>
                 </tr>
               ) : (
                 data.items.map((violation, i) => (
-                  <tr key={i} onClick={() => openViolation(violation.id)}>
-                    <td
+                  <tr
+                    key={violation.id}
+                    onClick={() => openViolation(violation.id)}
+                  >
+                    {/* <td
                       style={
                         violation.assignees.length === 0 ? {} : { padding: 0 }
                       }
                     >
+                      {assignees(violation.assignees)}
+                    </td> */}
+                    <td>
                       {!violation.section ? (
                         <i>Не е посочена секция</i>
                       ) : (
@@ -286,12 +295,12 @@ export default (props) => {
                     <td>
                       {violation.author.firstName} {violation.author.lastName}
                     </td>
-                    <td>{violation.description.slice(0, 40) + "..."}</td>
+                    <td>{violation.description.slice(0, 40) + '...'}</td>
                     <td>
                       {violation.isPublished ? (
-                        <span style={{ color: "green" }}>Да</span>
+                        <span style={{ color: 'green' }}>Да</span>
                       ) : (
-                        <span style={{ color: "red" }}>Не</span>
+                        <span style={{ color: 'red' }}>Не</span>
                       )}
                     </td>
                     <td>{status(violation.status)}</td>
@@ -299,9 +308,9 @@ export default (props) => {
                 ))
               )}
             </tbody>
-          </ViolationTable>,
-          renderLinks(),
-        ]
+          </ViolationTable>
+          {renderLinks()}
+        </>
       )}
     </TableViewContainer>
   );
