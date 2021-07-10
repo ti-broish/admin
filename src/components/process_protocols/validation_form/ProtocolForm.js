@@ -213,7 +213,6 @@ export default props => {
                         />
                     </td>
                 </tr>
-                {/*
                 <tr>
                     <td>
                         3. Брой на гласувалите избиратели според положените подписи в
@@ -229,31 +228,52 @@ export default props => {
                         />
                     </td>
                 </tr>
-                */}
             </tbody>
             </ProtocolDetailsTable>
-            {
-                props.protocolType === 'paper' || props.protocolType === 'paper-machine'?
-                    <>
-                        <h1>ДАННИ ИЗВЪН ИЗБИРАТЕЛНИЯ СПИСЪК</h1>
-                        <ProtocolDetailsTable>
-                        <tbody>
-                            <tr>
-                                <td>4. Бюлетини извън избирателната кутия (4а + 4б)</td>
-                                <td>
-                                    <input
-                                        type="text"
-                                        name="paperBallotsOutsideOfBox"
-                                        className={props.fieldStatus['paperBallotsOutsideOfBox'].invalid? 'invalid' : props.fieldStatus['paperBallotsOutsideOfBox'].changed? 'changed' : ''}
-                                        value={props.formState.formData.paperBallotsOutsideOfBox}
-                                        onChange={props.handleNumberChange}
-                                    />
-                                </td>
-                            </tr>
-                        </tbody>
-                        </ProtocolDetailsTable>
-                    </> : null
-            }
+            <h1>ДАННИ ИЗВЪН ИЗБИРАТЕЛНИЯ СПИСЪК</h1>
+            <ProtocolDetailsTable>
+            <tbody>
+                <tr>
+                    <td>4а. Брой на неизползваните бюлетини</td>
+                    <td>
+                        <input
+                            type="text"
+                            name="paperBallotsOutsideOfBox"
+                            className={props.fieldStatus['paperBallotsOutsideOfBox'].invalid? 'invalid' : props.fieldStatus['paperBallotsOutsideOfBox'].changed? 'changed' : ''}
+                            value={props.formState.formData.paperBallotsOutsideOfBox}
+                            onChange={props.handleNumberChange}
+                        />
+                    </td>
+                </tr>
+                {
+                    props.protocolType === 'paper' || props.protocolType === 'paper-machine'?
+                        <tr>
+                            <td>4б. Общ брой на недействителните бюлетини</td>
+                            <td>
+                                <input
+                                    type="text"
+                                    name="paperBallotsOutsideOfBox"
+                                    className={props.fieldStatus['paperBallotsOutsideOfBox'].invalid? 'invalid' : props.fieldStatus['paperBallotsOutsideOfBox'].changed? 'changed' : ''}
+                                    value={props.formState.formData.paperBallotsOutsideOfBox}
+                                    onChange={props.handleNumberChange}
+                                />
+                            </td>
+                        </tr> :
+                        <tr>
+                            <td>4б. Брой на унищожените от СИК бюлетини по други поводи (за създаване на образци за таблата пред изборното помещение и увредени механично при откъсване от кочана)</td>
+                            <td>
+                                <input
+                                    type="text"
+                                    name="paperBallotsOutsideOfBox"
+                                    className={props.fieldStatus['paperBallotsOutsideOfBox'].invalid? 'invalid' : props.fieldStatus['paperBallotsOutsideOfBox'].changed? 'changed' : ''}
+                                    value={props.formState.formData.paperBallotsOutsideOfBox}
+                                    onChange={props.handleNumberChange}
+                                />
+                            </td>
+                        </tr>
+                }
+            </tbody>
+            </ProtocolDetailsTable>
             <h1>СЛЕД КАТО ОТВОРИ ИЗБИРАТЕЛНАТА КУТИЯ, СИК УСТАНОВИ:</h1>
             <ProtocolDetailsTable>
                 <tbody>
@@ -322,7 +342,7 @@ export default props => {
                                 </td>
                             </tr>
                             <tr>
-                                <td>7. Общ брой на намерените в избирателната кутия действителни гласове (бюлетини)</td>
+                                <td>7.1. Брой на действителните гласове, подадени за кандидатските листи на партии, коалиции и инициативни комитети</td>
                                 <td>
                                     <input
                                         type="text"
@@ -338,7 +358,7 @@ export default props => {
                 </tbody>
             </ProtocolDetailsTable>
             <hr/>
-            <h1>7. РАЗПРЕДЕЛЕНИЕ НА ГЛАСОВЕТЕ ПО КАНДИДАТСКИ ЛИСТИ</h1>
+            <h1>РАЗПРЕДЕЛЕНИЕ НА ГЛАСОВЕТЕ ПО КАНДИДАТСКИ ЛИСТИ</h1>
             <PartyResultsTable colCount={calculateColCount()}>
                 <thead>
                     <th>#</th>
@@ -354,6 +374,86 @@ export default props => {
                     .map(partyRow)}
                 </tbody>
             </PartyResultsTable>
+            {
+                props.machineCount === 1?
+                    <>
+                        <hr/>
+                        <h1>Хеш от машината за гласуване</h1>
+                        <ProtocolDetailsTable>
+                        <tbody>
+                            <tr>
+                                <td>Първите четири символа от М1:</td>
+                                <td>
+                                    <input
+                                        type="text"
+                                        value={props.formState.formData.validVotesCount}
+                                        onChange={props.handleNumberChange}
+                                    />
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>Последните четири символа от М1:</td>
+                                <td>
+                                    <input
+                                        type="text"
+                                        value={props.formState.formData.validVotesCount}
+                                        onChange={props.handleNumberChange}
+                                    />
+                                </td>
+                            </tr>
+                        </tbody>
+                        </ProtocolDetailsTable>
+                    </> :
+                props.machineCount === 2?
+                    <>
+                        <hr/>
+                        <h1>Хеш от машините за гласуване</h1>
+                        <ProtocolDetailsTable>
+                        <tbody>
+                            <tr>
+                                <td>Първите четири символа от М1:</td>
+                                <td>
+                                    <input
+                                        type="text"
+                                        value={props.formState.formData.validVotesCount}
+                                        onChange={props.handleNumberChange}
+                                    />
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>Последните четири символа от М1:</td>
+                                <td>
+                                    <input
+                                        type="text"
+                                        value={props.formState.formData.validVotesCount}
+                                        onChange={props.handleNumberChange}
+                                    />
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>Първите четири символа от М2:</td>
+                                <td>
+                                    <input
+                                        type="text"
+                                        value={props.formState.formData.validVotesCount}
+                                        onChange={props.handleNumberChange}
+                                    />
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>Последните четири символа от М2:</td>
+                                <td>
+                                    <input
+                                        type="text"
+                                        value={props.formState.formData.validVotesCount}
+                                        onChange={props.handleNumberChange}
+                                    />
+                                </td>
+                            </tr>
+                        </tbody>
+                        </ProtocolDetailsTable>
+                    </> : null
+            }
         </div>
     );
 };

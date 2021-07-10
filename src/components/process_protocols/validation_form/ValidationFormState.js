@@ -118,6 +118,7 @@ export default class ValidationFormState {
             addStatusForResultField('votersCount');
             addStatusForResultField('additionalVotersCount');
             addStatusForResultField('votesCount');
+            addStatusForResultField('paperBallotsOutsideOfBox');
         } else if(protocolType === 'paper-machine') {
             addStatusForResultField('votersCount');
             addStatusForResultField('additionalVotersCount');
