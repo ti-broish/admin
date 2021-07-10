@@ -24,6 +24,7 @@ import styled from 'styled-components';
 import CommentSection from './CommentSection';
 
 import { formatDateShort, formatTime } from '../../utils/Util';
+import PublishModal from './PublishModal';
 
 const UpdatesTable = styled(TableStyle)`
   td,
@@ -171,6 +172,8 @@ export default (props) => {
     reject: false,
   });
 
+  const [modalState, setModalState] = useState({ isOpen: false });
+
   useEffect(() => {
     authGet(`/violations/${violation}`).then((res) => {
       setData(res.data);
@@ -221,11 +224,29 @@ export default (props) => {
     });
   };
 
-  const publishViolation = () => {
+  const openPublishModal = () => {
+    setModalState({
+      isOpen: true,
+      violationText: data.publishedText? data.publishedText : data.description,
+      confirmHandler: publishViolation,
+      cancelHandler: () => setModalState({ isOpen: false }),
+    });
+  };
+
+  const publishViolation = publishedText => {
     setButtonLoading({ ...buttonLoading, publish: true });
-    authPatch(`/violations/${violation}`, {
+    setModalState({ isOpen: false });
+
+    const reqBody = {
       isPublished: !data.isPublished,
-    }).then((res) => {
+    };
+
+    if(!data.isPublished) {
+      reqBody['publishedText'] = publishedText;
+    }
+
+
+    authPatch(`/violations/${violation}`, reqBody).then((res) => {
       setButtonLoading({ ...buttonLoading, publish: false });
       setData(res.data);
     });
@@ -248,37 +269,6 @@ export default (props) => {
     }
   };
 
-  const handleSubmitPublishedText = (e) => {
-    e.preventDefault();
-
-    console.log('save PublishedText');
-  };
-
-  const handleChange = (e) => {
-    setFormData({ ...formData, [e.target.name]: e.target.value });
-  };
-
-  const editableTextArea = (availableText) => {
-    return (
-      <TextAreaFormStyle onSubmit={handleSubmitPublishedText}>
-        <textarea
-          type="text"
-          name="text"
-          rows={4}
-          placeholder={'Напишете текст който може да бъде публикуван'}
-          value={availableText}
-          onChange={handleChange}
-        />
-        <FancyButtonBlue
-          type="submit"
-          disabled={!!availableText}
-          value="Изпрати"
-        />
-        <FancyButtonBlue style={{ visibility: 'hidden' }} value="Редактирай" />
-      </TextAreaFormStyle>
-    );
-  };
-
   const iAmAssignee =
     data && data.assignees.length !== 0 && data.assignees[0].id === user.id;
 
@@ -292,6 +282,12 @@ export default (props) => {
 
   return (
     <ContentPanel>
+      <PublishModal
+        isOpen={modalState.isOpen}
+        violationText={modalState.violationText}
+        confirmHandler={modalState.confirmHandler}
+        cancelHandler={modalState.cancelHandler}
+      />
       <h1>
         <BackButton onClick={goBack}>
           <FontAwesomeIcon icon={faChevronLeft} />
@@ -331,11 +327,11 @@ export default (props) => {
               'Момент...'
             ) : iAmAssignee ? (
               <>
-                <FontAwesomeIcon icon={faDove} />, ' Освободи'{' '}
+                <FontAwesomeIcon icon={faDove} /> Освободи{' '}
               </>
             ) : (
               <>
-                <FontAwesomeIcon icon={faEdit} />, ' Обработвай'{' '}
+                <FontAwesomeIcon icon={faEdit} /> Обработвай{' '}
               </>
             )}
           </FancyButtonYellow>
@@ -347,24 +343,24 @@ export default (props) => {
               'Момент...'
             ) : (
               <>
-                <FontAwesomeIcon icon={faCheck} />, ' Приключи'{' '}
+                <FontAwesomeIcon icon={faCheck} /> Приключи{' '}
               </>
             )}
           </FancyButtonGreen>
 
           <FancyButtonBlue
-            onClick={publishViolation}
+            onClick={data.isPublished? publishViolation : openPublishModal}
             disabled={!publishPossible()}
           >
             {buttonLoading.publish ? (
               'Момент...'
             ) : data.isPublished ? (
               <>
-                <FontAwesomeIcon icon={faEyeSlash} />, ' Скрий'
+                <FontAwesomeIcon icon={faEyeSlash} /> Скрий
               </>
             ) : (
               <>
-                <FontAwesomeIcon icon={faUpload} />, ' Публикувай'
+                <FontAwesomeIcon icon={faUpload} /> Публикувай
               </>
             )}
           </FancyButtonBlue>
@@ -376,7 +372,7 @@ export default (props) => {
               'Момент...'
             ) : (
               <>
-                <FontAwesomeIcon icon={faTimes} />, ' Отхвърли'{' '}
+                <FontAwesomeIcon icon={faTimes} /> Отхвърли{' '}
               </>
             )}
           </FancyButtonRed>
@@ -386,8 +382,9 @@ export default (props) => {
           <hr />
           {!data.publishedText ? null : (
             <>
-              <h2>Публикуван текст</h2>
-              {editableTextArea(data.publishedText)}
+              <h2 style={{marginBottom: '5px'}}>Текст за публикуване</h2>
+              {data.isPublished? null : <h5 style={{margin: '5px 0', color: 'red'}}>Сигналът не е публикуван</h5>}
+              <p>{data.publishedText}</p>
               <hr />
             </>
           )}
