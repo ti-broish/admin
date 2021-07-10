@@ -29,7 +29,7 @@ jobs:
         run: npm ci
 
       - name: Build
-        run: npm run-script build-production
+        run: npx webpack --config webpack/build.config.js --env NODE_ENV=production --env API_HOST=https://api.tibroish.bg --env FIREBASE_API_KEY=${{ secrets.FIREBASE_API_KEY }} --env FIREBASE_AUTH_DOMAIN=${{ secrets.FIREBASE_AUTH_DOMAIN }} --env FIREBASE_DATABASE_URL=${{ secrets.FIREBASE_DATABASE_URL }} --env FIREBASE_PROJECT_ID=${{ secrets.FIREBASE_PROJECT_ID }}
 
       - name: Minio Deploy
         uses: hkdobrev/minio-deploy-action@v1
