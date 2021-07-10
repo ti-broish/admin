@@ -51,7 +51,7 @@ export default class ValidationFormState {
             }
         }
 
-        for(const result of protocol.results.results) {
+        for(const result of protocol.results) {
             if(protocolType === 'paper' || protocolType === 'machine-paper') {
                 this.resultsData[`party${result.party}paper`] = emptyStrIfNull(result.nonMachineVotesCount);
             }
@@ -82,7 +82,7 @@ export default class ValidationFormState {
         }
 
         const getPartyResult = partyId => {
-            for(const result of protocol.results.results) {
+            for(const result of protocol.results) {
                 if(result.party.id === partyId) {
                     return result;
                 }
