@@ -124,7 +124,6 @@ export default (props) => {
 
   useEffect(() => {
     if (props.isOpen === false) {
-      setRejectionReasons(null);
       setSelectedReason(null);
     }
 
