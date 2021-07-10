@@ -99,7 +99,7 @@ export default (props) => {
         </div>
         <div>
           Роля: <br></br>
-          <Roles role={role} setRole={setRole} />
+          <Roles roles={props.roles} role={role} setRole={setRole} />
         </div>
         <div></div>
         <Link to={`/users`}>
