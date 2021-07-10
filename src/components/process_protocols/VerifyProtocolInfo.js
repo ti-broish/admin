@@ -354,7 +354,7 @@ export default (props) => {
       isOpen: true,
       isRejectionModal: true,
       title: 'Сигурни ли сте?',
-      message: 'Сигурни ли сте, че искате да отвхрълите този протокол?',
+      message: 'Сигурни ли сте, че искате да отхвърлите този протокол?',
       confirmButtonName: 'Отхвърли протокола',
       cancelButtonName: 'Върни се',
       confirmHandler: (reason) => rejectProtocol(reason),
