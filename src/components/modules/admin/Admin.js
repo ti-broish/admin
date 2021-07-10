@@ -212,10 +212,16 @@ export default (props) => {
         color = '#00bcd4';
         break;
       case 'streamer':
-        color = '#ff9800';
+        color = '#ffad35';
         break;
       case 'admin':
         color = '#ff3a39';
+        break;
+        case 'stream_moderator':
+        color = '#e6d858';
+        break;
+        case 'super_validator':
+        color = '#009688';
         break;
       default:
         break;
@@ -224,9 +230,11 @@ export default (props) => {
   };
 
   const roleCircle = (roleName, idx, color) => {
+    const splittedRoleName =  roleName.split(' ');
+    const initials = splittedRoleName.length > 1 ? splittedRoleName[0][0] + splittedRoleName[1][0] : splittedRoleName[0][0]
     return (
       <Tooltip key={idx} text={roleName}>
-        <RoleIcon style={{ backgroundColor: color }}>{roleName[0]}</RoleIcon>
+        <RoleIcon style={{ backgroundColor: color }}>{initials}</RoleIcon>
       </Tooltip>
     );
   };
