@@ -146,6 +146,19 @@ const FancyButtonRed = styled(FancyButton)`
   }
 `;
 
+const TextAreaFormStyle = styled.form`
+  width: 100%;
+
+  textarea {
+    width: 100%;
+    font-size: 18px;
+    padding: 20px;
+    border: 1px solid #eee;
+    margin: 20px 0;
+    box-sizing: border-box;
+  }
+`;
+
 export default (props) => {
   const { authGet, authPost, user, authPatch, authDelete } =
     useContext(AuthContext);
@@ -233,6 +246,37 @@ export default (props) => {
       default:
         return apiStatus;
     }
+  };
+
+  const handleSubmitPublishedText = (e) => {
+    e.preventDefault();
+
+    console.log('save PublishedText');
+  };
+
+  const handleChange = (e) => {
+    setFormData({ ...formData, [e.target.name]: e.target.value });
+  };
+
+  const editableTextArea = (availableText) => {
+    return (
+      <TextAreaFormStyle onSubmit={handleSubmitPublishedText}>
+        <textarea
+          type="text"
+          name="text"
+          rows={4}
+          placeholder={'Напишете текст който може да бъде публикуван'}
+          value={availableText}
+          onChange={handleChange}
+        />
+        <FancyButtonBlue
+          type="submit"
+          disabled={!!availableText}
+          value="Изпрати"
+        />
+        <FancyButtonBlue style={{ visibility: 'hidden' }} value="Редактирай" />
+      </TextAreaFormStyle>
+    );
   };
 
   const iAmAssignee =
@@ -340,6 +384,13 @@ export default (props) => {
           <h2>Описание</h2>
           <p>{data.description}</p>
           <hr />
+          {!data.publishedText ? null : (
+            <>
+              <h2>Публикуван текст</h2>
+              {editableTextArea(data.publishedText)}
+              <hr />
+            </>
+          )}
           <h2>Изпратен от</h2>
           <TableStyle>
             <tbody>
