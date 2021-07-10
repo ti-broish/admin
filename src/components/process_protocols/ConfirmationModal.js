@@ -1,8 +1,11 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useContext, useEffect } from 'react';
+import { AuthContext } from '../App';
 
 import styled from 'styled-components';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faExclamationTriangle } from '@fortawesome/free-solid-svg-icons';
+
+import Loading from '../layout/Loading';
 
 const ModalOverlay = styled.div`
   position: fixed;
@@ -113,40 +116,27 @@ const CheckboxList = styled.div`
   }
 `;
 
-const rejectionReasonsMock = [
-  {
-    rejectionReason: 'missing-protocol-information',
-    rejectionReasonLocalized:
-      'Непълно съдържание на протокола. (Моля, изпратете целия протокол отново.)',
-    isChecked: false,
-  },
-  {
-    rejectionReason: 'missing-machine-printout-information',
-    rejectionReasonLocalized:
-      'Непълно съдържание на машинната разпечатка. (Моля, изпратете я цялата отново.)',
-    isChecked: false,
-  },
-  {
-    rejectionReason: 'reject-without-notify',
-    rejectionReasonLocalized: 'Отхвърли без известие до застъпник.',
-    isChecked: false,
-  },
-];
-
 export default (props) => {
-  const [rejectionReasons, setRejectionReasons] =
-    useState(rejectionReasonsMock);
+  const { authGet } = useContext(AuthContext);
+
+  const [rejectionReasons, setRejectionReasons] = useState(null);
   const [selectedReason, setSelectedReason] = useState(null);
 
   useEffect(() => {
     if (props.isOpen === false) {
-      setRejectionReasons(rejectionReasonsMock);
       setSelectedReason(null);
+    }
+
+    if (props.isRejectionModal && !rejectionReasons) {
+      authGet('/protocols/rejection-reasons').then((res) => {
+        console.log(res.data);
+        setRejectionReasons(res.data);
+      });
     }
   }, [props.isOpen]);
   const handleOnChange = (item) => {
-    const selectedItem = { ...item, isChecked: !item.isChecked };
-    const updatedCheckedState = rejectionReasonsMock.map((reason) =>
+    const selectedItem = item ? { ...item, isChecked: !item.isChecked } : null;
+    const updatedCheckedState = rejectionReasons?.map((reason) =>
       reason.rejectionReason === selectedItem.rejectionReason
         ? selectedItem
         : { ...reason, isChecked: false }
@@ -167,18 +157,20 @@ export default (props) => {
             {props.warningMessage}
           </p>
         )}
-        {!props.isRejectionModal ? null : (
+        {!props.isRejectionModal ? null : !rejectionReasons ? (
+          <Loading />
+        ) : (
           <>
             <h3>Причина за отхвърляне</h3>
             <ul style={{ padding: 0 }}>
               <CheckboxList>
-                {rejectionReasons.map((reason, index) => {
+                {rejectionReasons?.map((reason, index) => {
                   return (
                     <li key={index}>
                       <div className="checkbox-list-item">
                         <div>
                           <input
-                            type="checkbox"
+                            type="radio"
                             id={`custom-checkbox-${index}`}
                             name={reason.rejectionReasonLocalized}
                             value={reason.rejectionReasonLocalized}

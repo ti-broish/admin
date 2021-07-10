@@ -322,7 +322,7 @@ export default (props) => {
       props.setLoading(true);
 
       authPost(`/protocols/${props.protocol.id}/reject`, {
-        rejectionReason: reason?.rejectionReason,
+        reason: reason?.rejectionReason,
       })
         .then((res) => {
           props.setLoading(false);
