@@ -124,15 +124,15 @@ export default (props) => {
     const organization = query.get('organization');
     // const limit = query.get('limit');
 
-    if (page || firstName || lastName || email || role || organization)
+    if (page || firstName || lastName || email || role || organization) {
       url += '?';
-
+    }
     if (page) url += `page=${page}`;
-    if (firstName) url += `firstName=${firstName}`;
-    if (lastName) url += `lastName=${lastName}`;
-    if (email) url += `email=${email}`;
-    if (role) url += `role=${role}`;
-    if (organization) url += `organization=${organization}`;
+    if (firstName) url += `&firstName=${firstName}`;
+    if (lastName) url += `&lastName=${lastName}`;
+    if (email) url += `&email=${email}`;
+    if (role) url += `&role=${role}`;
+    if (organization) url += `&organization=${organization}`;
 
     // if (limit) url += `limit=${limit}`;
 
@@ -142,9 +142,11 @@ export default (props) => {
       setData(res.data);
     });
 
-    authGet(url + '/roles').then((res) => {
-      setRolesState(res.data);
-    });
+    if (!rolesState) {
+      authGet(url + '/roles').then((res) => {
+        setRolesState(res.data);
+      });
+    }
   }, [
     query.get('firstName'),
     query.get('lastName'),
