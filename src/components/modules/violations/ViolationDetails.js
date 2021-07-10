@@ -24,6 +24,7 @@ import styled from 'styled-components';
 import CommentSection from './CommentSection';
 
 import { formatDateShort, formatTime } from '../../utils/Util';
+import PublishModal from './PublishModal';
 
 const UpdatesTable = styled(TableStyle)`
   td,
@@ -146,6 +147,19 @@ const FancyButtonRed = styled(FancyButton)`
   }
 `;
 
+const TextAreaFormStyle = styled.form`
+  width: 100%;
+
+  textarea {
+    width: 100%;
+    font-size: 18px;
+    padding: 20px;
+    border: 1px solid #eee;
+    margin: 20px 0;
+    box-sizing: border-box;
+  }
+`;
+
 export default (props) => {
   const { authGet, authPost, user, authPatch, authDelete } =
     useContext(AuthContext);
@@ -157,6 +171,8 @@ export default (props) => {
     process: false,
     reject: false,
   });
+
+  const [modalState, setModalState] = useState({ isOpen: false });
 
   useEffect(() => {
     authGet(`/violations/${violation}`).then((res) => {
@@ -208,11 +224,29 @@ export default (props) => {
     });
   };
 
-  const publishViolation = () => {
+  const openPublishModal = () => {
+    setModalState({
+      isOpen: true,
+      violationText: data.publishedText? data.publishedText : data.description,
+      confirmHandler: publishViolation,
+      cancelHandler: () => setModalState({ isOpen: false }),
+    });
+  };
+
+  const publishViolation = publishedText => {
     setButtonLoading({ ...buttonLoading, publish: true });
-    authPatch(`/violations/${violation}`, {
+    setModalState({ isOpen: false });
+
+    const reqBody = {
       isPublished: !data.isPublished,
-    }).then((res) => {
+    };
+
+    if(!data.isPublished) {
+      reqBody['publishedText'] = publishedText;
+    }
+
+
+    authPatch(`/violations/${violation}`, reqBody).then((res) => {
       setButtonLoading({ ...buttonLoading, publish: false });
       setData(res.data);
     });
@@ -248,6 +282,12 @@ export default (props) => {
 
   return (
     <ContentPanel>
+      <PublishModal
+        isOpen={modalState.isOpen}
+        violationText={modalState.violationText}
+        confirmHandler={modalState.confirmHandler}
+        cancelHandler={modalState.cancelHandler}
+      />
       <h1>
         <BackButton onClick={goBack}>
           <FontAwesomeIcon icon={faChevronLeft} />
@@ -287,11 +327,11 @@ export default (props) => {
               'Момент...'
             ) : iAmAssignee ? (
               <>
-                <FontAwesomeIcon icon={faDove} />, ' Освободи'{' '}
+                <FontAwesomeIcon icon={faDove} /> Освободи{' '}
               </>
             ) : (
               <>
-                <FontAwesomeIcon icon={faEdit} />, ' Обработвай'{' '}
+                <FontAwesomeIcon icon={faEdit} /> Обработвай{' '}
               </>
             )}
           </FancyButtonYellow>
@@ -303,24 +343,24 @@ export default (props) => {
               'Момент...'
             ) : (
               <>
-                <FontAwesomeIcon icon={faCheck} />, ' Приключи'{' '}
+                <FontAwesomeIcon icon={faCheck} /> Приключи{' '}
               </>
             )}
           </FancyButtonGreen>
 
           <FancyButtonBlue
-            onClick={publishViolation}
+            onClick={data.isPublished? publishViolation : openPublishModal}
             disabled={!publishPossible()}
           >
             {buttonLoading.publish ? (
               'Момент...'
             ) : data.isPublished ? (
               <>
-                <FontAwesomeIcon icon={faEyeSlash} />, ' Скрий'
+                <FontAwesomeIcon icon={faEyeSlash} /> Скрий
               </>
             ) : (
               <>
-                <FontAwesomeIcon icon={faUpload} />, ' Публикувай'
+                <FontAwesomeIcon icon={faUpload} /> Публикувай
               </>
             )}
           </FancyButtonBlue>
@@ -332,7 +372,7 @@ export default (props) => {
               'Момент...'
             ) : (
               <>
-                <FontAwesomeIcon icon={faTimes} />, ' Отхвърли'{' '}
+                <FontAwesomeIcon icon={faTimes} /> Отхвърли{' '}
               </>
             )}
           </FancyButtonRed>
@@ -340,6 +380,14 @@ export default (props) => {
           <h2>Описание</h2>
           <p>{data.description}</p>
           <hr />
+          {!data.publishedText ? null : (
+            <>
+              <h2 style={{marginBottom: '5px'}}>Текст за публикуване</h2>
+              {data.isPublished? null : <h5 style={{margin: '5px 0', color: 'red'}}>Сигналът не е публикуван</h5>}
+              <p>{data.publishedText}</p>
+              <hr />
+            </>
+          )}
           <h2>Изпратен от</h2>
           <TableStyle>
             <tbody>
