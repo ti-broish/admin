@@ -135,113 +135,146 @@ import { AuthContext } from '../App';
 import ConfirmationModal from './ConfirmationModal';
 import SectionDetails from './validation_form/SectionDetails';
 
-export default props => {
-    const { parties, authPost, authGet } = useContext(AuthContext);
+export default (props) => {
+  const { parties, authPost, authGet } = useContext(AuthContext);
 
-    const [allParties, setAllParties] = useState(true);//Math.random() < 0.5);
-    const [modalState, setModalState] = useState({isOpen: false});
-    const [sectionData, setSectionData] = useState({
-        country: null,
-        electionRegion: null,
-        municipality: null,
-        town: null,
-        townId: null,
-        cityRegion: null,
-        address: null,
-        isMachine: false,
+  const [allParties, setAllParties] = useState(true); //Math.random() < 0.5);
+  const [modalState, setModalState] = useState({ isOpen: false });
+  const [sectionData, setSectionData] = useState({
+    country: null,
+    electionRegion: null,
+    municipality: null,
+    town: null,
+    townId: null,
+    cityRegion: null,
+    address: null,
+    isMachine: false,
+  });
+
+  const [machineHash, setMachineHash] = useState([
+    { startHash: '', endHash: '' },
+  ]);
+
+  const [protocolType, setProtocolType] = useState('unset');
+  const [machineCount, setMachineCount] = useState(0);
+  const [isFinal, setIsFinal] = useState(false);
+
+  const [formState, setFormState] = useState(
+    () =>
+      new ValidationFormState({
+        protocol: props.protocol,
+        parties,
+        protocolType,
+        machineCount,
+      })
+  );
+  const { fieldStatus, invalidFields, changedFields } =
+    formState.getFieldStatus(
+      props.protocol,
+      parties,
+      protocolType,
+      machineCount
+    );
+  const ref = useRef();
+
+  useEffect(() => {
+    setFormState(
+      new ValidationFormState({
+        protocol: props.protocol,
+        parties,
+        protocolType,
+        machineCount,
+      })
+    );
+    setMachineCount(0);
+  }, [protocolType]);
+
+  useEffect(() => {
+    setFormState(
+      new ValidationFormState({
+        protocol: props.protocol,
+        parties,
+        protocolType,
+        machineCount,
+      })
+    );
+    if (machineCount === 0) {
+      setMachineHash([]);
+    } else if (machineCount === 1) {
+      setMachineHash([{ startHash: '', endHash: '' }]);
+    } else if (machineCount === 2) {
+      setMachineHash([
+        { startHash: '', endHash: '' },
+        { startHash: '', endHash: '' },
+      ]);
+    }
+  }, [machineCount]);
+
+  useKeypress(['ArrowUp'], (event) => {
+    let lastInput = null;
+
+    const traverseNodeTree = (node) => {
+      if (node === document.activeElement && lastInput != null)
+        lastInput.focus();
+      else {
+        if (node.tagName === 'INPUT') lastInput = node;
+        [...node.children].forEach(traverseNodeTree);
+      }
+    };
+
+    traverseNodeTree(ref.current);
+  });
+
+  useKeypress(['ArrowDown', 'Enter'], (event) => {
+    let shouldFocus = false;
+
+    const traverseNodeTree = (node) => {
+      if (node.tagName === 'INPUT' && shouldFocus) {
+        node.focus();
+        shouldFocus = false;
+      } else {
+        if (node === document.activeElement) shouldFocus = true;
+        [...node.children].forEach(traverseNodeTree);
+      }
+    };
+
+    traverseNodeTree(ref.current);
+  });
+
+  const violationMessage = useRef('');
+
+  useEffect(() => {
+    if (formState.formData.sectionId.length === 9) {
+      updateSectionData();
+    }
+  }, [formState.formData.sectionId]);
+
+  const updateSectionData = async () => {
+    setSectionData({
+      country: null,
+      electionRegion: null,
+      municipality: null,
+      town: null,
+      townId: null,
+      cityRegion: null,
+      address: null,
+      isMachine: false,
     });
 
-    const [machineHash, setMachineHash] = useState([{startHash: '', endHash: ''}]);
+    const res = await authGet(`/sections/${formState.formData.sectionId}`);
 
-    const [protocolType, setProtocolType] = useState('unset');
-    const [machineCount, setMachineCount] = useState(0);
-    const [isFinal, setIsFinal] = useState(false);
-    
-    const [formState, setFormState] = useState(() => new ValidationFormState({ protocol: props.protocol, parties, protocolType, machineCount }));
-    const { fieldStatus, invalidFields, changedFields } = formState.getFieldStatus(props.protocol, parties, protocolType, machineCount );
-    const ref = useRef();
+    const { town, electionRegion, cityRegion, place } = res.data;
 
-    useEffect(() => {
-        setFormState(new ValidationFormState({ protocol: props.protocol, parties, protocolType, machineCount }));
-        setMachineCount(0);
-    }, [protocolType]);
-
-    useEffect(() => {
-        setFormState(new ValidationFormState({ protocol: props.protocol, parties, protocolType, machineCount }));
-        if(machineCount === 0) {
-            setMachineHash([]);
-        } else if(machineCount === 1) {
-            setMachineHash([{startHash: '', endHash: ''}]);
-        } else if(machineCount === 2) {
-            setMachineHash([{startHash: '', endHash: ''}, {startHash: '', endHash: ''}]);
-        }
-    }, [machineCount]);
-
-    useKeypress(['ArrowUp'], event => {
-        let lastInput = null;
-
-        const traverseNodeTree = node => {
-            if(node === document.activeElement && lastInput != null)
-                lastInput.focus();
-            else {
-                if(node.tagName === 'INPUT') lastInput = node;
-                [...node.children].forEach(traverseNodeTree);
-            }
-        };
-
-        traverseNodeTree(ref.current);
+    setSectionData({
+      country: town.country.name,
+      electionRegion: electionRegion.name,
+      municipality: town.municipality ? town.municipality.name : null,
+      town: town.name,
+      townId: town.id,
+      cityRegion: !cityRegion ? null : cityRegion.name,
+      address: place,
+      isMachine: res.data.isMachine,
     });
-
-    useKeypress(['ArrowDown', 'Enter'], event => {
-        let shouldFocus = false;
-
-        const traverseNodeTree = node => {
-            if(node.tagName === 'INPUT' && shouldFocus) {
-                node.focus();
-                shouldFocus = false;
-            } else {
-                if(node === document.activeElement) shouldFocus = true;
-                [...node.children].forEach(traverseNodeTree);
-            }
-        };
-
-        traverseNodeTree(ref.current);
-    });
-
-    const violationMessage = useRef('')
-
-    useEffect(() => {
-        if(formState.formData.sectionId.length === 9) {
-            updateSectionData();
-        }
-    }, [formState.formData.sectionId])
-
-    const updateSectionData = async () => {
-        setSectionData({
-            country: null,
-            electionRegion: null,
-            municipality: null,
-            town: null,
-            townId: null,
-            cityRegion: null,
-            address: null,
-            isMachine: false,
-        });
-
-        const res = await authGet(`/sections/${formState.formData.sectionId}`);
-
-      const { town, electionRegion, cityRegion, place } = res.data;
-
-      setSectionData({
-        country: town.country.name,
-        electionRegion: electionRegion.name,
-        municipality: town.municipality ? town.municipality.name : null,
-        town: town.name,
-        townId: town.id,
-        cityRegion: !cityRegion ? null : cityRegion.name,
-        address: place,
-        isMachine: res.data.isMachine,
-      });
   };
 
   const handleProtocolNumberChange = (e) => {
@@ -329,135 +362,158 @@ export default props => {
     });
   };
 
-    const replaceProtocol = async () => {
-        const postBody = {
-            section: { id: formState.formData.sectionId },
-            hasPaperBallots: protocolType === 'paper' || protocolType === 'paper-machine',
-            machinesCount: machineCount,
-            isFinal: isFinal,
-            votersCount: parseInt(formState.formData.votersCount, 10),
-            additionalVotersCount: parseInt(formState.formData.additionalVotersCount, 10),
-            votersVotedCount: parseInt(formState.formData.votersVotedCount, 10),
-            uncastBallots: parseInt(formState.formData.uncastBallots, 10),
-            invalidAndUncastBallots: parseInt(formState.formData.invalidAndUncastBallots, 10),
-            totalVotesCast: parseInt(formState.formData.totalVotesCast, 10),
-            results: formState.generateResults(parties, protocolType, machineCount),
-            pictures: props.protocol.pictures,
-        };
-
-        if(protocolType === 'paper-machine') {
-            postBody['nonMachineVotesCount'] = parseInt(formState.formData.nonMachineVotesCount, 10);
-            postBody['machineVotesCount'] = parseInt(formState.formData.machineVotesCount, 10);
-        }
-
-        if(protocolType === 'paper' || protocolType === 'paper-machine') {
-            postBody['invalidVotesCount'] = parseInt(formState.formData.invalidVotesCount, 10);
-            postBody['validVotesCount'] = parseInt(formState.formData.validVotesCount, 10);
-        }
-
-        if(protocolType === 'machine' || protocolType === 'paper-machine') {
-            postBody['machineHashes'] = machineHash;
-        }
-
-        props.setLoading(true);
-        try {
-            const res = await authPost(`/protocols/${props.protocol.id}/replace`, postBody);
-        } catch(err) {
-            props.setLoading(false);
-            return;
-        }
-        props.setLoading(false);
-        props.processingDone(`Протокол ${props.protocol.id} ОДОБРЕН с КОРЕКЦИЯ`);
+  const replaceProtocol = async () => {
+    const postBody = {
+      section: { id: formState.formData.sectionId },
+      hasPaperBallots:
+        protocolType === 'paper' || protocolType === 'paper-machine',
+      machinesCount: machineCount,
+      isFinal: isFinal,
+      votersCount: parseInt(formState.formData.votersCount, 10),
+      additionalVotersCount: parseInt(
+        formState.formData.additionalVotersCount,
+        10
+      ),
+      votersVotedCount: parseInt(formState.formData.votersVotedCount, 10),
+      uncastBallots: parseInt(formState.formData.uncastBallots, 10),
+      invalidAndUncastBallots: parseInt(
+        formState.formData.invalidAndUncastBallots,
+        10
+      ),
+      totalVotesCast: parseInt(formState.formData.totalVotesCast, 10),
+      results: formState.generateResults(parties, protocolType, machineCount),
+      pictures: props.protocol.pictures,
     };
 
-    const performSumCheck = () => {
-        if(protocolType === 'machine') return null;
+    if (protocolType === 'paper-machine') {
+      postBody['nonMachineVotesCount'] = parseInt(
+        formState.formData.nonMachineVotesCount,
+        10
+      );
+      postBody['machineVotesCount'] = parseInt(
+        formState.formData.machineVotesCount,
+        10
+      );
+    }
 
-        let sum = 0;
-        for(const key of Object.keys(formState.resultsData)) {
-            sum += parseInt(formState.resultsData[key], 10);
-        }
+    if (protocolType === 'paper' || protocolType === 'paper-machine') {
+      postBody['invalidVotesCount'] = parseInt(
+        formState.formData.invalidVotesCount,
+        10
+      );
+      postBody['validVotesCount'] = parseInt(
+        formState.formData.validVotesCount,
+        10
+      );
+    }
 
-        if(sum !== parseInt(formState.formData.validVotesCount, 10)) {
-            return [`
+    if (protocolType === 'machine' || protocolType === 'paper-machine') {
+      postBody['machineHashes'] = machineHash;
+    }
+
+    props.setLoading(true);
+    try {
+      const res = await authPost(
+        `/protocols/${props.protocol.id}/replace`,
+        postBody
+      );
+    } catch (err) {
+      props.setLoading(false);
+      return;
+    }
+    props.setLoading(false);
+    props.processingDone(`Протокол ${props.protocol.id} ОДОБРЕН с КОРЕКЦИЯ`);
+  };
+
+  const performSumCheck = () => {
+    if (protocolType === 'machine') return null;
+
+    let sum = 0;
+    for (const key of Object.keys(formState.resultsData)) {
+      sum += parseInt(formState.resultsData[key], 10);
+    }
+
+    if (sum !== parseInt(formState.formData.validVotesCount, 10)) {
+      return [
+        `
                 Сборът на гласовете на всички партии (${sum}) не се равнява на числото 
                 въведено в т. 7.1 (${formState.formData.validVotesCount}).`,
-                <br/>,<br/>,
-                `Ако грешката идва от протокола, моля не го поправяйте!
-            `];
-        } else return null;
-    };
+        <br />,
+        <br />,
+        `Ако грешката идва от протокола, моля не го поправяйте!
+            `,
+      ];
+    } else return null;
+  };
 
-    return(
-        <div>
-            <ConfirmationModal
-                isOpen={modalState.isOpen}
-                title={modalState.title}
-                message={modalState.message}
-                confirmButtonName={modalState.confirmButtonName}
-                cancelButtonName={modalState.cancelButtonName}
-                confirmHandler={modalState.confirmHandler}
-                cancelHandler={modalState.cancelHandler}
-                warningMessage={modalState.warningMessage}
-                messageHandler={modalState.messageHandler}
+  return (
+    <div>
+      <ConfirmationModal
+        isOpen={modalState.isOpen}
+        isRejectionModal={modalState.isRejectionModal}
+        title={modalState.title}
+        message={modalState.message}
+        confirmButtonName={modalState.confirmButtonName}
+        cancelButtonName={modalState.cancelButtonName}
+        confirmHandler={modalState.confirmHandler}
+        cancelHandler={modalState.cancelHandler}
+        warningMessage={modalState.warningMessage}
+        messageHandler={modalState.messageHandler}
+      />
+      <FontAwesomeIcon icon={faChevronDown} />
+      <ProtocolPhotos
+        protocol={props.protocol}
+        reorderPictures={props.reorderPictures}
+      />
+      <ProtocolInfoSection ref={ref}>
+        <SectionHeader>
+          <BackButton onClick={props.returnProtocol}>
+            <FontAwesomeIcon icon={faChevronLeft} />
+          </BackButton>
+          <h1 style={{ display: 'inline-block' }}>
+            Секция {props.protocol.section.id}
+          </h1>
+        </SectionHeader>
+        <ProtocolDetails>
+          <SectionDetails
+            fieldStatus={fieldStatus}
+            handleProtocolNumberChange={handleProtocolNumberChange}
+            sectionData={sectionData}
+            protocol={props.protocol}
+            formState={formState}
+            protocolType={protocolType}
+            setProtocolType={setProtocolType}
+            machineCount={machineCount}
+            setMachineCount={setMachineCount}
+            setIsFinal={setIsFinal}
+          />
+          {protocolType === 'unset' ||
+          (protocolType === 'machine' && machineCount === 0) ||
+          (protocolType === 'paper-machine' && machineCount === 0) ? null : (
+            <ProtocolForm
+              fieldStatus={fieldStatus}
+              handleNumberChange={handleNumberChange}
+              handleResultsChange={handleResultsChange}
+              formState={formState}
+              parties={parties}
+              allParties={allParties}
+              protocolType={protocolType}
+              machineCount={machineCount}
+              machineHash={machineHash}
+              setMachineHash={setMachineHash}
             />
-            <FontAwesomeIcon icon={faChevronDown}/>
-            <ProtocolPhotos protocol={props.protocol} reorderPictures={props.reorderPictures}/>
-            <ProtocolInfoSection ref={ref}>
-                <SectionHeader>
-                    <BackButton onClick={props.returnProtocol}>
-                        <FontAwesomeIcon icon={faChevronLeft}/>
-                    </BackButton>
-                    <h1 style={{display: 'inline-block'}}>Секция {props.protocol.section.id}</h1>
-                </SectionHeader>
-                <ProtocolDetails>
-                    <SectionDetails
-                        fieldStatus={fieldStatus}
-                        handleProtocolNumberChange={handleProtocolNumberChange}
-                        sectionData={sectionData}
-                        protocol={props.protocol}
-                        formState={formState}
-                        protocolType={protocolType}
-                        setProtocolType={setProtocolType}
-                        machineCount={machineCount}
-                        setMachineCount={setMachineCount}
-                        setIsFinal={setIsFinal}
-                    />
-                    {
-                        protocolType === 'unset' ||
-                        (protocolType === 'machine' && machineCount === 0) ||
-                        (protocolType === 'paper-machine' && machineCount === 0)? null :
-                            <ProtocolForm
-                                fieldStatus={fieldStatus}
-                                handleNumberChange={handleNumberChange}
-                                handleResultsChange={handleResultsChange}
-                                formState={formState}
-                                parties={parties}
-                                allParties={allParties}
-                                protocolType={protocolType}
-                                machineCount={machineCount}
-                                machineHash={machineHash}
-                                setMachineHash={setMachineHash}
-                            />
-                    }
-                    {protocolType !== 'unset'? <hr/> : null}
-                    {
-                        invalidFields || changedFields?
-                            <AcceptButton
-                                disabled={invalidFields}
-                                onClick={openConfirmModal}
-                            >
-                                Потвърди
-                            </AcceptButton> :
-                            <AcceptButton onClick={approveProtocol}>
-                                Потвърди
-                            </AcceptButton>
-                    }
-                    <RejectButton onClick={openRejectModal}>
-                        Отхвърли
-                    </RejectButton>
-                </ProtocolDetails>
-            </ProtocolInfoSection>
-        </div>
-    );
+          )}
+          {protocolType !== 'unset' ? <hr /> : null}
+          {invalidFields || changedFields ? (
+            <AcceptButton disabled={invalidFields} onClick={openConfirmModal}>
+              Потвърди
+            </AcceptButton>
+          ) : (
+            <AcceptButton onClick={approveProtocol}>Потвърди</AcceptButton>
+          )}
+          <RejectButton onClick={openRejectModal}>Отхвърли</RejectButton>
+        </ProtocolDetails>
+      </ProtocolInfoSection>
+    </div>
+  );
 };
