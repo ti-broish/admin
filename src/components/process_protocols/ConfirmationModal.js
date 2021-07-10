@@ -125,15 +125,31 @@ export default (props) => {
   useEffect(() => {
     if (props.isOpen === false) {
       setSelectedReason(null);
+
+      if (rejectionReasons) {
+        restoreReasonSelection(rejectionReasons);
+      }
     }
 
     if (props.isRejectionModal && !rejectionReasons) {
       authGet('/protocols/rejection-reasons').then((res) => {
-        console.log(res.data);
-        setRejectionReasons(res.data);
+        const reasons = res.data;
+        if (reasons) {
+          restoreReasonSelection(reasons);
+        }
       });
     }
   }, [props.isOpen]);
+
+  const restoreReasonSelection = (reasons) => {
+    setRejectionReasons(
+      reasons.map((reason) => ({
+        ...reason,
+        isChecked: false,
+      }))
+    );
+  };
+
   const handleOnChange = (item) => {
     const selectedItem = item ? { ...item, isChecked: !item.isChecked } : null;
     const updatedCheckedState = rejectionReasons?.map((reason) =>
