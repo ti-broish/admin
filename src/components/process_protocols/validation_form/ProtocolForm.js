@@ -174,9 +174,40 @@ export default props => {
 
         count += props.machineCount;
 
-        console.log(count);
-
         return count;
+    };
+
+    const inputField = varName => 
+        <input
+            type="text"
+            name={varName}
+            className={props.fieldStatus[varName].invalid? 'invalid' : props.fieldStatus[varName].changed? 'changed' : ''}
+            value={props.formState.formData[varName]}
+            onChange={props.handleNumberChange}
+        />
+
+    const handleMachine1StartChange = e => {
+        let machineHash = props.machineHash;
+        machineHash[0].startHash = e.target.value;
+        props.setMachineHash([...machineHash]);
+    };
+
+    const handleMachine1EndChange = e => {
+        let machineHash = props.machineHash;
+        machineHash[0].endHash = e.target.value;
+        props.setMachineHash([...machineHash]);
+    };
+
+    const handleMachine2StartChange = e => {
+        let machineHash = props.machineHash;
+        machineHash[1].startHash = e.target.value;
+        props.setMachineHash([...machineHash]);
+    };
+
+    const handleMachine2EndChange = e => {
+        let machineHash = props.machineHash;
+        machineHash[1].endHash = e.target.value;
+        props.setMachineHash([...machineHash]);
     };
 
     return(
@@ -188,45 +219,21 @@ export default props => {
                     <td>
                         1. Брой на избирателите в избирателния списък при предаването му на СИК
                     </td>
-                    <td>
-                        <input
-                            type="text"
-                            name="votersCount"
-                            className={props.fieldStatus['votersCount'].invalid? 'invalid' : props.fieldStatus['votersCount'].changed? 'changed' : ''}
-                            value={props.formState.formData.votersCount}
-                            onChange={props.handleNumberChange}
-                        />
-                    </td>
+                    <td>{inputField('votersCount')}</td>
                 </tr>
                 <tr>
                     <td>
                         2. Брой на избирателите, вписани в допълнителната страница (под чертата) на
                         избирателния списък в изборния ден
                     </td>
-                    <td>
-                        <input
-                            type="text"
-                            name="additionalVotersCount"
-                            className={props.fieldStatus['additionalVotersCount'].invalid? 'invalid' : props.fieldStatus['additionalVotersCount'].changed? 'changed' : ''}
-                            value={props.formState.formData.additionalVotersCount}
-                            onChange={props.handleNumberChange}
-                        />
-                    </td>
+                    <td>{inputField('additionalVotersCount')}</td>
                 </tr>
                 <tr>
                     <td>
                         3. Брой на гласувалите избиратели според положените подписи в
                         избирателния списък (вкл. под чертата)
                     </td>
-                    <td>
-                        <input
-                            type="text"
-                            name="votersCount"
-                            className={props.fieldStatus['votersCount'].invalid? 'invalid' : props.fieldStatus['votersCount'].changed? 'changed' : ''}
-                            value={props.formState.formData.votersCount}
-                            onChange={props.handleNumberChange}
-                        />
-                    </td>
+                    <td>{inputField('votersVotedCount')}</td>
                 </tr>
             </tbody>
             </ProtocolDetailsTable>
@@ -235,43 +242,18 @@ export default props => {
             <tbody>
                 <tr>
                     <td>4а. Брой на неизползваните бюлетини</td>
-                    <td>
-                        <input
-                            type="text"
-                            name="paperBallotsOutsideOfBox"
-                            className={props.fieldStatus['paperBallotsOutsideOfBox'].invalid? 'invalid' : props.fieldStatus['paperBallotsOutsideOfBox'].changed? 'changed' : ''}
-                            value={props.formState.formData.paperBallotsOutsideOfBox}
-                            onChange={props.handleNumberChange}
-                        />
-                    </td>
+                    <td>{inputField('uncastBallots')}</td>
                 </tr>
-                {
-                    props.protocolType === 'paper' || props.protocolType === 'paper-machine'?
-                        <tr>
-                            <td>4б. Общ брой на недействителните бюлетини</td>
-                            <td>
-                                <input
-                                    type="text"
-                                    name="paperBallotsOutsideOfBox"
-                                    className={props.fieldStatus['paperBallotsOutsideOfBox'].invalid? 'invalid' : props.fieldStatus['paperBallotsOutsideOfBox'].changed? 'changed' : ''}
-                                    value={props.formState.formData.paperBallotsOutsideOfBox}
-                                    onChange={props.handleNumberChange}
-                                />
-                            </td>
-                        </tr> :
-                        <tr>
-                            <td>4б. Брой на унищожените от СИК бюлетини по други поводи (за създаване на образци за таблата пред изборното помещение и увредени механично при откъсване от кочана)</td>
-                            <td>
-                                <input
-                                    type="text"
-                                    name="paperBallotsOutsideOfBox"
-                                    className={props.fieldStatus['paperBallotsOutsideOfBox'].invalid? 'invalid' : props.fieldStatus['paperBallotsOutsideOfBox'].changed? 'changed' : ''}
-                                    value={props.formState.formData.paperBallotsOutsideOfBox}
-                                    onChange={props.handleNumberChange}
-                                />
-                            </td>
-                        </tr>
-                }
+                <tr>
+                    <td>
+                    {
+                        props.protocolType === 'paper' || props.protocolType === 'paper-machine'?
+                            '4б. Общ брой на недействителните бюлетини' :
+                            '4б. Брой на унищожените от СИК бюлетини по други поводи'
+                    }
+                    </td>
+                    <td>{inputField('invalidAndUncastBallots')}</td>
+                </tr>
             </tbody>
             </ProtocolDetailsTable>
             <h1>СЛЕД КАТО ОТВОРИ ИЗБИРАТЕЛНАТА КУТИЯ, СИК УСТАНОВИ:</h1>
@@ -287,42 +269,18 @@ export default props => {
                             'Общ брой на намерените в избирателната кутия бюлетини и потвърдените гласове от машинното гласуване' : null  
                         
                     }</td>
-                    <td>
-                        <input
-                            type="text"
-                            value={props.formState.formData.votesCount}
-                            name="votesCount"
-                            className={props.fieldStatus['votesCount'].invalid? 'invalid' : props.fieldStatus['votesCount'].changed? 'changed' : ''}
-                            onChange={props.handleNumberChange}
-                        />
-                    </td>
+                    <td>{inputField('totalVotesCast')}</td>
                 </tr>
                 {
                     props.protocolType === 'paper-machine'?
                         <>
                             <tr>
                                 <td>5.1. Брой на намерените в избирателните кутии бюлетини</td>
-                                <td>
-                                    <input
-                                        type="text"
-                                        value={props.formState.formData.paperVotesCount}
-                                        name="paperVotesCount"
-                                        className={props.fieldStatus['paperVotesCount'].invalid? 'invalid' : props.fieldStatus['paperVotesCount'].changed? 'changed' : ''}
-                                        onChange={props.handleNumberChange}
-                                    />
-                                </td>
+                                <td>{inputField('nonMachineVotesCount')}</td>
                             </tr>
                             <tr>
                                 <td>5.2. Брой на потвърдените гласове от машинното гласуване</td>
-                                <td>
-                                    <input
-                                        type="text"
-                                        value={props.formState.formData.machineVotesCount}
-                                        name="machineVotesCount"
-                                        className={props.fieldStatus['machineVotesCount'].invalid? 'invalid' : props.fieldStatus['machineVotesCount'].changed? 'changed' : ''}
-                                        onChange={props.handleNumberChange}
-                                    />
-                                </td>
+                                <td>{inputField('machineVotesCount')}</td>
                             </tr>
                         </> : null
                 }
@@ -331,27 +289,11 @@ export default props => {
                         <>
                             <tr>
                                 <td>6. Брой на намерените в избирателната кутия недействителни гласове (бюлетини)</td>
-                                <td>
-                                    <input
-                                        type="text"
-                                        value={props.formState.formData.invalidVotesCount}
-                                        name="invalidVotesCount"
-                                        className={props.fieldStatus['invalidVotesCount'].invalid? 'invalid' : props.fieldStatus['invalidVotesCount'].changed? 'changed' : ''}
-                                        onChange={props.handleNumberChange}
-                                    />
-                                </td>
+                                <td>{inputField('invalidVotesCount')}</td>
                             </tr>
                             <tr>
                                 <td>7.1. Брой на действителните гласове, подадени за кандидатските листи на партии, коалиции и инициативни комитети</td>
-                                <td>
-                                    <input
-                                        type="text"
-                                        value={props.formState.formData.validVotesCount}
-                                        name="validVotesCount"
-                                        className={props.fieldStatus['validVotesCount'].invalid? 'invalid' : props.fieldStatus['validVotesCount'].changed? 'changed' : ''}
-                                        onChange={props.handleNumberChange}
-                                    />
-                                </td>
+                                <td>{inputField('validVotesCount')}</td>
                             </tr>
                         </> : null
                 }
@@ -375,7 +317,7 @@ export default props => {
                 </tbody>
             </PartyResultsTable>
             {
-                props.machineCount === 1?
+                props.machineCount === 1 && props.machineHash.length === props.machineCount?
                     <>
                         <hr/>
                         <h1>Хеш от машината за гласуване</h1>
@@ -386,8 +328,9 @@ export default props => {
                                 <td>
                                     <input
                                         type="text"
-                                        value={props.formState.formData.validVotesCount}
-                                        onChange={props.handleNumberChange}
+                                        value={props.machineHash[0].startHash}
+                                        onChange={handleMachine1StartChange}
+                                        maxLength="4"
                                     />
                                 </td>
                             </tr>
@@ -396,15 +339,16 @@ export default props => {
                                 <td>
                                     <input
                                         type="text"
-                                        value={props.formState.formData.validVotesCount}
-                                        onChange={props.handleNumberChange}
+                                        value={props.machineHash[0].endHash}
+                                        onChange={handleMachine1EndChange}
+                                        maxLength="4"
                                     />
                                 </td>
                             </tr>
                         </tbody>
                         </ProtocolDetailsTable>
                     </> :
-                props.machineCount === 2?
+                props.machineCount === 2 && props.machineHash.length === props.machineCount?
                     <>
                         <hr/>
                         <h1>Хеш от машините за гласуване</h1>
@@ -415,8 +359,9 @@ export default props => {
                                 <td>
                                     <input
                                         type="text"
-                                        value={props.formState.formData.validVotesCount}
-                                        onChange={props.handleNumberChange}
+                                        value={props.machineHash[0].startHash}
+                                        onChange={handleMachine1StartChange}
+                                        maxLength="4"
                                     />
                                 </td>
                             </tr>
@@ -425,8 +370,9 @@ export default props => {
                                 <td>
                                     <input
                                         type="text"
-                                        value={props.formState.formData.validVotesCount}
-                                        onChange={props.handleNumberChange}
+                                        value={props.machineHash[0].endHash}
+                                        onChange={handleMachine1EndChange}
+                                        maxLength="4"
                                     />
                                 </td>
                             </tr>
@@ -435,8 +381,9 @@ export default props => {
                                 <td>
                                     <input
                                         type="text"
-                                        value={props.formState.formData.validVotesCount}
-                                        onChange={props.handleNumberChange}
+                                        value={props.machineHash[1].startHash}
+                                        onChange={handleMachine2StartChange}
+                                        maxLength="4"
                                     />
                                 </td>
                             </tr>
@@ -445,8 +392,9 @@ export default props => {
                                 <td>
                                     <input
                                         type="text"
-                                        value={props.formState.formData.validVotesCount}
-                                        onChange={props.handleNumberChange}
+                                        value={props.machineHash[1].endHash}
+                                        onChange={handleMachine2EndChange}
+                                        maxLength="4"
                                     />
                                 </td>
                             </tr>

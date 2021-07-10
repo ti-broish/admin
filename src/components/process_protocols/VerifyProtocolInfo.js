@@ -147,6 +147,8 @@ export default props => {
         isMachine: false,
     });
 
+    const [machineHash, setMachineHash] = useState([{startHash: '', endHash: ''}]);
+
     const [protocolType, setProtocolType] = useState('unset');
     const [machineCount, setMachineCount] = useState(0);
     const [isFinal, setIsFinal] = useState(false);
@@ -162,6 +164,13 @@ export default props => {
 
     useEffect(() => {
         setFormState(new ValidationFormState({ protocol: props.protocol, parties, protocolType, machineCount }));
+        if(machineCount === 0) {
+            setMachineHash([]);
+        } else if(machineCount === 1) {
+            setMachineHash([{startHash: '', endHash: ''}]);
+        } else if(machineCount === 2) {
+            setMachineHash([{startHash: '', endHash: ''}, {startHash: '', endHash: ''}]);
+        }
     }, [machineCount]);
 
     useKeypress(['ArrowUp'], event => {
@@ -252,7 +261,7 @@ export default props => {
         props.processingDone(`Протокол ${props.protocol.id} ОДОБРЕН`);
     };
 
-    const approveProtocolAndSendViolation = async () => {
+    /*const approveProtocolAndSendViolation = async () => {
         props.setLoading(true);
         const data = {
             description: violationMessage.current,
@@ -264,7 +273,7 @@ export default props => {
         await authPost(`/protocols/${props.protocol.id}/approve-with-violation`, data);
         props.setLoading(false);
         props.processingDone(`Протокол ${props.protocol.id} ОДОБРЕН и СИГНАЛ ИЗПРАТЕН`);
-    };
+    };*/
 
     const rejectProtocol = async () => {
         props.setLoading(true);
@@ -306,17 +315,27 @@ export default props => {
             isFinal: isFinal,
             votersCount: parseInt(formState.formData.votersCount, 10),
             additionalVotersCount: parseInt(formState.formData.additionalVotersCount, 10),
-            paperBallotsOutsideOfBox: parseInt(formState.formData.paperBallotsOutsideOfBox, 10),
-            votesCount: parseInt(formState.formData.votesCount, 10),
-            paperVotesCount: parseInt(formState.formData.paperVotesCount, 10),
-            machineVotesCount: parseInt(formState.formData.machineVotesCount, 10),
-            invalidVotesCount: parseInt(formState.formData.invalidVotesCount, 10),
-            validVotesCount: parseInt(formState.formData.validVotesCount, 10),
+            votersVotedCount: parseInt(formState.formData.votersVotedCount, 10),
+            uncastBallots: parseInt(formState.formData.uncastBallots, 10),
+            invalidAndUncastBallots: parseInt(formState.formData.invalidAndUncastBallots, 10),
+            totalVotesCast: parseInt(formState.formData.totalVotesCast, 10),
             results: formState.generateResults(parties, protocolType, machineCount),
             pictures: props.protocol.pictures,
         };
 
-        console.log(postBody);
+        if(protocolType === 'paper-machine') {
+            postBody['nonMachineVotesCount'] = parseInt(formState.formData.nonMachineVotesCount, 10);
+            postBody['machineVotesCount'] = parseInt(formState.formData.machineVotesCount, 10);
+        }
+
+        if(protocolType === 'paper' || protocolType === 'paper-machine') {
+            postBody['invalidVotesCount'] = parseInt(formState.formData.invalidVotesCount, 10);
+            postBody['validVotesCount'] = parseInt(formState.formData.validVotesCount, 10);
+        }
+
+        if(protocolType === 'machine' || protocolType === 'paper-machine') {
+            postBody['machineHashes'] = machineHash;
+        }
 
         props.setLoading(true);
         try {
@@ -330,16 +349,17 @@ export default props => {
     };
 
     const performSumCheck = () => {
+        if(protocolType === 'machine') return null;
+
         let sum = 0;
         for(const key of Object.keys(formState.resultsData)) {
-            if(key[0] !== '0' && key[key.length-1] !== 'm' && !isNaN(formState.resultsData[key]))
-                sum += parseInt(formState.resultsData[key], 10);
+            sum += parseInt(formState.resultsData[key], 10);
         }
 
         if(sum !== parseInt(formState.formData.validVotesCount, 10)) {
             return [`
-                Сборът на гласовете в т. 7 (${sum}) не се равнява на числото 
-                въведено в т. 6.1 (${formState.formData.validVotesCount}).`,
+                Сборът на гласовете на всички партии (${sum}) не се равнява на числото 
+                въведено в т. 7.1 (${formState.formData.validVotesCount}).`,
                 <br/>,<br/>,
                 `Ако грешката идва от протокола, моля не го поправяйте!
             `];
@@ -394,6 +414,8 @@ export default props => {
                                 allParties={allParties}
                                 protocolType={protocolType}
                                 machineCount={machineCount}
+                                machineHash={machineHash}
+                                setMachineHash={setMachineHash}
                             />
                     }
                     {protocolType !== 'unset'? <hr/> : null}

@@ -9,14 +9,25 @@ export default class ValidationFormState {
 
             this.formData = {
                 sectionId: protocol.section.id,
+                //данни от избирателния списък
                 votersCount: zeroIfEmpty(protocol.results.votersCount),
                 additionalVotersCount: zeroIfEmpty(protocol.results.additionalVotersCount),
-                paperBallotsOutsideOfBox: zeroIfEmpty(protocol.results.paperBallotsOutsideOfBox),
-                votesCount: zeroIfEmpty(protocol.results.votesCount), 
-                paperVotesCount: zeroIfEmpty(protocol.results.paperVotesCount),
-                machineVotesCount: zeroIfEmpty(protocol.results.machineVotesCount),
-                invalidVotesCount: zeroIfEmpty(protocol.results.invalidVotesCount),
-                validVotesCount: zeroIfEmpty(protocol.results.validVotesCount),
+                votersVotedCount: zeroIfEmpty(protocol.results.votersVotedCount),
+                //данни извън избирателния списък
+                uncastBallots: zeroIfEmpty(protocol.results.uncastBallots),
+                invalidAndUncastBallots: zeroIfEmpty(protocol.results.invalidAndUncastBallots),
+                //СЛЕД КАТО ОТВОРИ ИЗБИРАТЕЛНАТА КУТИЯ, СИК УСТАНОВИ
+                totalVotesCast: zeroIfEmpty(protocol.results.totalVotesCast),
+            };
+
+            if(protocolType === 'paper-machine') {
+                this.formData['nonMachineVotesCount'] = zeroIfEmpty(protocol.results.nonMachineVotesCount);
+                this.formData['machineVotesCount'] = zeroIfEmpty(protocol.results.machineVotesCount);
+            }
+
+            if(protocolType === 'paper' || protocolType === 'paper-machine') {
+                this.formData['invalidVotesCount'] = zeroIfEmpty(protocol.results.invalidVotesCount);
+                this.formData['validVotesCount'] = zeroIfEmpty(protocol.results.validVotesCount);
             }
     
             this.initResults(protocol, parties, protocolType, machineCount);
@@ -42,7 +53,7 @@ export default class ValidationFormState {
 
         for(const result of protocol.results.results) {
             if(protocolType === 'paper' || protocolType === 'machine-paper') {
-                this.resultsData[`party${result.party}paper`] = emptyStrIfNull(result.paperBallotsVotes);
+                this.resultsData[`party${result.party}paper`] = emptyStrIfNull(result.nonMachineVotesCount);
             }
 
             for(let i = 0; i < machineCount; i++) {
@@ -92,10 +103,10 @@ export default class ValidationFormState {
         for(const party of parties) {
 
             let result = getPartyResult(party.id);
-            if(!result) result = { paperBallotsVotes: null, machineVotes: [] };
+            if(!result) result = { nonMachineVotesCount: null, machineVotes: [] };
 
             if(protocolType === 'paper' || protocolType === 'paper-machine') {
-                const originalResult = emptyStrIfNull(result.paperBallotsVotes);
+                const originalResult = emptyStrIfNull(result.nonMachineVotesCount);
                 fieldStatus[`party${party.id}paper`] = compareResult(`party${party.id}paper`, originalResult);
             }
 
@@ -114,29 +125,26 @@ export default class ValidationFormState {
                 fieldStatus[fieldName] = { unchanged: true };
         };
 
-        if(protocolType === 'machine') {
-            addStatusForResultField('votersCount');
-            addStatusForResultField('additionalVotersCount');
-            addStatusForResultField('votesCount');
-            addStatusForResultField('paperBallotsOutsideOfBox');
-        } else if(protocolType === 'paper-machine') {
-            addStatusForResultField('votersCount');
-            addStatusForResultField('additionalVotersCount');
-            addStatusForResultField('paperBallotsOutsideOfBox');
-            addStatusForResultField('votesCount');
-            addStatusForResultField('paperVotesCount');
+        
+        addStatusForResultField('votersCount');
+        addStatusForResultField('additionalVotersCount');
+        addStatusForResultField('votersVotedCount');
+
+        addStatusForResultField('uncastBallots');
+        addStatusForResultField('invalidAndUncastBallots');
+        addStatusForResultField('totalVotesCast');
+        
+
+        if(protocolType === 'paper-machine') {
+            addStatusForResultField('nonMachineVotesCount');
             addStatusForResultField('machineVotesCount');
-            addStatusForResultField('invalidVotesCount');
-            addStatusForResultField('validVotesCount');
-        } else if(protocolType === 'paper') {
-            addStatusForResultField('votersCount');
-            addStatusForResultField('additionalVotersCount');
-            addStatusForResultField('paperBallotsOutsideOfBox');
-            addStatusForResultField('votesCount');
+        }
+
+        if(protocolType === 'paper' || protocolType === 'paper-machine') {
             addStatusForResultField('invalidVotesCount');
             addStatusForResultField('validVotesCount');
         }
-
+            
         let invalidFields = false;
         let changedFields = false;
     
@@ -186,12 +194,11 @@ export default class ValidationFormState {
         for(const party of parties) {
             const result = {
                 party: party.id,
-                paperBallotsVotes: 0,
                 machineVotes: [],
             }
 
             if(protocolType === 'paper' || protocolType === 'paper-machine') {
-                result.paperBallotsVotes = parseInt(this.resultsData[`party${party.id}paper`], 10);
+                result.nonMachineVotesCount = parseInt(this.resultsData[`party${party.id}paper`], 10);
             }
 
             for(let i = 0; i < machineCount; i++) {
