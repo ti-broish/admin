@@ -1,18 +1,18 @@
-import React, { useContext, useState, useEffect, useRef } from "react";
-import ReactDOM from "react-dom";
-import ProtocolPhotos from "./protocol_photos/ProtocolPhotos";
-import ProtocolForm from "./validation_form/ProtocolForm";
-import ValidationFormState from "./validation_form/ValidationFormState";
+import React, { useContext, useState, useEffect, useRef } from 'react';
+import ReactDOM from 'react-dom';
+import ProtocolPhotos from './protocol_photos/ProtocolPhotos';
+import ProtocolForm from './validation_form/ProtocolForm';
+import ValidationFormState from './validation_form/ValidationFormState';
 
-import useKeypress from "react-use-keypress";
+import useKeypress from 'react-use-keypress';
 
-import styled from "styled-components";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import styled from 'styled-components';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import {
   faChevronLeft,
   faPlus,
   faChevronDown,
-} from "@fortawesome/free-solid-svg-icons";
+} from '@fortawesome/free-solid-svg-icons';
 
 const ProtocolInfoSection = styled.div`
   width: 50vw;
@@ -131,9 +131,9 @@ const ApproveAndSendViolationButton = styled(VerificationPanelButton)`
   }
 `;
 
-import { AuthContext } from "../App";
-import ConfirmationModal from "./ConfirmationModal";
-import SectionDetails from "./validation_form/SectionDetails";
+import { AuthContext } from '../App';
+import ConfirmationModal from './ConfirmationModal';
+import SectionDetails from './validation_form/SectionDetails';
 
 export default (props) => {
   const { parties, authPost, authGet } = useContext(AuthContext);
@@ -151,7 +151,7 @@ export default (props) => {
     isMachine: false,
   });
 
-  const [protocolType, setProtocolType] = useState("unset");
+  const [protocolType, setProtocolType] = useState('unset');
   const [machineCount, setMachineCount] = useState(0);
   const [isFinal, setIsFinal] = useState(false);
 
@@ -196,14 +196,14 @@ export default (props) => {
     );
   }, [machineCount]);
 
-  useKeypress(["ArrowUp"], (event) => {
+  useKeypress(['ArrowUp'], (event) => {
     let lastInput = null;
 
     const traverseNodeTree = (node) => {
       if (node === document.activeElement && lastInput != null)
         lastInput.focus();
       else {
-        if (node.tagName === "INPUT") lastInput = node;
+        if (node.tagName === 'INPUT') lastInput = node;
         [...node.children].forEach(traverseNodeTree);
       }
     };
@@ -211,11 +211,11 @@ export default (props) => {
     traverseNodeTree(ref.current);
   });
 
-  useKeypress(["ArrowDown", "Enter"], (event) => {
+  useKeypress(['ArrowDown', 'Enter'], (event) => {
     let shouldFocus = false;
 
     const traverseNodeTree = (node) => {
-      if (node.tagName === "INPUT" && shouldFocus) {
+      if (node.tagName === 'INPUT' && shouldFocus) {
         node.focus();
         shouldFocus = false;
       } else {
@@ -227,7 +227,7 @@ export default (props) => {
     traverseNodeTree(ref.current);
   });
 
-  const violationMessage = useRef("");
+  const violationMessage = useRef('');
 
   useEffect(() => {
     if (formState.formData.sectionId.length === 9) {
@@ -304,21 +304,20 @@ export default (props) => {
   };
 
   const rejectProtocol = async (reason) => {
-    console.log(reason);
-
     if (reason?.rejectionReason) {
       props.setLoading(true);
-      const res = await authPost(`/protocols/${props.protocol.id}/reject`, {
+
+      authPost(`/protocols/${props.protocol.id}/reject`, {
         rejectionReason: reason?.rejectionReason,
-      });
-      console.log(res);
-      if (res.statusCode === 200) {
-        props.setLoading(false);
-        props.processingDone(`Протокол ${props.protocol.id} ОТХВЪРЛЕН`);
-      } else {
-        props.setLoading(false);
-        props.processingDone(res.message);
-      }
+      })
+        .then((res) => {
+          props.setLoading(false);
+          props.processingDone(`Протокол ${props.protocol.id} ОТХВЪРЛЕН`);
+        })
+        .catch((err) => {
+          props.setLoading(false);
+          props.processingFailed('Възникна грешка, моля опитайте отново');
+        });
     }
   };
 
@@ -326,11 +325,11 @@ export default (props) => {
     setModalState({
       isOpen: true,
       isRejectionModal: false,
-      title: "Сигурни ли сте?",
-      message: "Сигурни ли сте, че искате да потвърдите този протокол?",
+      title: 'Сигурни ли сте?',
+      message: 'Сигурни ли сте, че искате да потвърдите този протокол?',
       warningMessage: performSumCheck(),
-      confirmButtonName: "Потвърди",
-      cancelButtonName: "Върни се",
+      confirmButtonName: 'Потвърди',
+      cancelButtonName: 'Върни се',
       confirmHandler: replaceProtocol,
       cancelHandler: () => setModalState({ isOpen: false }),
     });
@@ -340,10 +339,10 @@ export default (props) => {
     setModalState({
       isOpen: true,
       isRejectionModal: true,
-      title: "Сигурни ли сте?",
-      message: "Сигурни ли сте, че искате да отвхрълите този протокол?",
-      confirmButtonName: "Отхвърли протокола",
-      cancelButtonName: "Върни се",
+      title: 'Сигурни ли сте?',
+      message: 'Сигурни ли сте, че искате да отвхрълите този протокол?',
+      confirmButtonName: 'Отхвърли протокола',
+      cancelButtonName: 'Върни се',
       confirmHandler: (reason) => rejectProtocol(reason),
       cancelHandler: () => setModalState({ isOpen: false }),
     });
@@ -353,7 +352,7 @@ export default (props) => {
     const postBody = {
       section: { id: formState.formData.sectionId },
       hasPaperBallots:
-        protocolType === "paper" || protocolType === "paper-machine",
+        protocolType === 'paper' || protocolType === 'paper-machine',
       machinesCount: machineCount,
       isFinal: isFinal,
       votersCount: parseInt(formState.formData.votersCount, 10),
@@ -394,8 +393,8 @@ export default (props) => {
     let sum = 0;
     for (const key of Object.keys(formState.resultsData)) {
       if (
-        key[0] !== "0" &&
-        key[key.length - 1] !== "m" &&
+        key[0] !== '0' &&
+        key[key.length - 1] !== 'm' &&
         !isNaN(formState.resultsData[key])
       )
         sum += parseInt(formState.resultsData[key], 10);
@@ -438,7 +437,7 @@ export default (props) => {
           <BackButton onClick={props.returnProtocol}>
             <FontAwesomeIcon icon={faChevronLeft} />
           </BackButton>
-          <h1 style={{ display: "inline-block" }}>
+          <h1 style={{ display: 'inline-block' }}>
             Секция {props.protocol.section.id}
           </h1>
         </SectionHeader>
@@ -455,9 +454,9 @@ export default (props) => {
             setMachineCount={setMachineCount}
             setIsFinal={setIsFinal}
           />
-          {protocolType === "unset" ||
-          (protocolType === "machine" && machineCount === 0) ||
-          (protocolType === "paper-machine" && machineCount === 0) ? null : (
+          {protocolType === 'unset' ||
+          (protocolType === 'machine' && machineCount === 0) ||
+          (protocolType === 'paper-machine' && machineCount === 0) ? null : (
             <ProtocolForm
               fieldStatus={fieldStatus}
               handleNumberChange={handleNumberChange}
@@ -469,7 +468,7 @@ export default (props) => {
               machineCount={machineCount}
             />
           )}
-          {protocolType !== "unset" ? <hr /> : null}
+          {protocolType !== 'unset' ? <hr /> : null}
           {invalidFields || changedFields ? (
             <AcceptButton disabled={invalidFields} onClick={openConfirmModal}>
               Потвърди

@@ -53,12 +53,23 @@ const NextProtocolButton = styled.button`
 `;
 
 const Message = styled.p`
-  color: green;
   font-size: 20px;
-  border: 1px solid green;
   padding: 10px;
-  background-color: #e0ffe0;
   border-radius: 10px;
+
+  ${(props) =>
+    props.fail
+      ? `  
+      border: 1px solid red;
+      color: white;
+      background-color: #de575d;
+    `
+      : `
+    border: 1px solid green;
+    color: green;
+    background-color: #e0ffe0;
+
+    `}
 `;
 
 const BackButton = styled.button`
@@ -75,6 +86,7 @@ export default (props) => {
   const [protocol, setProtocol] = useState(null);
   const [loading, setLoading] = useState(true);
   const [message, setMessage] = useState(null);
+  const [failedMessage, setFailedMessage] = useState(null);
 
   const history = useHistory();
 
@@ -128,6 +140,11 @@ export default (props) => {
     setProtocol(null);
   };
 
+  const processingFailed = (message) => {
+    setFailedMessage(message);
+    setProtocol(null);
+  };
+
   const reorderPictures = (newPictures) => {
     setProtocol({ ...protocol, pictures: newPictures });
   };
@@ -143,14 +160,17 @@ export default (props) => {
         Валидация на протоколи
       </h1>
       <hr />
-      {!message ? (
+      {!message && !failedMessage ? (
         <p>
           Когато сте готови, натиснете бутона долу и ще ви бъде назначен
           протокол.
         </p>
-      ) : (
+      ) : message && !failedMessage ? (
         <Message>{message}</Message>
+      ) : (
+        <Message fail>{failedMessage}</Message>
       )}
+
       <NextProtocolButton onClick={nextProtocol}>
         <FontAwesomeIcon icon={faFile} /> Следващ протокол
       </NextProtocolButton>
@@ -162,6 +182,7 @@ export default (props) => {
       returnProtocol={returnProtocol}
       setLoading={setLoading}
       processingDone={processingDone}
+      processingFailed={processingFailed}
     />
   );
 };

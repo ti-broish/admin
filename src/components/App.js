@@ -1,19 +1,19 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect } from "react";
 
-import firebase from 'firebase/app';
-import 'firebase/auth';
+import firebase from "firebase/app";
+import "firebase/auth";
 
-import axios from 'axios';
-import { BrowserRouter, Switch, Route, Redirect } from 'react-router-dom';
+import axios from "axios";
+import { BrowserRouter, Switch, Route, Redirect } from "react-router-dom";
 
-import Login from './front/Login';
-import Loading from './layout/Loading';
-import Modules from './modules/Modules';
+import Login from "./front/Login";
+import Loading from "./layout/Loading";
+import Modules from "./modules/Modules";
 
-import styled from 'styled-components';
-import ProcessProtocols from './process_protocols/ProcessProtocols';
+import styled from "styled-components";
+import ProcessProtocols from "./process_protocols/ProcessProtocols";
 
-import { apiKey, authDomain, databaseURL, projectId } from '../../config/keys';
+import { apiKey, authDomain, databaseURL, projectId } from "../../config/keys";
 
 const AppStyle = styled.div`
   font-family: Montserrat, sans-serif;
@@ -25,11 +25,10 @@ export default (props) => {
   const [state, setState] = useState({
     user: null,
     loading: true,
-    token: '',
+    token: "",
     parties: [],
     countries: [],
     organizations: [],
-    roles: [],
   });
 
   useEffect(() => {
@@ -59,10 +58,6 @@ export default (props) => {
             headers: { Authorization: `Bearer ${idToken}` },
           });
 
-          const res5 = await axios.get(`${apiHost()}/users/roles`, {
-            headers: { Authorization: `Bearer ${idToken}` },
-          });
-
           setState({
             user: res.data,
             loading: false,
@@ -70,17 +65,15 @@ export default (props) => {
             parties: res2.data,
             countries: res3.data,
             organizations: res4.data,
-            roles: res5.data,
           });
         } else {
           setState({
             user: null,
             loading: false,
-            token: '',
+            token: "",
             parties: [],
             countries: [],
             organizations: [],
-            roles: [],
           });
         }
       });
@@ -96,7 +89,7 @@ export default (props) => {
 
   const apiHost = () => {
     if (!process.env.API_HOST) {
-      return 'https://d1tapi.dabulgaria.bg';
+      return "https://d1tapi.dabulgaria.bg";
     } else {
       return process.env.API_HOST;
     }
@@ -116,11 +109,17 @@ export default (props) => {
         headers: { Authorization: `Bearer ${state.token}` },
       });
     } catch (err) {
-      alert(
-        `Error ${err.response.status}: ${
-          err.response.statusText
-        }\n${err.response.data.message.map((m, i) => `\n${i + 1}. ${m}`)}`
-      );
+      if (Array.isArray(err.response.data.message)) {
+        alert(
+          `Error ${err.response.status}: ${
+            err.response.statusText
+          }\n${err.response.data.message.map((m, i) => `\n${i + 1}. ${m}`)}`
+        );
+      } else {
+        alert(
+          `Error ${err.response.status}: ${err.response.statusText}\n${err.response.data.message}`
+        );
+      }
       throw err;
     }
     return res;
@@ -177,7 +176,6 @@ export default (props) => {
             parties: state.parties,
             countries: state.countries,
             organizations: state.organizations,
-            roles: state.roles,
             logIn,
             logOut,
             authGet,

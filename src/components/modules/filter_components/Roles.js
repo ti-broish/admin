@@ -1,12 +1,11 @@
-import React, { useContext } from 'react';
-import { AuthContext } from '../../App';
+import React from 'react';
 
 export default (props) => {
-  const roles = useContext(AuthContext).roles;
+  const { setRole, role, roles } = props;
 
-  const { setRole, role } = props;
-
-  const allRoles = [{ role: '00', roleLocalized: 'Всички' }, ...roles];
+  const allRoles = roles
+    ? [{ role: '00', roleLocalized: 'Всички' }, ...roles]
+    : [{ role: '00', roleLocalized: 'Зарежда ...' }];
 
   const changeHandler = (event) => {
     setRole(event.target.value);
@@ -21,7 +20,7 @@ export default (props) => {
   });
 
   return (
-    <select value={role} onChange={changeHandler}>
+    <select disabled={!roles} value={role} onChange={changeHandler}>
       {filters}
     </select>
   );

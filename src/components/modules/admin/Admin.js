@@ -112,7 +112,7 @@ export default (props) => {
   const [loading, setLoading] = useState(false);
   const query = useQuery();
   const history = useHistory();
-  const rolesState = useContext(AuthContext).roles;
+  const [rolesState, setRolesState] = useState(null);
 
   useEffect(() => {
     let url = '/users';
@@ -140,6 +140,10 @@ export default (props) => {
     authGet(url).then((res) => {
       setLoading(false);
       setData(res.data);
+    });
+
+    authGet(url + '/roles').then((res) => {
+      setRolesState(res.data);
     });
   }, [
     query.get('firstName'),
@@ -185,7 +189,7 @@ export default (props) => {
   };
 
   const openUser = (id) => {
-    history.push(`/user/${id}`);
+    history.push({ pathname: `/user/${id}`, state: rolesState });
   };
 
   const roles = (roles) => {
@@ -217,10 +221,10 @@ export default (props) => {
       case 'admin':
         color = '#ff3a39';
         break;
-        case 'stream_moderator':
+      case 'stream_moderator':
         color = '#e6d858';
         break;
-        case 'super_validator':
+      case 'super_validator':
         color = '#009688';
         break;
       default:
@@ -230,8 +234,11 @@ export default (props) => {
   };
 
   const roleCircle = (roleName, idx, color) => {
-    const splittedRoleName =  roleName.split(' ');
-    const initials = splittedRoleName.length > 1 ? splittedRoleName[0][0] + splittedRoleName[1][0] : splittedRoleName[0][0]
+    const splittedRoleName = roleName.split(' ');
+    const initials =
+      splittedRoleName.length > 1
+        ? splittedRoleName[0][0] + splittedRoleName[1][0]
+        : splittedRoleName[0][0];
     return (
       <Tooltip key={idx} text={roleName}>
         <RoleIcon style={{ backgroundColor: color }}>{initials}</RoleIcon>
@@ -243,7 +250,7 @@ export default (props) => {
     <>
       <TableViewContainer>
         <h1>Административна секция</h1>
-        <AdminFilter />
+        <AdminFilter roles={rolesState} />
         <hr />
         {!data ? (
           <Loading />

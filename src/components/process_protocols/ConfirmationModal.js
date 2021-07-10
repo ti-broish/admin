@@ -1,8 +1,8 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from 'react';
 
-import styled from "styled-components";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faExclamationTriangle } from "@fortawesome/free-solid-svg-icons";
+import styled from 'styled-components';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faExclamationTriangle } from '@fortawesome/free-solid-svg-icons';
 
 const ModalOverlay = styled.div`
   position: fixed;
@@ -115,20 +115,20 @@ const CheckboxList = styled.div`
 
 const rejectionReasonsMock = [
   {
-    rejectionReason: "missing-protocol-information",
+    rejectionReason: 'missing-protocol-information',
     rejectionReasonLocalized:
-      "Непълно съдържание на протокола. (Моля, изпратете целия протокол отново.)",
+      'Непълно съдържание на протокола. (Моля, изпратете целия протокол отново.)',
     isChecked: false,
   },
   {
-    rejectionReason: "missing-machine-printout-information",
+    rejectionReason: 'missing-machine-printout-information',
     rejectionReasonLocalized:
-      "Непълно съдържание на машинната разпечатка. (Моля, изпратете я цялата отново.)",
+      'Непълно съдържание на машинната разпечатка. (Моля, изпратете я цялата отново.)',
     isChecked: false,
   },
   {
-    rejectionReason: "reject-without-notify",
-    rejectionReasonLocalized: "Отхвърли без известие до застъпник.",
+    rejectionReason: 'reject-without-notify',
+    rejectionReasonLocalized: 'Отхвърли без известие до застъпник.',
     isChecked: false,
   },
 ];
@@ -138,6 +138,12 @@ export default (props) => {
     useState(rejectionReasonsMock);
   const [selectedReason, setSelectedReason] = useState(null);
 
+  useEffect(() => {
+    if (props.isOpen === false) {
+      setRejectionReasons(rejectionReasonsMock);
+      setSelectedReason(null);
+    }
+  }, [props.isOpen]);
   const handleOnChange = (item) => {
     const selectedItem = { ...item, isChecked: !item.isChecked };
     const updatedCheckedState = rejectionReasonsMock.map((reason) =>
@@ -156,7 +162,7 @@ export default (props) => {
         <hr />
         <p>{props.message}</p>
         {!props.warningMessage ? null : (
-          <p style={{ color: "#f9d71c", fontWeight: "bold" }}>
+          <p style={{ color: '#f9d71c', fontWeight: 'bold' }}>
             <FontAwesomeIcon icon={faExclamationTriangle} />
             {props.warningMessage}
           </p>
@@ -199,7 +205,7 @@ export default (props) => {
               id="violation"
               cols="30"
               rows="10"
-              style={{ width: "100%" }}
+              style={{ width: '100%' }}
               onChange={props.messageHandler}
               value={props.messageValue}
             ></textarea>

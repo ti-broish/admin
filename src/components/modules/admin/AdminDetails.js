@@ -61,12 +61,11 @@ export default (props) => {
   const [userData, setUserData] = useState(null);
   const [roles, setRoles] = useState(null);
   const [rolesUpdateSuccessful, setRolesUpdateSuccessful] = useState(undefined);
-  const rolesState = useContext(AuthContext).roles;
   useEffect(async () => {
     const resUser = await authGet(`/users/${userId}`);
     setUserData(resUser.data);
+    let allRoles = props.location.state;
 
-    let allRoles = rolesState;
     if (resUser.data && allRoles) {
       allRoles = allRoles.map((role) => ({
         ...role,
