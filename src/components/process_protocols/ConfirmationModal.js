@@ -171,7 +171,7 @@ export default (props) => {
                       <div className="checkbox-list-item">
                         <div>
                           <input
-                            type="checkbox"
+                            type="radio"
                             id={`custom-checkbox-${index}`}
                             name={reason.rejectionReasonLocalized}
                             value={reason.rejectionReasonLocalized}
