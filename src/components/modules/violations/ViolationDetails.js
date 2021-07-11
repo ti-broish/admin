@@ -227,13 +227,13 @@ export default (props) => {
   const openPublishModal = () => {
     setModalState({
       isOpen: true,
-      violationText: data.publishedText? data.publishedText : data.description,
+      violationText: data.publishedText ? data.publishedText : data.description,
       confirmHandler: publishViolation,
       cancelHandler: () => setModalState({ isOpen: false }),
     });
   };
 
-  const publishViolation = publishedText => {
+  const publishViolation = (publishedText) => {
     setButtonLoading({ ...buttonLoading, publish: true });
     setModalState({ isOpen: false });
 
@@ -241,10 +241,9 @@ export default (props) => {
       isPublished: !data.isPublished,
     };
 
-    if(!data.isPublished) {
+    if (!data.isPublished) {
       reqBody['publishedText'] = publishedText;
     }
-
 
     authPatch(`/violations/${violation}`, reqBody).then((res) => {
       setButtonLoading({ ...buttonLoading, publish: false });
@@ -312,10 +311,14 @@ export default (props) => {
               'Свободен за обработка'
             ) : (
               <>
-                `Обработва се от ${data.assignees[0].firstName} $
-                {data.assignees[0].lastName}`, !iAmAssignee ? null : (
-                <span style={{ color: 'red' }}> (Вие)</span>
-                ),
+                Обработва се от
+                {' ' +
+                  data.assignees[0].firstName +
+                  ' ' +
+                  data.assignees[0].lastName}{' '}
+                {!iAmAssignee ? null : (
+                  <span style={{ color: 'red' }}> (Вие)</span>
+                )}
               </>
             )}
           </h2>
@@ -349,7 +352,7 @@ export default (props) => {
           </FancyButtonGreen>
 
           <FancyButtonBlue
-            onClick={data.isPublished? publishViolation : openPublishModal}
+            onClick={data.isPublished ? publishViolation : openPublishModal}
             disabled={!publishPossible()}
           >
             {buttonLoading.publish ? (
@@ -382,8 +385,12 @@ export default (props) => {
           <hr />
           {!data.publishedText ? null : (
             <>
-              <h2 style={{marginBottom: '5px'}}>Текст за публикуване</h2>
-              {data.isPublished? null : <h5 style={{margin: '5px 0', color: 'red'}}>Сигналът не е публикуван</h5>}
+              <h2 style={{ marginBottom: '5px' }}>Текст за публикуване</h2>
+              {data.isPublished ? null : (
+                <h5 style={{ margin: '5px 0', color: 'red' }}>
+                  Сигналът не е публикуван
+                </h5>
+              )}
               <p>{data.publishedText}</p>
               <hr />
             </>
