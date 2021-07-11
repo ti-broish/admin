@@ -192,9 +192,10 @@ export default class ValidationFormState {
         const results = [];
 
         for(const party of parties) {
-            const result = {
-                party: party.id,
-                machineVotes: [],
+            const result = { party: party.id };
+
+            if(protocolType === 'machine' || protocolType === 'paper-machine') {
+                result.machineVotes = [];
             }
 
             if(protocolType === 'paper' || protocolType === 'paper-machine') {
