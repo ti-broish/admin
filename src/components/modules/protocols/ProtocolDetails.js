@@ -71,7 +71,7 @@ export default (props) => {
                 <td>Изпратен от (организация)</td>
                 <td>{data.author.organization.name}</td>
               </tr>
-              {data.assignees.map((assignee, idx) => (
+              {data.assignees?.map((assignee, idx) => (
                 <tr key={idx}>
                   <td>Проверява се от</td>
                   <td>
@@ -97,7 +97,7 @@ export default (props) => {
           <h2>Резултати</h2>
           <TableStyle>
             <tbody>
-              {data.results.results.map((result, idx) => (
+              {data.results.results?.map((result, idx) => (
                 <tr key={idx}>
                   <td>{result.party.name}</td>
                   <td>{result.validVotesCount}</td>
