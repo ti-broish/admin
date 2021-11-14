@@ -410,7 +410,7 @@ export default (props) => {
     if (sum !== parseInt(formState.formData.validVotesCount, 10)) {
       return [
         `
-                Сборът на гласовете на всички партии (${sum}) не се равнява на числото 
+                Сборът на гласовете на всички партии (${sum}) не се равнява на числото
                 въведено в т. 7.1 (${formState.formData.validVotesCount}).`,
         <br />,
         <br />,

@@ -59,7 +59,7 @@ const Message = styled.p`
 
   ${(props) =>
     props.fail
-      ? `  
+      ? `
       border: 1px solid red;
       color: white;
       background-color: #de575d;
