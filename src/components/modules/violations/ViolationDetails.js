@@ -448,7 +448,7 @@ export default (props) => {
           <h2>История</h2>
           <div
             style={{
-              height: '100px',
+              height: '150px',
               overflowY: 'auto',
               border: '1px solid #bbb',
             }}
@@ -463,7 +463,7 @@ export default (props) => {
                 </tr>
               </thead>
               <tbody>
-                {data.updates.map((update) => (
+                {data.updates.sort((a, b) => a.timestamp.localeCompare(b.timestamp)).map((update) => (
                   <tr key={update.id}>
                     <td>{formatDateShort(update.timestamp)}</td>
                     <td>{formatTime(update.timestamp)}</td>
