@@ -291,32 +291,6 @@ export default (props) => {
     setFormState(formState.updateFormData(key, e.target.value));
   };
 
-  const approveProtocol = async () => {
-    props.setLoading(true);
-    await authPost(`/protocols/${props.protocol.id}/approve`);
-    props.setLoading(false);
-    props.processingDone(`Протокол ${props.protocol.id} ОДОБРЕН`);
-  };
-
-  const approveProtocolAndSendViolation = async () => {
-    props.setLoading(true);
-    const data = {
-      description: violationMessage.current,
-      town: {
-        id: sectionData.townId,
-        name: sectionData.town,
-      },
-    };
-    await authPost(
-      `/protocols/${props.protocol.id}/approve-with-violation`,
-      data
-    );
-    props.setLoading(false);
-    props.processingDone(
-      `Протокол ${props.protocol.id} ОДОБРЕН и СИГНАЛ ИЗПРАТЕН`
-    );
-  };
-
   const rejectProtocol = async (reason) => {
     if (reason?.rejectionReason) {
       props.setLoading(true);
@@ -509,7 +483,7 @@ export default (props) => {
               Потвърди
             </AcceptButton>
           ) : (
-            <AcceptButton onClick={approveProtocol}>Потвърди</AcceptButton>
+            <AcceptButton onClick={openConfirmModal}>Потвърди</AcceptButton>
           )}
           <RejectButton onClick={openRejectModal}>Отхвърли</RejectButton>
         </ProtocolDetails>
