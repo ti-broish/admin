@@ -45,16 +45,16 @@ const GalleryPhotoButton = styled.button`
         top: 0;
         left: 0;
         //width: 100%;
-        ${props => props.selected? 
-            `border: 2px solid yellow;` : 
+        ${props => props.selected?
+            `border: 2px solid yellow;` :
             'border: 2px solid transparent;'
         }
     }
 
     &:hover {
         img {
-            ${props => props.selected? 
-                `border: 2px solid yellow;` : 
+            ${props => props.selected?
+                `border: 2px solid yellow;` :
                 'border: 2px solid white;'
             }
         }
@@ -71,7 +71,7 @@ const SelectedPageControls = styled.div`
     box-sizing: border-box;
     color: white;
     font-size: 22px;
-    
+
     & > * { display: inline-block; }
 `;
 
@@ -147,7 +147,7 @@ export default props => {
 
             pictures.splice(selectedPhoto, 1);
             pictures.splice(selectedPhoto - 1, 0, curPage);
-            
+
             props.reorderPictures(pictures);
             setSelectedPhoto(selectedPhoto - 1);
         }
@@ -160,7 +160,7 @@ export default props => {
 
             pictures.splice(selectedPhoto, 1);
             pictures.splice(selectedPhoto + 1, 0, curPage);
-            
+
             props.reorderPictures(pictures);
             setSelectedPhoto(selectedPhoto + 1);
         }
@@ -171,7 +171,6 @@ export default props => {
         if(!pictures[selectedPhoto].rotation) pictures[selectedPhoto].rotation = 0;
         pictures[selectedPhoto].rotation += 90;
         if(pictures[selectedPhoto].rotation >= 360) pictures[selectedPhoto].rotation -= 360;
-        console.log(pictures[selectedPhoto].rotation);
         props.reorderPictures([...pictures]);
     };
 
@@ -202,22 +201,22 @@ export default props => {
                     <PageNavCompensator/>
                 </>
             }
-            {props.protocol.pictures.map((picture, i) => 
-                <GalleryPhotoButton 
+            {props.protocol.pictures.map((picture, i) =>
+                <GalleryPhotoButton
                     key={i}
-                    selected={selectedPhoto === i} 
+                    selected={selectedPhoto === i}
                     onClick={() => setSelectedPhoto(i)}
                     onDoubleClick={() => props.setPage(i)}
-                    style={{ minHeight: 
-                        (picture.rotation === 90 || picture.rotation === 270)? 
+                    style={{ minHeight:
+                        (picture.rotation === 90 || picture.rotation === 270)?
                             heights[i] : 0
                     }}
                     rotation={picture.rotation? picture.rotation : 0}
                 >
-                    <ProtocolPage 
+                    <ProtocolPage
                         key={picture.url}
-                        isCurrentPage={true} 
-                        picture={picture} 
+                        isCurrentPage={true}
+                        picture={picture}
                         rotation={picture.rotation? picture.rotation : 0}
                         preload={true}
                         zoom={100}

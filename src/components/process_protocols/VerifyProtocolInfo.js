@@ -168,6 +168,7 @@ export default (props) => {
         machineCount,
       })
   );
+
   const { fieldStatus, invalidFields, changedFields } =
     formState.getFieldStatus(
       props.protocol,
@@ -177,38 +178,38 @@ export default (props) => {
     );
   const ref = useRef();
 
-  useEffect(() => {
-    setFormState(
-      new ValidationFormState({
-        protocol: props.protocol,
-        parties,
-        protocolType,
-        machineCount,
-      })
-    );
-    setMachineCount(0);
-  }, [protocolType]);
+//   useEffect(() => {
+//     setFormState(
+//       new ValidationFormState({
+//         protocol: props.protocol,
+//         parties,
+//         protocolType,
+//         machineCount,
+//       })
+//     );
+//     // setMachineCount(0);
+//   }, [protocolType]);
 
-  useEffect(() => {
-    setFormState(
-      new ValidationFormState({
-        protocol: props.protocol,
-        parties,
-        protocolType,
-        machineCount,
-      })
-    );
-    if (machineCount === 0) {
-      setMachineHash([]);
-    } else if (machineCount === 1) {
-      setMachineHash([{ startHash: '', endHash: '' }]);
-    } else if (machineCount === 2) {
-      setMachineHash([
-        { startHash: '', endHash: '' },
-        { startHash: '', endHash: '' },
-      ]);
-    }
-  }, [machineCount]);
+//   useEffect(() => {
+//     setFormState(
+//       new ValidationFormState({
+//         protocol: props.protocol,
+//         parties,
+//         protocolType,
+//         machineCount,
+//       })
+//     );
+//     if (machineCount === 0) {
+//       setMachineHash([]);
+//     } else if (machineCount === 1) {
+//       setMachineHash([{ startHash: '', endHash: '' }]);
+//     } else if (machineCount === 2) {
+//       setMachineHash([
+//         { startHash: '', endHash: '' },
+//         { startHash: '', endHash: '' },
+//       ]);
+//     }
+//   }, [machineCount]);
 
   useKeypress(['ArrowUp'], (event) => {
     let lastInput = null;
@@ -400,6 +401,7 @@ export default (props) => {
   };
 
   const performSumCheck = () => {
+    return null;
     if (protocolType === 'machine') return null;
 
     let sum = 0;
@@ -461,7 +463,7 @@ export default (props) => {
             setMachineCount={setMachineCount}
             setIsFinal={setIsFinal}
           />
-          {protocolType === 'unset' ||
+          {/* {protocolType === 'unset' ||
           (protocolType === 'machine' && machineCount === 0) ||
           (protocolType === 'paper-machine' && machineCount === 0) ? null : (
             <ProtocolForm
@@ -476,7 +478,7 @@ export default (props) => {
               machineHash={machineHash}
               setMachineHash={setMachineHash}
             />
-          )}
+          )} */}
           {protocolType !== 'unset' ? <hr /> : null}
           {invalidFields || changedFields ? (
             <AcceptButton disabled={invalidFields} onClick={openConfirmModal}>

@@ -137,7 +137,7 @@ export default props => {
                 </tr>
             </tbody>
             </table>
-            <h5 style={{margin: '10px 0'}}>Чернова ли е протоколът?</h5>
+            {/* <h5 style={{margin: '10px 0'}}>Чернова ли е протоколът?</h5>
             <ChooseProtocolType>
                 <input type="radio" id="isNotFinal" name="isFinal" value="false" onClick={() => props.setIsFinal(false)}/>
                 <label htmlFor="isNotFinal">Чернова</label>
@@ -164,7 +164,7 @@ export default props => {
                         <label htmlFor="2machines">2 машини</label>
                     </ChooseProtocolType>
                     </> : null
-            }
+            } */}
             <hr/>
         </>
     );
