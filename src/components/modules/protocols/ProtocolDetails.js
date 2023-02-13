@@ -69,7 +69,7 @@ export default (props) => {
             <tbody>
               <tr>
                 <td>Изпратен от (организация)</td>
-                <td>{data.author.organization.name}</td>
+                <td>{data.author?.organization.name}</td>
               </tr>
               {data.assignees?.map((assignee, idx) => (
                 <tr key={idx}>
