@@ -55,11 +55,11 @@ export default (props) => {
             <tbody>
               <tr>
                 <td>Номер</td>
-                <td>{data.section.id}</td>
+                <td>{data.section?.id}</td>
               </tr>
               <tr>
                 <td>Адрес</td>
-                <td>{data.section.place}</td>
+                <td>{data.section?.place}</td>
               </tr>
             </tbody>
           </TableStyle>
