@@ -1,6 +1,7 @@
 export default class ValidationFormState {
 
     constructor({ formData, resultsData, protocol, parties, protocolType, machineCount }) {
+        this.protocol = protocol
         if(formData && resultsData) {
             this.formData = formData;
             this.resultsData = resultsData;
@@ -70,15 +71,20 @@ export default class ValidationFormState {
         const fieldStatus = {};
 
         for(let i = 0; i < 9; i ++) {
-            const char1 = protocol.section.id[i];
-            const char2 = this.formData.sectionId[i];
-
-            if(typeof char1 == 'undefined' || typeof char2 == 'undefined')
-                fieldStatus[`sectionId${i+1}`] = { invalid: true };
-            else if(char1.toString() !== char2.toString())
-                fieldStatus[`sectionId${i+1}`] = { changed: true };
-            else
-                fieldStatus[`sectionId${i+1}`] = { unchanged: true };
+            const sectionId = protocol.section?.id
+            if (!sectionId) {
+                fieldStatus[`sectionId${i + 1}`] = { invalid: true };
+            } else {
+                const char1 = protocol.section.id[i];
+                const char2 = this.formData.sectionId[i];
+    
+                if(typeof char1 == 'undefined' || typeof char2 == 'undefined')
+                    fieldStatus[`sectionId${i+1}`] = { invalid: true };
+                else if(char1.toString() !== char2.toString())
+                    fieldStatus[`sectionId${i+1}`] = { changed: true };
+                else
+                    fieldStatus[`sectionId${i+1}`] = { unchanged: true };
+            }
         }
 
         // const getPartyResult = partyId => {
@@ -213,8 +219,10 @@ export default class ValidationFormState {
     }
 
     updateProtocolNumber(value) {
-        this.formData = {...this.formData, sectionId: value};
-        return new ValidationFormState({...this});
+        this.formData = { ...this.formData, sectionId: value };
+        const state = new ValidationFormState({ ...this });
+        state.protocol.section = { id: state.formData.sectionId }
+        return state
     }
 
     updateFormData(key, value) {
