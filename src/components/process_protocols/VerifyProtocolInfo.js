@@ -245,7 +245,7 @@ export default (props) => {
   const violationMessage = useRef('');
 
   useEffect(() => {
-    if (formState.formData.sectionId.length === 9) {
+    if (formState.formData.sectionId?.length === 9) {
       updateSectionData();
     }
   }, [formState.formData.sectionId]);
@@ -447,7 +447,7 @@ export default (props) => {
             <FontAwesomeIcon icon={faChevronLeft} />
           </BackButton>
           <h1 style={{ display: 'inline-block' }}>
-            Секция {props.protocol.section.id}
+            Секция {props.protocol.section?.id}
           </h1>
         </SectionHeader>
         <ProtocolDetails>

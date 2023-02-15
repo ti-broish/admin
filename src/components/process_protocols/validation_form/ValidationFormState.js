@@ -8,7 +8,7 @@ export default class ValidationFormState {
             const zeroIfEmpty = value => value? value : '';//0;
 
             this.formData = {
-                sectionId: protocol.section.id,
+                sectionId: protocol.section?.id,
                 // //данни от избирателния списък
                 // votersCount: zeroIfEmpty(protocol.results.votersCount),
                 // additionalVotersCount: zeroIfEmpty(protocol.results.additionalVotersCount),
