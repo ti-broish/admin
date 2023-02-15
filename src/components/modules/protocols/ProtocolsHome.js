@@ -273,10 +273,10 @@ export default (props) => {
                 data.items.map((protocol, i) => (
                   <tr key={i} onClick={() => openProtocol(protocol.id)}>
                     <td style={{ textAlign: 'right' }}>
-                      {protocol.section.id}
+                      {protocol.section?.id}
                     </td>
                     <td>{origin(protocol.origin)}</td>
-                    <td>{protocol.section.place}</td>
+                    <td>{protocol.section?.place}</td>
                     <td>{status(protocol.status)}</td>
                   </tr>
                 ))
