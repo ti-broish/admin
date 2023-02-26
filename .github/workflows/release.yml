@@ -22,7 +22,7 @@ jobs:
         run: npm ci
 
       - name: Build
-        run: npx webpack --config webpack/build.config.js
+        run: node --openssl-legacy-provider node_modules/.bin/webpack
         env:
           NODE_ENV: production
           API_HOST: https://api.tibroish.bg
