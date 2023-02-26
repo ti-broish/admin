@@ -1,7 +1,4 @@
-if (process.env.NODE_ENV === "production") {
-  // we are in production - return the prod set of keys
-  module.exports = require("./prod");
-} else {
-  //we are in development - return the dev set of keys
-  module.exports = require("./dev");
-}
+export const apiKey = process.env.FIREBASE_API_KEY;
+export const authDomain = process.env.FIREBASE_AUTH_DOMAIN;
+export const databaseURL = process.env.FIREBASE_DATABASE_URL;
+export const projectId = process.env.FIREBASE_PROJECT_ID;
