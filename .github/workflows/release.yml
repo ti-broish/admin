@@ -10,26 +10,26 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Check out repo
-        uses: actions/checkout@v1
+        uses: actions/checkout@v3
 
       - name: Set up node
-        uses: actions/setup-node@v2
+        uses: actions/setup-node@v3
         with:
-          node-version: '15'
-
-      - name: Cache dependencies
-        uses: actions/cache@v2
-        with:
-            path: ~/.npm
-            key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
-            restore-keys: |
-                ${{ runner.os }}-node-
+          node-version: '18'
+          cache: npm
 
       - name: Clean install of dependencies
         run: npm ci
 
       - name: Build
-        run: npx webpack --config webpack/build.config.js --env NODE_ENV=production --env API_HOST=https://api.tibroish.bg --env FIREBASE_API_KEY=${{ secrets.FIREBASE_API_KEY }} --env FIREBASE_AUTH_DOMAIN=${{ secrets.FIREBASE_AUTH_DOMAIN }} --env FIREBASE_DATABASE_URL=${{ secrets.FIREBASE_DATABASE_URL }} --env FIREBASE_PROJECT_ID=${{ secrets.FIREBASE_PROJECT_ID }}
+        run: npx webpack --config webpack/build.config.js
+        env:
+          NODE_ENV: production
+          API_HOST: https://api.tibroish.bg
+          FIREBASE_API_KEY: ${{ secrets.FIREBASE_API_KEY }}
+          FIREBASE_AUTH_DOMAIN: ${{ secrets.FIREBASE_AUTH_DOMAIN }}
+          FIREBASE_DATABASE_URL: ${{ secrets.FIREBASE_DATABASE_URL }}
+          FIREBASE_PROJECT_ID: ${{ secrets.FIREBASE_PROJECT_ID }}
 
       - name: Minio Deploy
         uses: hkdobrev/minio-deploy-action@v1
