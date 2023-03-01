@@ -15,6 +15,8 @@ import Regions from '../filters/Regions';
 
 import styled from 'styled-components';
 
+import { apiHost } from '../../../config';
+
 const FilterlTable = styled.table`
   width: 100%;
   border-collapse: collapse;
@@ -73,14 +75,6 @@ export default (props) => {
     props.setFilterStatus(status);
   };
 
-  const apiHost = () => {
-    if (!process.env.API_HOST) {
-      return 'https://d1tapi.dabulgaria.bg';
-    } else {
-      return process.env.API_HOST;
-    }
-  };
-
   useEffect(() => {
     firebase
       .app()
@@ -90,14 +84,14 @@ export default (props) => {
           const idToken = await user.getIdToken();
 
           //gets all the MIRs
-          const res = await axios.get(`${apiHost()}/election_regions`, {
+          const res = await axios.get(`${apiHost}/election_regions`, {
             headers: { Authorization: `Bearer ${idToken}` },
           });
 
           //if country is NOT Bulgaria: gets all the cities in the foreign country
           if (country !== '00') {
             const res2 = await axios.get(
-              `${apiHost()}/towns?country=${country}`,
+              `${apiHost}/towns?country=${country}`,
               {
                 headers: { Authorization: `Bearer ${idToken}` },
               }
@@ -108,7 +102,7 @@ export default (props) => {
           } else {
             //if country is Bulgaria: gets all towns in the given MIR and municipality
             const res3 = await axios.get(
-              `${apiHost()}/towns?country=00&election_region=${chosenMir}&municipality=${chosenMunicipality}`,
+              `${apiHost}/towns?country=00&election_region=${chosenMir}&municipality=${chosenMunicipality}`,
               {
                 headers: { Authorization: `Bearer ${idToken}` },
               }

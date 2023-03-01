@@ -13,7 +13,7 @@ import Modules from "./modules/Modules";
 import styled from "styled-components";
 import ProcessProtocols from "./process_protocols/ProcessProtocols";
 
-import { apiKey, authDomain, databaseURL, projectId } from "../../config/keys";
+import { apiHost, apiKey, authDomain, databaseURL, projectId } from "../config.js";
 
 const AppStyle = styled.div`
   font-family: Montserrat, sans-serif;
@@ -42,19 +42,19 @@ export default (props) => {
           const idToken = await user.getIdToken();
 
           setState({ ...state, loading: true });
-          const res = await axios.get(`${apiHost()}/me`, {
+          const res = await axios.get(`${apiHost}/me`, {
             headers: { Authorization: `Bearer ${idToken}` },
           });
 
-          const res2 = await axios.get(`${apiHost()}/parties`, {
+          const res2 = await axios.get(`${apiHost}/parties`, {
             headers: { Authorization: `Bearer ${idToken}` },
           });
 
-          const res3 = await axios.get(`${apiHost()}/countries`, {
+          const res3 = await axios.get(`${apiHost}/countries`, {
             headers: { Authorization: `Bearer ${idToken}` },
           });
 
-          const res4 = await axios.get(`${apiHost()}/organizations`, {
+          const res4 = await axios.get(`${apiHost}/organizations`, {
             headers: { Authorization: `Bearer ${idToken}` },
           });
 
@@ -87,16 +87,8 @@ export default (props) => {
     firebase.app().auth().signOut();
   };
 
-  const apiHost = () => {
-    if (!process.env.API_HOST) {
-      return "https://d1tapi.dabulgaria.bg";
-    } else {
-      return process.env.API_HOST;
-    }
-  };
-
   const authGet = async (path) => {
-    const res = await axios.get(`${apiHost()}${path}`, {
+    const res = await axios.get(`${apiHost}${path}`, {
       headers: { Authorization: `Bearer ${state.token}` },
     });
     return res;
@@ -105,7 +97,7 @@ export default (props) => {
   const authPost = async (path, body) => {
     let res;
     try {
-      res = await axios.post(`${apiHost()}${path}`, body ? body : {}, {
+      res = await axios.post(`${apiHost}${path}`, body ? body : {}, {
         headers: { Authorization: `Bearer ${state.token}` },
       });
     } catch (err) {
@@ -126,7 +118,7 @@ export default (props) => {
   };
 
   const authDelete = async (path) => {
-    const res = await axios.delete(`${apiHost()}${path}`, {
+    const res = await axios.delete(`${apiHost}${path}`, {
       headers: { Authorization: `Bearer ${state.token}` },
     });
     return res;
@@ -135,7 +127,7 @@ export default (props) => {
   const authPut = async (path, body) => {
     let res;
     try {
-      res = await axios.put(`${apiHost()}${path}`, body ? body : {}, {
+      res = await axios.put(`${apiHost}${path}`, body ? body : {}, {
         headers: { Authorization: `Bearer ${state.token}` },
       });
     } catch (err) {
@@ -152,7 +144,7 @@ export default (props) => {
   const authPatch = async (path, body) => {
     let res;
     try {
-      res = await axios.patch(`${apiHost()}${path}`, body ? body : {}, {
+      res = await axios.patch(`${apiHost}${path}`, body ? body : {}, {
         headers: { Authorization: `Bearer ${state.token}` },
       });
     } catch (err) {
