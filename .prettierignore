@@ -1,0 +1,8 @@
+# Ignore static folders
+static
+
+# Ignore webpack config
+webpack
+
+# Ignore build files
+build
