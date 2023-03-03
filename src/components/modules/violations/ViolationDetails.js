@@ -401,24 +401,24 @@ export default (props) => {
               <tr>
                 <td>Имена</td>
                 <td>
-                  {data.author.firstName} {data.author.lastName}
+                  {data.author?.firstName} {data.author?.lastName}
                 </td>
               </tr>
               <tr>
                 <td>Организация</td>
                 <td>
-                  {data.author.organization
+                  {data.author?.organization
                     ? data.author.organization.name
                     : null}
                 </td>
               </tr>
               <tr>
                 <td>Ел. поща</td>
-                <td>{data.author.email}</td>
+                <td>{data.author?.email}</td>
               </tr>
               <tr>
                 <td>Телефон</td>
-                <td>{data.author.phone}</td>
+                <td>{data.author?.phone}</td>
               </tr>
             </tbody>
           </TableStyle>
@@ -468,7 +468,7 @@ export default (props) => {
                     <td>{formatDateShort(update.timestamp)}</td>
                     <td>{formatTime(update.timestamp)}</td>
                     <td>
-                      {update.actor.firstName} {update.actor.lastName}
+                      {update.actor?.firstName} {update.actor?.lastName}
                     </td>
                     <td>{update.type}</td>
                   </tr>

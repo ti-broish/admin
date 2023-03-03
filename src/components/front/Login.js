@@ -2,7 +2,7 @@ import React, { useState, useContext } from 'react';
 
 import { AuthContext } from '../App';
 
-import { Fade } from 'react-reveal';
+import { Fade } from 'react-awesome-reveal';
 
 import styled from 'styled-components';
 

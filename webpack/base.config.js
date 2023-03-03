@@ -1,6 +1,5 @@
 const path = require('path');
 const webpack = require('webpack');
-
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const LoadablePlugin = require('@loadable/webpack-plugin');
 const CopyWebpackPlugin = require('copy-webpack-plugin');
@@ -51,6 +50,16 @@ module.exports = {
         new HtmlWebpackPlugin({ title: 
             'Преброителен център',
             template: 'src/index.ejs',
+        }),
+        new webpack.DefinePlugin({
+            'process.env': {
+                'NODE_ENV': JSON.stringify(process.env.NODE_ENV),
+                'API_HOST': JSON.stringify(process.env.API_HOST),
+                'FIREBASE_API_KEY': JSON.stringify(process.env.FIREBASE_API_KEY),
+                'FIREBASE_AUTH_DOMAIN': JSON.stringify(process.env.FIREBASE_AUTH_DOMAIN),
+                'FIREBASE_DATABASE_URL': JSON.stringify(process.env.FIREBASE_DATABASE_URL),
+                'FIREBASE_PROJECT_ID': JSON.stringify(process.env.FIREBASE_PROJECT_ID),
+            },
         }),
     ],
 };

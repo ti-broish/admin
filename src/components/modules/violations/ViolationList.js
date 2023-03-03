@@ -293,7 +293,7 @@ export default (props) => {
                     </td>
                     <td>{violation.town.name}</td>
                     <td>
-                      {violation.author.firstName} {violation.author.lastName}
+                      {violation.author?.firstName} {violation.author?.lastName}
                     </td>
                     <td>{violation.description.slice(0, 40) + '...'}</td>
                     <td>
