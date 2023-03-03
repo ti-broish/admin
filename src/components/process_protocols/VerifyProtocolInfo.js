@@ -8,6 +8,11 @@ import { faChevronDown, faChevronLeft } from '@fortawesome/free-solid-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import styled from 'styled-components'
 
+import { AuthContext } from '../App'
+import ConfirmationModal from './ConfirmationModal'
+import ProtocolForm from './validation_form/ProtocolForm'
+import SectionDetails from './validation_form/SectionDetails'
+
 const ProtocolInfoSection = styled.div`
   width: 50vw;
   height: 100vh;
@@ -17,7 +22,7 @@ const ProtocolInfoSection = styled.div`
   right: 0;
 `
 
-const ProtocolDetails = styled.div`
+const ProtocolDetailsStyle = styled.div`
   padding: 20px;
 
   h1 {
@@ -125,10 +130,6 @@ const ApproveAndSendViolationButton = styled(VerificationPanelButton)`
   }
 `
 
-import { AuthContext } from '../App'
-import ConfirmationModal from './ConfirmationModal'
-import SectionDetails from './validation_form/SectionDetails'
-
 export default (props) => {
   const { parties, authPost, authGet } = useContext(AuthContext)
 
@@ -172,38 +173,38 @@ export default (props) => {
     )
   const ref = useRef()
 
-  //   useEffect(() => {
-  //     setFormState(
-  //       new ValidationFormState({
-  //         protocol: props.protocol,
-  //         parties,
-  //         protocolType,
-  //         machineCount,
-  //       })
-  //     );
-  //     // setMachineCount(0);
-  //   }, [protocolType]);
+  useEffect(() => {
+    setFormState(
+      new ValidationFormState({
+        protocol: props.protocol,
+        parties,
+        protocolType,
+        machineCount,
+      })
+    )
+    // setMachineCount(0);
+  }, [protocolType])
 
-  //   useEffect(() => {
-  //     setFormState(
-  //       new ValidationFormState({
-  //         protocol: props.protocol,
-  //         parties,
-  //         protocolType,
-  //         machineCount,
-  //       })
-  //     );
-  //     if (machineCount === 0) {
-  //       setMachineHash([]);
-  //     } else if (machineCount === 1) {
-  //       setMachineHash([{ startHash: '', endHash: '' }]);
-  //     } else if (machineCount === 2) {
-  //       setMachineHash([
-  //         { startHash: '', endHash: '' },
-  //         { startHash: '', endHash: '' },
-  //       ]);
-  //     }
-  //   }, [machineCount]);
+  useEffect(() => {
+    setFormState(
+      new ValidationFormState({
+        protocol: props.protocol,
+        parties,
+        protocolType,
+        machineCount,
+      })
+    )
+    if (machineCount === 0) {
+      setMachineHash([])
+    } else if (machineCount === 1) {
+      setMachineHash([{ startHash: '', endHash: '' }])
+    } else if (machineCount === 2) {
+      setMachineHash([
+        { startHash: '', endHash: '' },
+        { startHash: '', endHash: '' },
+      ])
+    }
+  }, [machineCount])
 
   useKeypress(['ArrowUp'], (event) => {
     let lastInput = null
@@ -444,7 +445,7 @@ export default (props) => {
             Секция {props.protocol.section?.id}
           </h1>
         </SectionHeader>
-        <ProtocolDetails>
+        <ProtocolDetailsStyle>
           <SectionDetails
             fieldStatus={fieldStatus}
             handleProtocolNumberChange={handleProtocolNumberChange}
@@ -457,7 +458,7 @@ export default (props) => {
             setMachineCount={setMachineCount}
             setIsFinal={setIsFinal}
           />
-          {/* {protocolType === 'unset' ||
+          {protocolType === 'unset' ||
           (protocolType === 'machine' && machineCount === 0) ||
           (protocolType === 'paper-machine' && machineCount === 0) ? null : (
             <ProtocolForm
@@ -472,7 +473,7 @@ export default (props) => {
               machineHash={machineHash}
               setMachineHash={setMachineHash}
             />
-          )} */}
+          )}
           {protocolType !== 'unset' ? <hr /> : null}
           {invalidFields || changedFields ? (
             <AcceptButton disabled={invalidFields} onClick={openConfirmModal}>
@@ -482,7 +483,7 @@ export default (props) => {
             <AcceptButton onClick={openConfirmModal}>Потвърди</AcceptButton>
           )}
           <RejectButton onClick={openRejectModal}>Отхвърли</RejectButton>
-        </ProtocolDetails>
+        </ProtocolDetailsStyle>
       </ProtocolInfoSection>
     </div>
   )
