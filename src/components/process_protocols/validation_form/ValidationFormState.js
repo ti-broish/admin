@@ -16,28 +16,40 @@ export default class ValidationFormState {
 
       this.formData = {
         sectionId: protocol.section?.id ?? '',
-        // //данни от избирателния списък
-        // votersCount: zeroIfEmpty(protocol.results.votersCount),
-        // additionalVotersCount: zeroIfEmpty(protocol.results.additionalVotersCount),
-        // votersVotedCount: zeroIfEmpty(protocol.results.votersVotedCount),
-        // //данни извън избирателния списък
-        // uncastBallots: zeroIfEmpty(protocol.results.uncastBallots),
-        // invalidAndUncastBallots: zeroIfEmpty(protocol.results.invalidAndUncastBallots),
-        // //СЛЕД КАТО ОТВОРИ ИЗБИРАТЕЛНАТА КУТИЯ, СИК УСТАНОВИ
-        // totalVotesCast: zeroIfEmpty(protocol.results.totalVotesCast),
+        //данни от избирателния списък
+        votersCount: zeroIfEmpty(protocol.results.votersCount),
+        additionalVotersCount: zeroIfEmpty(
+          protocol.results.additionalVotersCount
+        ),
+        votersVotedCount: zeroIfEmpty(protocol.results.votersVotedCount),
+        //данни извън избирателния списък
+        uncastBallots: zeroIfEmpty(protocol.results.uncastBallots),
+        invalidAndUncastBallots: zeroIfEmpty(
+          protocol.results.invalidAndUncastBallots
+        ),
+        //СЛЕД КАТО ОТВОРИ ИЗБИРАТЕЛНАТА КУТИЯ, СИК УСТАНОВИ
+        totalVotesCast: zeroIfEmpty(protocol.results.totalVotesCast),
       }
 
-      // if(protocolType === 'paper-machine') {
-      //     this.formData['nonMachineVotesCount'] = zeroIfEmpty(protocol.results.nonMachineVotesCount);
-      //     this.formData['machineVotesCount'] = zeroIfEmpty(protocol.results.machineVotesCount);
-      // }
+      if (protocolType === 'paper-machine') {
+        this.formData['nonMachineVotesCount'] = zeroIfEmpty(
+          protocol.results.nonMachineVotesCount
+        )
+        this.formData['machineVotesCount'] = zeroIfEmpty(
+          protocol.results.machineVotesCount
+        )
+      }
 
-      // if(protocolType === 'paper' || protocolType === 'paper-machine') {
-      //     this.formData['invalidVotesCount'] = zeroIfEmpty(protocol.results.invalidVotesCount);
-      //     this.formData['validVotesCount'] = zeroIfEmpty(protocol.results.validVotesCount);
-      // }
+      if (protocolType === 'paper' || protocolType === 'paper-machine') {
+        this.formData['invalidVotesCount'] = zeroIfEmpty(
+          protocol.results.invalidVotesCount
+        )
+        this.formData['validVotesCount'] = zeroIfEmpty(
+          protocol.results.validVotesCount
+        )
+      }
 
-      // this.initResults(protocol, parties, protocolType, machineCount);
+      this.initResults(protocol, parties, protocolType, machineCount)
     }
   }
 
@@ -95,67 +107,72 @@ export default class ValidationFormState {
       }
     }
 
-    // const getPartyResult = partyId => {
-    //     for(const result of protocol.results) {
-    //         if(result.party.id === partyId) {
-    //             return result;
-    //         }
-    //     }
+    const getPartyResult = (partyId) => {
+      for (const result of protocol.results) {
+        if (result.party.id === partyId) {
+          return result
+        }
+      }
 
-    //     return null;
-    // };
+      return null
+    }
 
-    // const compareResult = (key, originalResult) => {
-    //     if(!this.resultsData[key] || this.resultsData[key] === '')
-    //         return { invalid: true };
-    //     else if(originalResult.toString() !== this.resultsData[key].toString())
-    //         return { changed: true };
-    //     else
-    //         return { unchanged: true };
-    // };
+    const compareResult = (key, originalResult) => {
+      if (!this.resultsData[key] || this.resultsData[key] === '')
+        return { invalid: true }
+      else if (originalResult.toString() !== this.resultsData[key].toString())
+        return { changed: true }
+      else return { unchanged: true }
+    }
 
-    // for(const party of parties) {
+    for (const party of parties) {
+      let result = getPartyResult(party.id)
+      if (!result) result = { nonMachineVotesCount: null, machineVotes: [] }
 
-    //     let result = getPartyResult(party.id);
-    //     if(!result) result = { nonMachineVotesCount: null, machineVotes: [] };
+      if (protocolType === 'paper' || protocolType === 'paper-machine') {
+        const originalResult = emptyStrIfNull(result.nonMachineVotesCount)
+        fieldStatus[`party${party.id}paper`] = compareResult(
+          `party${party.id}paper`,
+          originalResult
+        )
+      }
 
-    //     if(protocolType === 'paper' || protocolType === 'paper-machine') {
-    //         const originalResult = emptyStrIfNull(result.nonMachineVotesCount);
-    //         fieldStatus[`party${party.id}paper`] = compareResult(`party${party.id}paper`, originalResult);
-    //     }
+      for (let i = 0; i < machineCount; i++) {
+        const originalResult = emptyStrIfNull(result.machineVotes[i])
+        fieldStatus[`party${party.id}machine${i + 1}`] = compareResult(
+          `party${party.id}machine${i + 1}`,
+          originalResult
+        )
+      }
+    }
 
-    //     for(let i = 0; i < machineCount; i++) {
-    //         const originalResult = emptyStrIfNull(result.machineVotes[i]);
-    //         fieldStatus[`party${party.id}machine${i+1}`] = compareResult(`party${party.id}machine${i+1}`, originalResult);;
-    //     }
-    // }
+    const addStatusForResultField = (fieldName) => {
+      if (this.formData[fieldName] === '')
+        fieldStatus[fieldName] = { invalid: true }
+      else if (
+        this.formData[fieldName] !== zeroIfEmpty(protocol.results[fieldName])
+      )
+        fieldStatus[fieldName] = { changed: true }
+      else fieldStatus[fieldName] = { unchanged: true }
+    }
 
-    // const addStatusForResultField = fieldName => {
-    //     if(this.formData[fieldName] === '')
-    //         fieldStatus[fieldName] = { invalid: true };
-    //     else if(this.formData[fieldName] !== zeroIfEmpty(protocol.results[fieldName]))
-    //         fieldStatus[fieldName] = { changed: true };
-    //     else
-    //         fieldStatus[fieldName] = { unchanged: true };
-    // };
+    addStatusForResultField('votersCount')
+    addStatusForResultField('additionalVotersCount')
+    addStatusForResultField('votersVotedCount')
 
-    // addStatusForResultField('votersCount');
-    // addStatusForResultField('additionalVotersCount');
-    // addStatusForResultField('votersVotedCount');
+    addStatusForResultField('uncastBallots')
+    addStatusForResultField('invalidAndUncastBallots')
+    addStatusForResultField('totalVotesCast')
 
-    // addStatusForResultField('uncastBallots');
-    // addStatusForResultField('invalidAndUncastBallots');
-    // addStatusForResultField('totalVotesCast');
+    if (protocolType === 'paper-machine') {
+      addStatusForResultField('nonMachineVotesCount')
+      addStatusForResultField('machineVotesCount')
+    }
 
-    // if(protocolType === 'paper-machine') {
-    //     addStatusForResultField('nonMachineVotesCount');
-    //     addStatusForResultField('machineVotesCount');
-    // }
-
-    // if(protocolType === 'paper' || protocolType === 'paper-machine') {
-    //     addStatusForResultField('invalidVotesCount');
-    //     addStatusForResultField('validVotesCount');
-    // }
+    if (protocolType === 'paper' || protocolType === 'paper-machine') {
+      addStatusForResultField('invalidVotesCount')
+      addStatusForResultField('validVotesCount')
+    }
 
     let invalidFields = false
     let changedFields = false
@@ -165,8 +182,7 @@ export default class ValidationFormState {
       if (fieldStatus[key].changed) changedFields = true
     }
 
-    // if(protocolType === 'unset')
-    //     invalidFields = true;
+    if (protocolType === 'unset') invalidFields = true
 
     return { fieldStatus, invalidFields, changedFields }
   }
