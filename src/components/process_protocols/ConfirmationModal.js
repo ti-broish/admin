@@ -1,11 +1,11 @@
-import React, { useState, useContext, useEffect } from 'react';
-import { AuthContext } from '../App';
+import React, { useState, useContext, useEffect } from 'react'
+import { AuthContext } from '../App'
 
-import styled from 'styled-components';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faExclamationTriangle } from '@fortawesome/free-solid-svg-icons';
+import styled from 'styled-components'
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+import { faExclamationTriangle } from '@fortawesome/free-solid-svg-icons'
 
-import Loading from '../layout/Loading';
+import Loading from '../layout/Loading'
 
 const ModalOverlay = styled.div`
   position: fixed;
@@ -15,7 +15,7 @@ const ModalOverlay = styled.div`
   right: 0;
   background-color: rgba(0, 0, 0, 0.5);
   z-index: 1998;
-`;
+`
 
 const ConfirmationModal = styled.div`
   background-color: white;
@@ -45,7 +45,7 @@ const ConfirmationModal = styled.div`
     border-top: none;
     border-color: #ddd;
   }
-`;
+`
 
 const VerificationPanelButton = styled.button`
   border: none;
@@ -75,7 +75,7 @@ const VerificationPanelButton = styled.button`
       background-color: #aaa;
     }
   }
-`;
+`
 
 const AcceptButton = styled(VerificationPanelButton)`
   background-color: #44e644;
@@ -85,7 +85,7 @@ const AcceptButton = styled(VerificationPanelButton)`
   &:hover {
     background-color: #2ece2e;
   }
-`;
+`
 
 const CancelButton = styled(VerificationPanelButton)`
   background-color: #ccc;
@@ -95,7 +95,7 @@ const CancelButton = styled(VerificationPanelButton)`
   &:hover {
     background-color: #ddd;
   }
-`;
+`
 
 const CheckboxList = styled.div`
   list-style: none;
@@ -114,32 +114,32 @@ const CheckboxList = styled.div`
       margin-left: 0.5rem;
     }
   }
-`;
+`
 
 export default (props) => {
-  const { authGet } = useContext(AuthContext);
+  const { authGet } = useContext(AuthContext)
 
-  const [rejectionReasons, setRejectionReasons] = useState(null);
-  const [selectedReason, setSelectedReason] = useState(null);
+  const [rejectionReasons, setRejectionReasons] = useState(null)
+  const [selectedReason, setSelectedReason] = useState(null)
 
   useEffect(() => {
     if (props.isOpen === false) {
-      setSelectedReason(null);
+      setSelectedReason(null)
 
       if (rejectionReasons) {
-        restoreReasonSelection(rejectionReasons);
+        restoreReasonSelection(rejectionReasons)
       }
     }
 
     if (props.isRejectionModal && !rejectionReasons) {
       authGet('/protocols/rejection-reasons').then((res) => {
-        const reasons = res.data;
+        const reasons = res.data
         if (reasons) {
-          restoreReasonSelection(reasons);
+          restoreReasonSelection(reasons)
         }
-      });
+      })
     }
-  }, [props.isOpen]);
+  }, [props.isOpen])
 
   const restoreReasonSelection = (reasons) => {
     setRejectionReasons(
@@ -147,19 +147,19 @@ export default (props) => {
         ...reason,
         isChecked: false,
       }))
-    );
-  };
+    )
+  }
 
   const handleOnChange = (item) => {
-    const selectedItem = item ? { ...item, isChecked: !item.isChecked } : null;
+    const selectedItem = item ? { ...item, isChecked: !item.isChecked } : null
     const updatedCheckedState = rejectionReasons?.map((reason) =>
       reason.rejectionReason === selectedItem.rejectionReason
         ? selectedItem
         : { ...reason, isChecked: false }
-    );
-    setSelectedReason(selectedItem);
-    setRejectionReasons(updatedCheckedState);
-  };
+    )
+    setSelectedReason(selectedItem)
+    setRejectionReasons(updatedCheckedState)
+  }
   return !props.isOpen ? null : (
     <>
       <ModalOverlay onClick={props.cancelHandler} />,
@@ -199,7 +199,7 @@ export default (props) => {
                         </div>
                       </div>
                     </li>
-                  );
+                  )
                 })}
               </CheckboxList>
             </ul>
@@ -230,5 +230,5 @@ export default (props) => {
         </CancelButton>
       </ConfirmationModal>
     </>
-  );
-};
+  )
+}

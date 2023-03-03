@@ -1,29 +1,29 @@
-import React from 'react';
+import React from 'react'
 
 export default (props) => {
-  let municipalities = [];
+  let municipalities = []
 
   if (!props.isAbroad) {
     municipalities = [
       { code: '00', name: 'Всички', isAbroad: false },
       ...props.municipalities,
-    ];
+    ]
   } else {
-    municipalities = props.municipalities;
+    municipalities = props.municipalities
   }
 
   const municipalityHandler = (event) => {
-    props.setSelectedMunicipality(event.target.value);
+    props.setSelectedMunicipality(event.target.value)
 
-    var selectMunicipality = document.getElementById('selectMunicipality');
+    var selectMunicipality = document.getElementById('selectMunicipality')
     var selectedValue =
-      selectMunicipality.options[selectMunicipality.selectedIndex].value;
+      selectMunicipality.options[selectMunicipality.selectedIndex].value
     municipalities.map(({ code, name }) => {
       if (selectedValue === name) {
-        props.setMunicipality(code);
+        props.setMunicipality(code)
       }
-    });
-  };
+    })
+  }
   const filters = municipalities
     .sort((a, b) => (a.code > b.code ? 1 : -1))
     .map(({ code, name }, idx) => {
@@ -31,8 +31,8 @@ export default (props) => {
         <option key={idx} value={name}>
           {name}
         </option>
-      );
-    });
+      )
+    })
 
   return (
     <select
@@ -43,5 +43,5 @@ export default (props) => {
     >
       {filters}
     </select>
-  );
-};
+  )
+}

@@ -1,13 +1,13 @@
-import React, { useState, useContext, useEffect } from 'react';
+import React, { useState, useContext, useEffect } from 'react'
 
-import { useHistory } from 'react-router-dom';
+import { useHistory } from 'react-router-dom'
 
-import VerifyProtocolInfo from './VerifyProtocolInfo';
+import VerifyProtocolInfo from './VerifyProtocolInfo'
 
-import styled from 'styled-components';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faFile, faChevronLeft } from '@fortawesome/free-solid-svg-icons';
-import Loading from '../layout/Loading';
+import styled from 'styled-components'
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+import { faFile, faChevronLeft } from '@fortawesome/free-solid-svg-icons'
+import Loading from '../layout/Loading'
 
 const ReadyScreen = styled.div`
   max-width: 900px;
@@ -23,7 +23,7 @@ const ReadyScreen = styled.div`
     border: 1px solid #ddd;
     border-top: 0;
   }
-`;
+`
 
 const NextProtocolButton = styled.button`
   border: none;
@@ -50,7 +50,7 @@ const NextProtocolButton = styled.button`
     border-bottom: 0;
     margin-bottom: 10px;
   }
-`;
+`
 
 const Message = styled.p`
   font-size: 20px;
@@ -70,7 +70,7 @@ const Message = styled.p`
     background-color: #e0ffe0;
 
     `}
-`;
+`
 
 const BackButton = styled.button`
   cursor: pointer;
@@ -78,76 +78,75 @@ const BackButton = styled.button`
   border: 1px solid #aaa;
   border-radius: 10px;
   margin-right: 10px;
-`;
+`
 
-import { AuthContext } from '../App';
+import { AuthContext } from '../App'
 
 export default (props) => {
-  const [protocol, setProtocol] = useState(null);
-  const [loading, setLoading] = useState(true);
-  const [message, setMessage] = useState(null);
-  const [failedMessage, setFailedMessage] = useState(null);
+  const [protocol, setProtocol] = useState(null)
+  const [loading, setLoading] = useState(true)
+  const [message, setMessage] = useState(null)
+  const [failedMessage, setFailedMessage] = useState(null)
 
-  const history = useHistory();
+  const history = useHistory()
 
-  const { token, user, authGet, authDelete, authPost } =
-    useContext(AuthContext);
+  const { token, user, authGet, authDelete, authPost } = useContext(AuthContext)
 
   useEffect(() => {
-    init();
-  }, []);
+    init()
+  }, [])
 
   const init = async () => {
-    const res = await authGet(`/protocols?status=received&assignee=${user.id}`);
+    const res = await authGet(`/protocols?status=received&assignee=${user.id}`)
 
     if (res.data.items.length > 0) {
-      const res2 = await authGet(`/protocols/${res.data.items[0].id}`);
-      setProtocol(res2.data);
-      setLoading(false);
+      const res2 = await authGet(`/protocols/${res.data.items[0].id}`)
+      setProtocol(res2.data)
+      setLoading(false)
     } else {
-      setLoading(false);
+      setLoading(false)
     }
-  };
+  }
 
   const returnProtocol = async () => {
-    setLoading(true);
+    setLoading(true)
     const res = await authDelete(
       `/protocols/${protocol.id}/assignees/${user.id}`
-    );
+    )
 
-    setLoading(false);
-    setMessage(`Протокол ${protocol.id} ВЪРНАТ без взето решение.`);
-    setProtocol(null);
-  };
+    setLoading(false)
+    setMessage(`Протокол ${protocol.id} ВЪРНАТ без взето решение.`)
+    setProtocol(null)
+  }
 
   const nextProtocol = async () => {
-    setLoading(true);
+    setLoading(true)
 
-    const res = await authPost('/protocols/assign');
+    const res = await authPost('/protocols/assign')
 
     if (res.status === 204) {
-      setMessage(`Опашката за протоколи е празна`);
+      setMessage(`Опашката за протоколи е празна`)
     } else {
-      const res2 = await authGet(`/protocols/${res.data.id}`);
-      setProtocol(res2.data);
+      const res2 = await authGet(`/protocols/${res.data.id}`)
+      setProtocol(res2.data)
     }
 
-    setLoading(false);
-  };
+    setLoading(false)
+  }
 
   const processingDone = (message) => {
-    setMessage(message);
-    setProtocol(null);
-  };
+    setMessage(message)
+    setProtocol(null)
+  }
 
   const processingFailed = (message) => {
-    setFailedMessage(message);
-    setProtocol(null);
-  };
+    setFailedMessage(message)
+    setProtocol(null)
+  }
 
   const reorderPictures = (newPictures) => {
-    setProtocol({ ...protocol, pictures: newPictures });
-  };
+    setProtocol({ ...protocol, pictures: newPictures })
+  }
 
   return loading ? (
     <Loading fullScreen />
@@ -184,5 +183,5 @@ export default (props) => {
       processingDone={processingDone}
       processingFailed={processingFailed}
     />
-  );
-};
+  )
+}

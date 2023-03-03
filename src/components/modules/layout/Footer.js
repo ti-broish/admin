@@ -1,9 +1,5 @@
-import React from 'react';
+import React from 'react'
 
-export default props => {
-    return(
-        <footer>
-            Копирайт
-        </footer>
-    )
-};
+export default (props) => {
+  return <footer>Копирайт</footer>
+}

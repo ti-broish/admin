@@ -1,20 +1,20 @@
-import React, { useState, useEffect, useContext } from 'react';
-import { Link } from 'react-router-dom';
+import React, { useState, useEffect, useContext } from 'react'
+import { Link } from 'react-router-dom'
 
-import { AuthContext } from '../../App';
+import { AuthContext } from '../../App'
 
-import Statuses from '../filter_components/Statuses';
-import TextInput from '../filter_components/TextInput';
-import Origins from '../filter_components/Origins';
-import SendBy from '../filter_components/SendBy';
+import Statuses from '../filter_components/Statuses'
+import TextInput from '../filter_components/TextInput'
+import Origins from '../filter_components/Origins'
+import SendBy from '../filter_components/SendBy'
 
-import Countries from '../filter_components/Countries';
-import MIRs from '../filter_components/MIRs';
-import Municipalities from '../filter_components/Municipalities';
-import Towns from '../filter_components/Towns';
-import Regions from '../filter_components/Regions';
+import Countries from '../filter_components/Countries'
+import MIRs from '../filter_components/MIRs'
+import Municipalities from '../filter_components/Municipalities'
+import Towns from '../filter_components/Towns'
+import Regions from '../filter_components/Regions'
 
-import styled from 'styled-components';
+import styled from 'styled-components'
 
 const FilterTable = styled.table`
   width: 100%;
@@ -26,7 +26,7 @@ const FilterTable = styled.table`
     font-size: 15px;
     width: auto;
   }
-`;
+`
 
 const ButtonStyle = styled.button`
   background-color: #4892e1;
@@ -50,44 +50,44 @@ const ButtonStyle = styled.button`
     border-bottom: none;
     margin-top: 3px;
   }
-`;
+`
 
 export default (props) => {
-  const { authGet } = useContext(AuthContext);
+  const { authGet } = useContext(AuthContext)
 
-  const [section, setSection] = useState('');
+  const [section, setSection] = useState('')
 
-  const [organization, setOrganization] = useState('');
+  const [organization, setOrganization] = useState('')
 
-  const [country, setCountry] = useState('00');
-  const [selectedCountry, setSelectedCountry] = useState('');
+  const [country, setCountry] = useState('00')
+  const [selectedCountry, setSelectedCountry] = useState('')
 
-  const [disabled, setDisabled] = useState(true); //sets callback function for disabling field
+  const [disabled, setDisabled] = useState(true) //sets callback function for disabling field
 
-  const [mirs, setMirs] = useState([]); //sets all MIRs in Bulgaria
-  const [electionRegion, setElectionRegion] = useState('00');
-  const [selectedElectionRegion, setSelectedElectionRegion] = useState('');
+  const [mirs, setMirs] = useState([]) //sets all MIRs in Bulgaria
+  const [electionRegion, setElectionRegion] = useState('00')
+  const [selectedElectionRegion, setSelectedElectionRegion] = useState('')
 
-  const [municipalities, setMunicipalities] = useState([]); //sets the municipalities in one MIR
-  const [municipality, setMunicipality] = useState('00'); //gets the chosen municipality
-  const [selectedMunicipality, setSelectedMunicipality] = useState('');
+  const [municipalities, setMunicipalities] = useState([]) //sets the municipalities in one MIR
+  const [municipality, setMunicipality] = useState('00') //gets the chosen municipality
+  const [selectedMunicipality, setSelectedMunicipality] = useState('')
 
-  const [towns, setTowns] = useState([]); //sets all towns in one municipality
-  const [town, setTown] = useState('00');
-  const [selectedTown, setSelectedTown] = useState('');
+  const [towns, setTowns] = useState([]) //sets all towns in one municipality
+  const [town, setTown] = useState('00')
+  const [selectedTown, setSelectedTown] = useState('')
 
-  const [regions, setRegions] = useState([]); //sets the election regions in one town
-  const [cityRegion, setCityRegion] = useState('00');
+  const [regions, setRegions] = useState([]) //sets the election regions in one town
+  const [cityRegion, setCityRegion] = useState('00')
 
-  const [statuses, setStatuses] = useState([]);
-  const [status, setStatus] = useState('');
+  const [statuses, setStatuses] = useState([])
+  const [status, setStatus] = useState('')
 
-  const [origins, setOrigins] = useState([]);
-  const [origin, setOrigin] = useState('');
+  const [origins, setOrigins] = useState([])
+  const [origin, setOrigin] = useState('')
 
-  const [isAbroad, setIsAbroad] = useState(false); //sets if country is Bulgaria or not
+  const [isAbroad, setIsAbroad] = useState(false) //sets if country is Bulgaria or not
 
-  let url = '';
+  let url = ''
 
   let params = {
     country: country,
@@ -99,62 +99,62 @@ export default (props) => {
     status: status,
     organization: organization,
     origin: origin,
-  };
+  }
 
   for (const [key, value] of Object.entries(params)) {
     if (value !== '00' && value !== '' && value) {
-      url += `&${key}=${value}`;
+      url += `&${key}=${value}`
     } else {
-      url.replace(`&${key}=${value}`, '');
+      url.replace(`&${key}=${value}`, '')
     }
   }
 
   useEffect(async () => {
     //gets all the MIRs
-    const resElectionRegions = await authGet('/election_regions');
+    const resElectionRegions = await authGet('/election_regions')
 
-    const resStatuses = await authGet('/protocols/statuses');
-    setStatuses(resStatuses.data);
+    const resStatuses = await authGet('/protocols/statuses')
+    setStatuses(resStatuses.data)
 
-    const resOrigins = await authGet('/protocols/origins');
-    setOrigins(resOrigins.data);
+    const resOrigins = await authGet('/protocols/origins')
+    setOrigins(resOrigins.data)
 
     //if country is NOT Bulgaria: gets all the cities in the foreign country
     if (country !== '00') {
-      setElectionRegion('32');
+      setElectionRegion('32')
 
-      const resForeignTowns = await authGet(`/towns?country=${country}`);
+      const resForeignTowns = await authGet(`/towns?country=${country}`)
       //sets the cities in the foreign country and sets MIR to the last one which is "Abroad"
-      setTowns(resForeignTowns.data);
-      setMirs(resElectionRegions.data.slice(-1));
+      setTowns(resForeignTowns.data)
+      setMirs(resElectionRegions.data.slice(-1))
     } else {
       //if country is Bulgaria: gets all towns in the given MIR and municipality
       const resDomesticTowns = await authGet(
         `/towns?country=00&election_region=${electionRegion}&municipality=${municipality}`
-      );
+      )
       //sets the cities in the given MIR && Municipality and sets the MIRs list to all MIRs except the last "Abroad" one
-      setMirs(resElectionRegions.data.slice(0, -1));
-      setTowns(resDomesticTowns.data);
+      setMirs(resElectionRegions.data.slice(0, -1))
+      setTowns(resDomesticTowns.data)
     }
-  }, [country, municipality, electionRegion, town]);
+  }, [country, municipality, electionRegion, town])
 
   const clearAll = () => {
-    setOrganization('');
-    setOrigin('');
-    setStatus('');
-    setSelectedCountry('');
-    setCountry('00');
-    setSelectedElectionRegion('');
-    setIsAbroad(false);
-    setDisabled(true);
-    setSelectedMunicipality('Всички');
-    setSelectedTown('Всички');
-    setCityRegion('');
-    setMunicipality('00');
-    setElectionRegion('00');
-    setTown('');
-    setSection('');
-  };
+    setOrganization('')
+    setOrigin('')
+    setStatus('')
+    setSelectedCountry('')
+    setCountry('00')
+    setSelectedElectionRegion('')
+    setIsAbroad(false)
+    setDisabled(true)
+    setSelectedMunicipality('Всички')
+    setSelectedTown('Всички')
+    setCityRegion('')
+    setMunicipality('00')
+    setElectionRegion('00')
+    setTown('')
+    setSection('')
+  }
 
   return (
     <FilterTable>
@@ -271,5 +271,5 @@ export default (props) => {
         </tr>
       </tbody>
     </FilterTable>
-  );
-};
+  )
+}

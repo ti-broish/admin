@@ -1,6 +1,6 @@
-import React, { useState } from 'react';
+import React, { useState } from 'react'
 
-import styled from 'styled-components';
+import styled from 'styled-components'
 
 const TooltipContainer = styled.div`
   position: relative;
@@ -22,10 +22,10 @@ const TooltipContainer = styled.div`
   .tooltip-box.visible {
     display: block;
   }
-`;
+`
 
 export default ({ children, text }) => {
-  const [show, setShow] = useState(false);
+  const [show, setShow] = useState(false)
 
   return (
     <TooltipContainer>
@@ -37,5 +37,5 @@ export default ({ children, text }) => {
         {children}
       </div>
     </TooltipContainer>
-  );
-};
+  )
+}

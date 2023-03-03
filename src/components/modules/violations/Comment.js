@@ -1,8 +1,8 @@
-import React from 'react';
+import React from 'react'
 
-import styled from 'styled-components';
+import styled from 'styled-components'
 
-import { formatTime, formatDateShort } from '../../utils/Util';
+import { formatTime, formatDateShort } from '../../utils/Util'
 
 export const CommentStyle = styled.div`
   width: 100%;
@@ -37,17 +37,17 @@ export const CommentStyle = styled.div`
     margin-left: 10px;
     margin-top: -2px;
   }
-`;
+`
 
 export default (props) => {
   const formatCommentType = (commentType) => {
     switch (commentType) {
       case 'internal':
-        return 'Вътрешен';
+        return 'Вътрешен'
       default:
-        return 'Вътрешен';
+        return 'Вътрешен'
     }
-  };
+  }
 
   return (
     <CommentStyle>
@@ -63,5 +63,5 @@ export default (props) => {
       </h2>
       <p>{props.comment.text}</p>
     </CommentStyle>
-  );
-};
+  )
+}

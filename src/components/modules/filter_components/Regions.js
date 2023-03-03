@@ -1,28 +1,28 @@
-import React from 'react';
+import React from 'react'
 
 export default (props) => {
-  let regions = [];
+  let regions = []
 
   if (!props.isAbroad) {
     regions = [
       { code: '00', name: 'Всички', isAbroad: false },
       ...props.regions,
-    ];
+    ]
   } else {
-    regions = props.regions;
+    regions = props.regions
   }
 
   const changeHandler = (event) => {
-    props.setCityRegion(event.target.value);
-  };
+    props.setCityRegion(event.target.value)
+  }
 
   const filters = regions.map(({ name, code }, idx) => {
     return (
       <option key={idx} value={code}>
         {name}
       </option>
-    );
-  });
+    )
+  })
 
   return (
     <select
@@ -32,5 +32,5 @@ export default (props) => {
     >
       {filters}
     </select>
-  );
-};
+  )
+}

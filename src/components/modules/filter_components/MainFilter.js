@@ -1,21 +1,21 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react'
 
-import firebase from 'firebase/app';
-import 'firebase/auth';
+import firebase from 'firebase/app'
+import 'firebase/auth'
 
-import axios from 'axios';
+import axios from 'axios'
 
-import TextInput from '../filters/TextInput';
+import TextInput from '../filters/TextInput'
 
-import Countries from '../filters/Countries';
-import MIRs from '../filters/MIRs';
-import Municipalities from '../filters/Municipalities';
-import Towns from '../filters/Towns';
-import Regions from '../filters/Regions';
+import Countries from '../filters/Countries'
+import MIRs from '../filters/MIRs'
+import Municipalities from '../filters/Municipalities'
+import Towns from '../filters/Towns'
+import Regions from '../filters/Regions'
 
-import styled from 'styled-components';
+import styled from 'styled-components'
 
-import { apiHost } from '../../../config';
+import { apiHost } from '../../../config'
 
 const FilterlTable = styled.table`
   width: 100%;
@@ -27,7 +27,7 @@ const FilterlTable = styled.table`
     font-size: 15px;
     width: auto;
   }
-`;
+`
 
 const ButtonStyle = styled.button`
   background-color: #4892e1;
@@ -51,29 +51,29 @@ const ButtonStyle = styled.button`
     border-bottom: none;
     margin-top: 3px;
   }
-`;
+`
 
 export default (props) => {
-  const [disabled, setDisabled] = useState(true); //sets callback function for disabling field
+  const [disabled, setDisabled] = useState(true) //sets callback function for disabling field
 
-  const [country, setCountry] = useState('00');
+  const [country, setCountry] = useState('00')
 
-  const [mirs, setMirs] = useState([]); //sets all MIRs in Bulgaria
-  const [chosenMir, setChosenMir] = useState('00'); //gets the chosen MIR
+  const [mirs, setMirs] = useState([]) //sets all MIRs in Bulgaria
+  const [chosenMir, setChosenMir] = useState('00') //gets the chosen MIR
 
-  const [municipalities, setMunicipalities] = useState([]); //sets the municipalities in one MIR
-  const [chosenMunicipality, setChosenMunicipality] = useState('00'); //gets the chosen municipality
+  const [municipalities, setMunicipalities] = useState([]) //sets the municipalities in one MIR
+  const [chosenMunicipality, setChosenMunicipality] = useState('00') //gets the chosen municipality
 
-  const [towns, setTowns] = useState([]); //sets all towns in one municipality
+  const [towns, setTowns] = useState([]) //sets all towns in one municipality
 
-  const [regions, setRegions] = useState([]); //sets the election regions in one town
+  const [regions, setRegions] = useState([]) //sets the election regions in one town
 
-  const [status, setStatus] = useState('');
-  const [isAbroad, setIsAbroad] = useState(false); //sets if country is Bulgaria or not
+  const [status, setStatus] = useState('')
+  const [isAbroad, setIsAbroad] = useState(false) //sets if country is Bulgaria or not
 
   const submitHandler = () => {
-    props.setFilterStatus(status);
-  };
+    props.setFilterStatus(status)
+  }
 
   useEffect(() => {
     firebase
@@ -81,12 +81,12 @@ export default (props) => {
       .auth()
       .onAuthStateChanged(async (user) => {
         if (user) {
-          const idToken = await user.getIdToken();
+          const idToken = await user.getIdToken()
 
           //gets all the MIRs
           const res = await axios.get(`${apiHost}/election_regions`, {
             headers: { Authorization: `Bearer ${idToken}` },
-          });
+          })
 
           //if country is NOT Bulgaria: gets all the cities in the foreign country
           if (country !== '00') {
@@ -95,10 +95,10 @@ export default (props) => {
               {
                 headers: { Authorization: `Bearer ${idToken}` },
               }
-            );
+            )
             //sets the cities in the foreign country and sets MIR to the last one which is "Abroad"
-            setTowns(res2.data);
-            setMirs(res.data.slice(-1));
+            setTowns(res2.data)
+            setMirs(res.data.slice(-1))
           } else {
             //if country is Bulgaria: gets all towns in the given MIR and municipality
             const res3 = await axios.get(
@@ -106,14 +106,14 @@ export default (props) => {
               {
                 headers: { Authorization: `Bearer ${idToken}` },
               }
-            );
+            )
             //sets the cities in the given MIR && Municipality and sets the MIRs list to all MIRs except the last "Abroad" one
-            setMirs(res.data.slice(0, -1));
-            setTowns(res3.data);
+            setMirs(res.data.slice(0, -1))
+            setTowns(res3.data)
           }
         }
-      });
-  }, [country, chosenMunicipality, chosenMir]);
+      })
+  }, [country, chosenMunicipality, chosenMir])
 
   return (
     <FilterlTable>
@@ -198,5 +198,5 @@ export default (props) => {
         </tr>
       </tbody>
     </FilterlTable>
-  );
-};
+  )
+}
