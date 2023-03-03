@@ -1,18 +1,15 @@
-import React, { useContext, useState, useEffect, useRef } from 'react';
-import ReactDOM from 'react-dom';
+import React, { useContext, useEffect, useRef, useState } from 'react';
 import ProtocolPhotos from './protocol_photos/ProtocolPhotos';
-import ProtocolForm from './validation_form/ProtocolForm';
 import ValidationFormState from './validation_form/ValidationFormState';
 
 import useKeypress from 'react-use-keypress';
 
-import styled from 'styled-components';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import {
-  faChevronLeft,
-  faPlus,
   faChevronDown,
+  faChevronLeft,
 } from '@fortawesome/free-solid-svg-icons';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import styled from 'styled-components';
 
 const ProtocolInfoSection = styled.div`
   width: 50vw;
@@ -178,38 +175,38 @@ export default (props) => {
     );
   const ref = useRef();
 
-//   useEffect(() => {
-//     setFormState(
-//       new ValidationFormState({
-//         protocol: props.protocol,
-//         parties,
-//         protocolType,
-//         machineCount,
-//       })
-//     );
-//     // setMachineCount(0);
-//   }, [protocolType]);
+  //   useEffect(() => {
+  //     setFormState(
+  //       new ValidationFormState({
+  //         protocol: props.protocol,
+  //         parties,
+  //         protocolType,
+  //         machineCount,
+  //       })
+  //     );
+  //     // setMachineCount(0);
+  //   }, [protocolType]);
 
-//   useEffect(() => {
-//     setFormState(
-//       new ValidationFormState({
-//         protocol: props.protocol,
-//         parties,
-//         protocolType,
-//         machineCount,
-//       })
-//     );
-//     if (machineCount === 0) {
-//       setMachineHash([]);
-//     } else if (machineCount === 1) {
-//       setMachineHash([{ startHash: '', endHash: '' }]);
-//     } else if (machineCount === 2) {
-//       setMachineHash([
-//         { startHash: '', endHash: '' },
-//         { startHash: '', endHash: '' },
-//       ]);
-//     }
-//   }, [machineCount]);
+  //   useEffect(() => {
+  //     setFormState(
+  //       new ValidationFormState({
+  //         protocol: props.protocol,
+  //         parties,
+  //         protocolType,
+  //         machineCount,
+  //       })
+  //     );
+  //     if (machineCount === 0) {
+  //       setMachineHash([]);
+  //     } else if (machineCount === 1) {
+  //       setMachineHash([{ startHash: '', endHash: '' }]);
+  //     } else if (machineCount === 2) {
+  //       setMachineHash([
+  //         { startHash: '', endHash: '' },
+  //         { startHash: '', endHash: '' },
+  //       ]);
+  //     }
+  //   }, [machineCount]);
 
   useKeypress(['ArrowUp'], (event) => {
     let lastInput = null;
@@ -245,7 +242,7 @@ export default (props) => {
   const violationMessage = useRef('');
 
   useEffect(() => {
-    if (formState.formData.sectionId.length === 9) {
+    if (formState.formData.sectionId?.length === 9) {
       updateSectionData();
     }
   }, [formState.formData.sectionId]);
@@ -447,7 +444,7 @@ export default (props) => {
             <FontAwesomeIcon icon={faChevronLeft} />
           </BackButton>
           <h1 style={{ display: 'inline-block' }}>
-            Секция {props.protocol.section.id}
+            Секция {props.protocol.section?.id}
           </h1>
         </SectionHeader>
         <ProtocolDetails>

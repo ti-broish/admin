@@ -133,7 +133,7 @@ export default props => {
                 <tbody>
                 <tr>
                     <td style={{paddingTop: '20px'}}>Изпратен от (организация):</td>
-                    <td style={{paddingTop: '20px'}}>{props.protocol.author.organization.name}</td>
+                    <td style={{paddingTop: '20px'}}>{props.protocol.author?.organization.name}</td>
                 </tr>
             </tbody>
             </table>
