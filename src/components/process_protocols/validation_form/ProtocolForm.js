@@ -164,13 +164,13 @@ export default (props) => {
                   : ''
               }
               name={`party${party.id}paper`}
-              value={props.formState.resultsData[`party${party.id}paper`]}
+              value={props.formState.resultsData[`party${party.id}paper`] ?? ''}
               onChange={props.handleResultsChange}
             />
           </td>
         ) : null}
-        {[...Array(props.machineCount).keys()].map((i) => (
-          <td>
+        {[...Array(props.machineCount).keys()].map((i, index) => (
+          <td key={index}>
             <input
               type="text"
               className={
@@ -182,7 +182,9 @@ export default (props) => {
               }
               name={`party${party.id}machine${i + 1}`}
               value={
-                props.formState.resultsData[`party${party.id}machine${i + 1}`]
+                props.formState.resultsData[
+                  `party${party.id}machine${i + 1}`
+                ] ?? ''
               }
               onChange={props.handleResultsChange}
             />
@@ -218,7 +220,7 @@ export default (props) => {
           ? 'changed'
           : ''
       }
-      value={props.formState.formData[varName]}
+      value={props.formState.formData[varName] ?? ''}
       onChange={props.handleNumberChange}
     />
   )
@@ -348,15 +350,17 @@ export default (props) => {
       <h1>РАЗПРЕДЕЛЕНИЕ НА ГЛАСОВЕТЕ ПО КАНДИДАТСКИ ЛИСТИ</h1>
       <PartyResultsTable colCount={calculateColCount()}>
         <thead>
-          <th>#</th>
-          <th>Име</th>
-          {props.protocolType === 'paper' ||
-          props.protocolType === 'paper-machine' ? (
-            <th>Х</th>
-          ) : null}
-          {[...Array(props.machineCount).keys()].map((i) => (
-            <th>M{i + 1}</th>
-          ))}
+          <tr>
+            <th>#</th>
+            <th>Име</th>
+            {props.protocolType === 'paper' ||
+            props.protocolType === 'paper-machine' ? (
+              <th>Х</th>
+            ) : null}
+            {[...Array(props.machineCount).keys()].map((i, index) => (
+              <th key={index}>M{i + 1}</th>
+            ))}
+          </tr>
         </thead>
         <tbody>
           {props.parties
