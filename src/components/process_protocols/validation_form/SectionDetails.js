@@ -193,7 +193,6 @@ export default (props) => {
           type="radio"
           id="machine"
           name="protocolType"
-          value="machine"
           onClick={() => props.setProtocolType('machine')}
         />
         <label htmlFor="machine">Машинен</label>
@@ -201,7 +200,6 @@ export default (props) => {
           type="radio"
           id="paper"
           name="protocolType"
-          value="paper"
           onClick={() => props.setProtocolType('paper')}
         />
         <label htmlFor="paper">Хартиен</label>
@@ -209,7 +207,6 @@ export default (props) => {
           type="radio"
           id="paper-machine"
           name="protocolType"
-          value="paper-machine"
           onClick={() => props.setProtocolType('paper-machine')}
         />
         <label htmlFor="paper-machine">Хартиено-машинен</label>
@@ -220,6 +217,7 @@ export default (props) => {
           <h5 style={{ margin: '10px 0' }}>Брой машини</h5>
           <ChooseProtocolType>
             <input
+              readOnly
               type="radio"
               id="1machine"
               name="machineCount"
@@ -229,6 +227,7 @@ export default (props) => {
             />
             <label htmlFor="1machine">1 машина</label>
             <input
+              readOnly
               type="radio"
               id="2machines"
               name="machineCount"

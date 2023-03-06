@@ -182,7 +182,8 @@ export default (props) => {
         machineCount,
       })
     )
-    // setMachineCount(0);
+
+    setMachineCount(0)
   }, [protocolType])
 
   useEffect(() => {
@@ -194,6 +195,7 @@ export default (props) => {
         machineCount,
       })
     )
+
     if (machineCount === 0) {
       setMachineHash([])
     } else if (machineCount === 1) {
