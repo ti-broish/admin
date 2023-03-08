@@ -1,19 +1,19 @@
-import React, { useState, useEffect, useContext } from 'react';
-import { Link } from 'react-router-dom';
+import React, { useState, useEffect, useContext } from 'react'
+import { Link } from 'react-router-dom'
 
-import { AuthContext } from '../../App';
+import { AuthContext } from '../../App'
 
-import SendBy from '../filter_components/SendBy';
-import Roles from '../filter_components/Roles';
-import TextInput from '../filter_components/TextInput';
+import SendBy from '../filter_components/SendBy'
+import Roles from '../filter_components/Roles'
+import TextInput from '../filter_components/TextInput'
 
-import styled from 'styled-components';
+import styled from 'styled-components'
 
 const FilterTable = styled.div`
   display: grid;
   grid-template-columns: 1fr 1fr 1fr;
   row-gap: 24px;
-`;
+`
 
 const ButtonStyle = styled.button`
   background-color: #4892e1;
@@ -37,16 +37,16 @@ const ButtonStyle = styled.button`
     border-bottom: none;
     margin-top: 3px;
   }
-`;
+`
 
 export default (props) => {
-  const [firstName, setFirstName] = useState('');
-  const [lastName, setLastName] = useState('');
-  const [email, setEmail] = useState('');
-  const [organization, setOrganization] = useState('');
-  const [role, setRole] = useState('');
+  const [firstName, setFirstName] = useState('')
+  const [lastName, setLastName] = useState('')
+  const [email, setEmail] = useState('')
+  const [organization, setOrganization] = useState('')
+  const [role, setRole] = useState('')
 
-  let url = '';
+  let url = ''
 
   let params = {
     firstName: firstName,
@@ -54,25 +54,25 @@ export default (props) => {
     email: email,
     organization: organization,
     role: role,
-  };
+  }
 
   for (const [key, value] of Object.entries(params)) {
     if (value !== '00' && value !== '' && value) {
-      url += `&${key}=${value}`;
+      url += `&${key}=${value}`
     } else {
-      url.replace(`&${key}=${value}`, '');
+      url.replace(`&${key}=${value}`, '')
     }
   }
 
-  useEffect(() => {}, [firstName, lastName, email, organization, role]);
+  useEffect(() => {}, [firstName, lastName, email, organization, role])
 
   const clearAll = () => {
-    setOrganization('');
-    setRole('');
-    setFirstName('');
-    setLastName('');
-    setEmail('');
-  };
+    setOrganization('')
+    setRole('')
+    setFirstName('')
+    setLastName('')
+    setEmail('')
+  }
 
   return (
     <>
@@ -112,5 +112,5 @@ export default (props) => {
         </Link>
       </FilterTable>
     </>
-  );
-};
+  )
+}

@@ -1,33 +1,33 @@
-import React, { useState, useEffect, useContext } from 'react';
+import React, { useState, useEffect, useContext } from 'react'
 
-import { ContentPanel } from '../Modules';
+import { ContentPanel } from '../Modules'
 
-import { useHistory, useParams } from 'react-router-dom';
+import { useHistory, useParams } from 'react-router-dom'
 
-import { AuthContext } from '../../App';
-import ImageGallery from '../../utils/ImageGallery';
-import Loading from '../../layout/Loading';
-import { TableStyle } from '../Profile';
+import { AuthContext } from '../../App'
+import ImageGallery from '../../utils/ImageGallery'
+import Loading from '../../layout/Loading'
+import { TableStyle } from '../Profile'
 
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faChevronLeft } from '@fortawesome/free-solid-svg-icons';
-import { BackButton } from '../violations/ViolationDetails';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+import { faChevronLeft } from '@fortawesome/free-solid-svg-icons'
+import { BackButton } from '../violations/ViolationDetails'
 
 export default (props) => {
-  const { authGet } = useContext(AuthContext);
-  const { protocol } = useParams();
-  const history = useHistory();
-  const [data, setData] = useState(null);
+  const { authGet } = useContext(AuthContext)
+  const { protocol } = useParams()
+  const history = useHistory()
+  const [data, setData] = useState(null)
 
   useEffect(() => {
     authGet(`/protocols/${protocol}`).then((res) => {
-      setData(res.data);
-    });
-  }, []);
+      setData(res.data)
+    })
+  }, [])
 
   const goBack = () => {
-    history.goBack();
-  };
+    history.goBack()
+  }
 
   return (
     <ContentPanel>
@@ -118,5 +118,5 @@ export default (props) => {
         </div>
       )}
     </ContentPanel>
-  );
-};
+  )
+}

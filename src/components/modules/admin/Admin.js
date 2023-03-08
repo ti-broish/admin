@@ -1,24 +1,24 @@
-import React, { useEffect, useContext, useState } from 'react';
-import { Link, useLocation, useHistory } from 'react-router-dom';
+import React, { useEffect, useContext, useState } from 'react'
+import { Link, useLocation, useHistory } from 'react-router-dom'
 
-import { AuthContext } from '../../App';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { AuthContext } from '../../App'
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import {
   faChevronLeft,
   faChevronRight,
   faFastForward,
   faFastBackward,
-} from '@fortawesome/free-solid-svg-icons';
+} from '@fortawesome/free-solid-svg-icons'
 
-import styled from 'styled-components';
+import styled from 'styled-components'
 
-import AdminFilter from './AdminFilter';
+import AdminFilter from './AdminFilter'
 
-import Loading from '../../layout/Loading';
+import Loading from '../../layout/Loading'
 
-import Tooltip from '../../utils/Tooltip';
+import Tooltip from '../../utils/Tooltip'
 
-import { mapRoleLocalization } from '../../utils/Util';
+import { mapRoleLocalization } from '../../utils/Util'
 
 const TableViewContainer = styled.div`
   padding: 40px;
@@ -27,7 +27,7 @@ const TableViewContainer = styled.div`
     border: 1px solid #ccc;
     border-bottom: none;
   }
-`;
+`
 
 const PaginationLinks = styled.div`
   padding: 20px;
@@ -47,7 +47,7 @@ const PaginationLinks = styled.div`
       pointer-events: none;
     }
   }
-`;
+`
 
 const UserTable = styled.table`
   background-color: white;
@@ -78,7 +78,7 @@ const UserTable = styled.table`
       background-color: rgb(202, 255, 249);
     }
   }
-`;
+`
 
 const RoleIcon = styled.span`
   background-color: #4aa2ff;
@@ -95,57 +95,57 @@ const RoleIcon = styled.span`
   &:hover {
     background-color: #5da2ec;
   }
-`;
+`
 
 const RolesContainer = styled.div`
   display: grid;
   grid-template-columns: 1fr 1fr 1fr 1fr;
   row-gap: 5px;
-`;
+`
 const useQuery = () => {
-  return new URLSearchParams(useLocation().search);
-};
+  return new URLSearchParams(useLocation().search)
+}
 
 export default (props) => {
-  const { authGet } = useContext(AuthContext);
-  const [data, setData] = useState(null);
-  const [loading, setLoading] = useState(false);
-  const query = useQuery();
-  const history = useHistory();
-  const [rolesState, setRolesState] = useState(null);
+  const { authGet } = useContext(AuthContext)
+  const [data, setData] = useState(null)
+  const [loading, setLoading] = useState(false)
+  const query = useQuery()
+  const history = useHistory()
+  const [rolesState, setRolesState] = useState(null)
 
   useEffect(() => {
-    let url = '/users';
-    const page = query.get('page');
-    const firstName = query.get('firstName');
-    const lastName = query.get('lastName');
-    const email = query.get('email');
-    const role = query.get('role');
-    const organization = query.get('organization');
+    let url = '/users'
+    const page = query.get('page')
+    const firstName = query.get('firstName')
+    const lastName = query.get('lastName')
+    const email = query.get('email')
+    const role = query.get('role')
+    const organization = query.get('organization')
     // const limit = query.get('limit');
 
     if (page || firstName || lastName || email || role || organization) {
-      url += '?';
+      url += '?'
     }
-    if (page) url += `page=${page}`;
-    if (firstName) url += `&firstName=${firstName}`;
-    if (lastName) url += `&lastName=${lastName}`;
-    if (email) url += `&email=${email}`;
-    if (role) url += `&role=${role}`;
-    if (organization) url += `&organization=${organization}`;
+    if (page) url += `page=${page}`
+    if (firstName) url += `&firstName=${firstName}`
+    if (lastName) url += `&lastName=${lastName}`
+    if (email) url += `&email=${email}`
+    if (role) url += `&role=${role}`
+    if (organization) url += `&organization=${organization}`
 
     // if (limit) url += `limit=${limit}`;
 
-    setLoading(true);
+    setLoading(true)
     authGet(url).then((res) => {
-      setLoading(false);
-      setData(res.data);
-    });
+      setLoading(false)
+      setData(res.data)
+    })
 
     if (!rolesState) {
       authGet(url + '/roles').then((res) => {
-        setRolesState(res.data);
-      });
+        setRolesState(res.data)
+      })
     }
   }, [
     query.get('firstName'),
@@ -154,13 +154,13 @@ export default (props) => {
     query.get('page'),
     query.get('role'),
     query.get('organization'),
-  ]);
+  ])
 
   const renderLinks = () => {
-    const firstAvail = data.meta.currentPage !== 1;
-    const lastAvail = data.meta.currentPage !== data.meta.totalPages;
-    const nextAvail = data.links.next;
-    const prevAvail = data.links.previous;
+    const firstAvail = data.meta.currentPage !== 1
+    const lastAvail = data.meta.currentPage !== data.meta.totalPages
+    const nextAvail = data.links.next
+    const prevAvail = data.links.previous
 
     return (
       <PaginationLinks>
@@ -187,66 +187,66 @@ export default (props) => {
           Последна <FontAwesomeIcon icon={faFastForward} />
         </Link>
       </PaginationLinks>
-    );
-  };
+    )
+  }
 
   const openUser = (id) => {
-    history.push({ pathname: `/user/${id}`, state: rolesState });
-  };
+    history.push({ pathname: `/user/${id}`, state: rolesState })
+  }
 
   const roles = (roles) => {
     return roles.length === 0 ? (
       <i>Без Роля</i>
     ) : (
       roles.map((role, idx) => {
-        return createRoleItem(role, idx);
+        return createRoleItem(role, idx)
       })
-    );
-  };
+    )
+  }
 
   const createRoleItem = (role, idx) => {
-    let roleName = mapRoleLocalization(rolesState, role) ?? role[0];
-    let color = '#9e9e9e';
+    let roleName = mapRoleLocalization(rolesState, role) ?? role[0]
+    let color = '#9e9e9e'
     switch (role) {
       case 'user':
-        color = '#4caf50';
-        break;
+        color = '#4caf50'
+        break
       case 'validator':
-        color = '#6c6cff';
-        break;
+        color = '#6c6cff'
+        break
       case 'lawyer':
-        color = '#00bcd4';
-        break;
+        color = '#00bcd4'
+        break
       case 'streamer':
-        color = '#ffad35';
-        break;
+        color = '#ffad35'
+        break
       case 'admin':
-        color = '#ff3a39';
-        break;
+        color = '#ff3a39'
+        break
       case 'stream_moderator':
-        color = '#e6d858';
-        break;
+        color = '#e6d858'
+        break
       case 'super_validator':
-        color = '#009688';
-        break;
+        color = '#009688'
+        break
       default:
-        break;
+        break
     }
-    return roleCircle(roleName, idx, color);
-  };
+    return roleCircle(roleName, idx, color)
+  }
 
   const roleCircle = (roleName, idx, color) => {
-    const splittedRoleName = roleName.split(' ');
+    const splittedRoleName = roleName.split(' ')
     const initials =
       splittedRoleName.length > 1
         ? splittedRoleName[0][0] + splittedRoleName[1][0]
-        : splittedRoleName[0][0];
+        : splittedRoleName[0][0]
     return (
       <Tooltip key={idx} text={roleName}>
         <RoleIcon style={{ backgroundColor: color }}>{initials}</RoleIcon>
       </Tooltip>
-    );
-  };
+    )
+  }
 
   return (
     <>
@@ -302,5 +302,5 @@ export default (props) => {
         )}
       </TableViewContainer>
     </>
-  );
-};
+  )
+}

@@ -1,62 +1,68 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect } from 'react'
 
-import firebase from "firebase/app";
-import "firebase/auth";
+import firebase from 'firebase/app'
+import 'firebase/auth'
 
-import axios from "axios";
-import { BrowserRouter, Switch, Route, Redirect } from "react-router-dom";
+import axios from 'axios'
+import { BrowserRouter, Switch, Route, Redirect } from 'react-router-dom'
 
-import Login from "./front/Login";
-import Loading from "./layout/Loading";
-import Modules from "./modules/Modules";
+import Login from './front/Login'
+import Loading from './layout/Loading'
+import Modules from './modules/Modules'
 
-import styled from "styled-components";
-import ProcessProtocols from "./process_protocols/ProcessProtocols";
+import styled from 'styled-components'
+import ProcessProtocols from './process_protocols/ProcessProtocols'
 
-import { apiHost, apiKey, authDomain, databaseURL, projectId } from "../config.js";
+import {
+  apiHost,
+  apiKey,
+  authDomain,
+  databaseURL,
+  projectId,
+} from '../config.js'
 
 const AppStyle = styled.div`
   font-family: Montserrat, sans-serif;
-`;
+`
 
-export const AuthContext = React.createContext();
+export const AuthContext = React.createContext()
 
 export default (props) => {
   const [state, setState] = useState({
     user: null,
     loading: true,
-    token: "",
+    token: '',
     parties: [],
     countries: [],
     organizations: [],
-  });
+  })
 
   useEffect(() => {
-    firebase.initializeApp({ apiKey, authDomain, databaseURL, projectId });
+    firebase.initializeApp({ apiKey, authDomain, databaseURL, projectId })
 
     firebase
       .app()
       .auth()
       .onAuthStateChanged(async (user) => {
         if (user) {
-          const idToken = await user.getIdToken();
+          const idToken = await user.getIdToken()
 
-          setState({ ...state, loading: true });
+          setState({ ...state, loading: true })
           const res = await axios.get(`${apiHost}/me`, {
             headers: { Authorization: `Bearer ${idToken}` },
-          });
+          })
 
           const res2 = await axios.get(`${apiHost}/parties`, {
             headers: { Authorization: `Bearer ${idToken}` },
-          });
+          })
 
           const res3 = await axios.get(`${apiHost}/countries`, {
             headers: { Authorization: `Bearer ${idToken}` },
-          });
+          })
 
           const res4 = await axios.get(`${apiHost}/organizations`, {
             headers: { Authorization: `Bearer ${idToken}` },
-          });
+          })
 
           setState({
             user: res.data,
@@ -65,98 +71,98 @@ export default (props) => {
             parties: res2.data,
             countries: res3.data,
             organizations: res4.data,
-          });
+          })
         } else {
           setState({
             user: null,
             loading: false,
-            token: "",
+            token: '',
             parties: [],
             countries: [],
             organizations: [],
-          });
+          })
         }
-      });
-  }, []);
+      })
+  }, [])
 
   const logIn = ({ email, password }) => {
-    return firebase.auth().signInWithEmailAndPassword(email, password);
-  };
+    return firebase.auth().signInWithEmailAndPassword(email, password)
+  }
 
   const logOut = () => {
-    firebase.app().auth().signOut();
-  };
+    firebase.app().auth().signOut()
+  }
 
   const authGet = async (path) => {
     const res = await axios.get(`${apiHost}${path}`, {
       headers: { Authorization: `Bearer ${state.token}` },
-    });
-    return res;
-  };
+    })
+    return res
+  }
 
   const authPost = async (path, body) => {
-    let res;
+    let res
     try {
       res = await axios.post(`${apiHost}${path}`, body ? body : {}, {
         headers: { Authorization: `Bearer ${state.token}` },
-      });
+      })
     } catch (err) {
       if (Array.isArray(err.response.data.message)) {
         alert(
           `Error ${err.response.status}: ${
             err.response.statusText
           }\n${err.response.data.message.map((m, i) => `\n${i + 1}. ${m}`)}`
-        );
+        )
       } else {
         alert(
           `Error ${err.response.status}: ${err.response.statusText}\n${err.response.data.message}`
-        );
+        )
       }
-      throw err;
+      throw err
     }
-    return res;
-  };
+    return res
+  }
 
   const authDelete = async (path) => {
     const res = await axios.delete(`${apiHost}${path}`, {
       headers: { Authorization: `Bearer ${state.token}` },
-    });
-    return res;
-  };
+    })
+    return res
+  }
 
   const authPut = async (path, body) => {
-    let res;
+    let res
     try {
       res = await axios.put(`${apiHost}${path}`, body ? body : {}, {
         headers: { Authorization: `Bearer ${state.token}` },
-      });
+      })
     } catch (err) {
       alert(
         `Error ${err.response.status}: ${
           err.response.statusText
         }\n${err.response.data.message.map((m, i) => `\n${i + 1}. ${m}`)}`
-      );
-      throw err;
+      )
+      throw err
     }
-    return res;
-  };
+    return res
+  }
 
   const authPatch = async (path, body) => {
-    let res;
+    let res
     try {
       res = await axios.patch(`${apiHost}${path}`, body ? body : {}, {
         headers: { Authorization: `Bearer ${state.token}` },
-      });
+      })
     } catch (err) {
       alert(
         `Error ${err.response.status}: ${
           err.response.statusText
         }\n${err.response.data.message.map((m, i) => `\n${i + 1}. ${m}`)}`
-      );
-      throw err;
+      )
+      throw err
     }
-    return res;
-  };
+    return res
+  }
 
   return (
     <AppStyle>
@@ -195,5 +201,5 @@ export default (props) => {
         </AuthContext.Provider>
       </BrowserRouter>
     </AppStyle>
-  );
-};
+  )
+}

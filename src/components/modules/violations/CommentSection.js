@@ -1,13 +1,13 @@
-import React, { useState, useEffect, useContext } from 'react';
+import React, { useState, useEffect, useContext } from 'react'
 
-import Loading from '../../layout/Loading';
-import { Link, useParams, useLocation, useHistory } from 'react-router-dom';
+import Loading from '../../layout/Loading'
+import { Link, useParams, useLocation, useHistory } from 'react-router-dom'
 
-import CommentForm from './CommentForm';
+import CommentForm from './CommentForm'
 
-import styled from 'styled-components';
+import styled from 'styled-components'
 
-import Comment from './Comment';
+import Comment from './Comment'
 
 export const PaginationLinks = styled.div`
   padding: 20px;
@@ -27,42 +27,42 @@ export const PaginationLinks = styled.div`
       pointer-events: none;
     }
   }
-`;
+`
 
-import { AuthContext } from '../../App';
+import { AuthContext } from '../../App'
 
 const useQuery = () => {
-  return new URLSearchParams(useLocation().search);
-};
+  return new URLSearchParams(useLocation().search)
+}
 
 export default (props) => {
-  const { violation } = useParams();
-  const [data, setData] = useState(null);
-  const { authGet } = useContext(AuthContext);
-  const query = useQuery();
+  const { violation } = useParams()
+  const [data, setData] = useState(null)
+  const { authGet } = useContext(AuthContext)
+  const query = useQuery()
 
   useEffect(() => {
-    let url = `/violations/${violation}/comments`;
-    const page = query.get('page');
-    const limit = query.get('limit');
+    let url = `/violations/${violation}/comments`
+    const page = query.get('page')
+    const limit = query.get('limit')
 
-    if (page || limit) url += '?';
+    if (page || limit) url += '?'
 
-    if (page) url += `page=${page}`;
-    if (limit) url += `limit=${limit}`;
+    if (page) url += `page=${page}`
+    if (limit) url += `limit=${limit}`
 
     authGet(url).then((res) => {
-      setData(res.data);
-    });
-  }, [query.get('page')]);
+      setData(res.data)
+    })
+  }, [query.get('page')])
 
   const newComment = (comment) => {
     setData({
       ...data,
       meta: { ...data.meta, totalItems: data.meta.totalItems + 1 },
       items: [comment, ...data.items],
-    });
-  };
+    })
+  }
 
   return (
     <>
@@ -102,5 +102,5 @@ export default (props) => {
         </div>
       )}
     </>
-  );
-};
+  )
+}

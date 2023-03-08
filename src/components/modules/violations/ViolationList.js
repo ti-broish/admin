@@ -1,19 +1,19 @@
-import React, { useState, useEffect, useContext } from 'react';
+import React, { useState, useEffect, useContext } from 'react'
 
-import { Link, useHistory, useLocation } from 'react-router-dom';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { Link, useHistory, useLocation } from 'react-router-dom'
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import {
   faChevronLeft,
   faChevronRight,
   faFastForward,
   faFastBackward,
-} from '@fortawesome/free-solid-svg-icons';
+} from '@fortawesome/free-solid-svg-icons'
 
-import { AuthContext } from '../../App';
-import Loading from '../../layout/Loading';
+import { AuthContext } from '../../App'
+import Loading from '../../layout/Loading'
 
-import styled from 'styled-components';
-import ViolationFilter from './ViolationFilter';
+import styled from 'styled-components'
+import ViolationFilter from './ViolationFilter'
 
 const TableViewContainer = styled.div`
   padding: 40px;
@@ -22,7 +22,7 @@ const TableViewContainer = styled.div`
     border: 1px solid #ccc;
     border-bottom: none;
   }
-`;
+`
 
 const PaginationLinks = styled.div`
   padding: 20px;
@@ -42,7 +42,7 @@ const PaginationLinks = styled.div`
       pointer-events: none;
     }
   }
-`;
+`
 
 const ViolationTable = styled.table`
   background-color: white;
@@ -73,11 +73,11 @@ const ViolationTable = styled.table`
       background-color: rgb(202, 255, 249);
     }
   }
-`;
+`
 
 const ViolationStatus = styled.span`
   font-weight: bold;
-`;
+`
 
 const AssigneeIcon = styled.span`
   background-color: #4aa2ff;
@@ -90,32 +90,32 @@ const AssigneeIcon = styled.span`
   padding: 8px 3px;
   box-sizing: border-box;
   margin-left: 20px;
-`;
+`
 
 const useQuery = () => {
-  return new URLSearchParams(useLocation().search);
-};
+  return new URLSearchParams(useLocation().search)
+}
 
 export default (props) => {
-  const { authGet } = useContext(AuthContext);
-  const [loading, setLoading] = useState(true);
-  const [data, setData] = useState(null);
-  const query = useQuery();
-  const history = useHistory();
+  const { authGet } = useContext(AuthContext)
+  const [loading, setLoading] = useState(true)
+  const [data, setData] = useState(null)
+  const query = useQuery()
+  const history = useHistory()
 
   useEffect(() => {
-    let url = '/violations';
-    const page = query.get('page');
+    let url = '/violations'
+    const page = query.get('page')
     // const limit = query.get('limit');
-    const country = query.get('country');
-    const electionRegion = query.get('electionRegion');
-    const assignee = query.get('assignee');
-    const section = query.get('section');
-    const municipality = query.get('municipality');
-    const town = query.get('town');
-    const cityRegion = query.get('cityRegion');
-    const status = query.get('status');
-    const published = query.get('published');
+    const country = query.get('country')
+    const electionRegion = query.get('electionRegion')
+    const assignee = query.get('assignee')
+    const section = query.get('section')
+    const municipality = query.get('municipality')
+    const town = query.get('town')
+    const cityRegion = query.get('cityRegion')
+    const status = query.get('status')
+    const published = query.get('published')
 
     if (
       page ||
@@ -129,25 +129,25 @@ export default (props) => {
       status ||
       published
     )
-      url += '?';
+      url += '?'
 
-    if (country) url += `country=${country}`;
-    if (electionRegion) url += `&electionRegion=${electionRegion}`;
-    if (municipality) url += `&municipality=${municipality}`;
-    if (assignee) url += `&assignee=${assignee}`;
-    if (section) url += `&section=${section}`;
-    if (town) url += `&town=${town}`;
-    if (cityRegion) url += `&cityRegion=${cityRegion}`;
-    if (status) url += `&status=${status}`;
-    if (published) url += `&published=${published}`;
-    if (page) url += `page=${page}`;
+    if (country) url += `country=${country}`
+    if (electionRegion) url += `&electionRegion=${electionRegion}`
+    if (municipality) url += `&municipality=${municipality}`
+    if (assignee) url += `&assignee=${assignee}`
+    if (section) url += `&section=${section}`
+    if (town) url += `&town=${town}`
+    if (cityRegion) url += `&cityRegion=${cityRegion}`
+    if (status) url += `&status=${status}`
+    if (published) url += `&published=${published}`
+    if (page) url += `page=${page}`
     // if (limit) url += `limit=${limit}`;
 
-    setLoading(true);
+    setLoading(true)
     authGet(url).then((res) => {
-      setLoading(false);
-      setData(res.data);
-    });
+      setLoading(false)
+      setData(res.data)
+    })
   }, [
     query.get('page'),
     query.get('country'),
@@ -159,7 +159,7 @@ export default (props) => {
     query.get('cityRegion'),
     query.get('status'),
     query.get('published'),
-  ]);
+  ])
 
   const status = (apiStatus) => {
     switch (apiStatus) {
@@ -168,29 +168,29 @@ export default (props) => {
           <ViolationStatus style={{ color: '#6c6cff' }}>
             Получен
           </ViolationStatus>
-        );
+        )
       case 'rejected':
         return (
           <ViolationStatus style={{ color: '#ff3939' }}>
             Отхвърлен
           </ViolationStatus>
-        );
+        )
       case 'processed':
         return (
           <ViolationStatus style={{ color: '#46df00' }}>
             Обработен
           </ViolationStatus>
-        );
+        )
       case 'processing':
         return (
           <ViolationStatus style={{ color: '#ecd40e' }}>
             Обработва се
           </ViolationStatus>
-        );
+        )
       default:
-        return apiStatus;
+        return apiStatus
     }
-  };
+  }
 
   const assignees = (assignees) => {
     return assignees.length === 0 ? (
@@ -200,14 +200,14 @@ export default (props) => {
         {assignees[0].firstName[0]}
         {assignees[0].lastName[0]}
       </AssigneeIcon>
-    );
-  };
+    )
+  }
 
   const renderLinks = () => {
-    const firstAvail = data.meta.currentPage !== 1;
-    const lastAvail = data.meta.currentPage !== data.meta.totalPages;
-    const nextAvail = data.links.next;
-    const prevAvail = data.links.previous;
+    const firstAvail = data.meta.currentPage !== 1
+    const lastAvail = data.meta.currentPage !== data.meta.totalPages
+    const nextAvail = data.links.next
+    const prevAvail = data.links.previous
 
     return (
       <PaginationLinks>
@@ -234,12 +234,12 @@ export default (props) => {
           Последна <FontAwesomeIcon icon={faFastForward} />
         </Link>
       </PaginationLinks>
-    );
-  };
+    )
+  }
 
   const openViolation = (id) => {
-    history.push(`/violation/${id}`);
-  };
+    history.push(`/violation/${id}`)
+  }
 
   return (
     <TableViewContainer>
@@ -313,5 +313,5 @@ export default (props) => {
         </>
       )}
     </TableViewContainer>
-  );
-};
+  )
+}

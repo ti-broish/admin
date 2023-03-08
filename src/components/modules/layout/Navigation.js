@@ -1,7 +1,7 @@
-import React, { useContext } from 'react';
+import React, { useContext } from 'react'
 
-import { Link } from 'react-router-dom';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { Link } from 'react-router-dom'
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import {
   faFileInvoice,
   faIdBadge,
@@ -11,10 +11,10 @@ import {
   faSignOutAlt,
   faCheckSquare,
   faPersonBooth,
-} from '@fortawesome/free-solid-svg-icons';
+} from '@fortawesome/free-solid-svg-icons'
 
-import styled from 'styled-components';
-import { AuthContext } from '../../App';
+import styled from 'styled-components'
+import { AuthContext } from '../../App'
 
 const NavigationStyle = styled.nav`
   height: 100%;
@@ -22,7 +22,7 @@ const NavigationStyle = styled.nav`
   background-color: rgb(56, 222, 203);
   overflow: hidden;
   color: white;
-`;
+`
 
 const NavTitle = styled.div`
   padding: 10px;
@@ -35,12 +35,12 @@ const NavTitle = styled.div`
   h1 {
     margin: 0;
   }
-`;
+`
 
 const NavLinks = styled.div`
   background-color: rgb(40, 174, 159);
   padding: 50px 0;
-`;
+`
 
 const NavLink = styled(Link)`
   color: white;
@@ -54,7 +54,7 @@ const NavLink = styled(Link)`
   &:hover {
     background-color: rgb(61, 191, 176);
   }
-`;
+`
 
 const NavFooter = styled.div`
   width: 100%;
@@ -64,17 +64,17 @@ const NavFooter = styled.div`
   text-align: center;
   padding: 15px 5px;
   box-sizing: border-box;
-`;
+`
 
 export default (props) => {
-  const { logOut, user } = useContext(AuthContext);
+  const { logOut, user } = useContext(AuthContext)
 
   const requireRoles = (roles) => {
     for (const role of roles) {
-      if (user.roles.includes(role)) return true;
+      if (user.roles.includes(role)) return true
     }
-    return false;
-  };
+    return false
+  }
 
   return (
     <NavigationStyle>
@@ -115,5 +115,5 @@ export default (props) => {
       </NavLinks>
       <NavFooter>„Демократична България - обединение“ © 2021</NavFooter>
     </NavigationStyle>
-  );
-};
+  )
+}

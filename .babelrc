@@ -1,10 +1,9 @@
 {
-    "plugins": [
-      "@babel/syntax-dynamic-import",
-      "@babel/plugin-transform-runtime", 
-      "@babel/plugin-syntax-object-rest-spread",
-      "@loadable/babel-plugin",
-      "babel-plugin-styled-components"
-    ],
-  }
-  
+  "plugins": [
+    "@babel/syntax-dynamic-import",
+    "@babel/plugin-transform-runtime",
+    "@babel/plugin-syntax-object-rest-spread",
+    "@loadable/babel-plugin",
+    "babel-plugin-styled-components"
+  ]
+}

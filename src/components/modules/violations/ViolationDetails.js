@@ -1,8 +1,8 @@
-import React, { useState, useEffect, useContext } from 'react';
+import React, { useState, useEffect, useContext } from 'react'
 
-import { useHistory, useParams } from 'react-router-dom';
+import { useHistory, useParams } from 'react-router-dom'
 
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import {
   faChevronLeft,
   faTimes,
@@ -11,20 +11,20 @@ import {
   faUpload,
   faEyeSlash,
   faDove,
-} from '@fortawesome/free-solid-svg-icons';
+} from '@fortawesome/free-solid-svg-icons'
 
-import { ContentPanel } from '../Modules';
-import { AuthContext } from '../../App';
-import ImageGallery from '../../utils/ImageGallery';
-import Loading from '../../layout/Loading';
+import { ContentPanel } from '../Modules'
+import { AuthContext } from '../../App'
+import ImageGallery from '../../utils/ImageGallery'
+import Loading from '../../layout/Loading'
 
-import { TableStyle } from '../Profile';
+import { TableStyle } from '../Profile'
 
-import styled from 'styled-components';
-import CommentSection from './CommentSection';
+import styled from 'styled-components'
+import CommentSection from './CommentSection'
 
-import { formatDateShort, formatTime } from '../../utils/Util';
-import PublishModal from './PublishModal';
+import { formatDateShort, formatTime } from '../../utils/Util'
+import PublishModal from './PublishModal'
 
 const UpdatesTable = styled(TableStyle)`
   td,
@@ -34,7 +34,7 @@ const UpdatesTable = styled(TableStyle)`
     text-align: center;
     font-size: 12px;
   }
-`;
+`
 
 export const BackButton = styled.button`
   cursor: pointer;
@@ -47,7 +47,7 @@ export const BackButton = styled.button`
   &:hover {
     background-color: #eee;
   }
-`;
+`
 
 const ViolationStatus = styled.span`
   font-weight: bold;
@@ -60,7 +60,7 @@ const ViolationStatus = styled.span`
   margin-left: 10px;
   font-size: 20px;
   margin-top: 5px;
-`;
+`
 
 const FancyButton = styled.button`
   border: none;
@@ -89,7 +89,7 @@ const FancyButton = styled.button`
   &:first-of-type {
     margin-left: 0;
   }
-`;
+`
 
 const FancyButtonGreen = styled(FancyButton)`
   background-color: #44e644;
@@ -103,7 +103,7 @@ const FancyButtonGreen = styled(FancyButton)`
     background-color: #9efd9e;
     border-bottom-color: #9aec8e;
   }
-`;
+`
 
 export const FancyButtonBlue = styled(FancyButton)`
   background-color: #36a2e3;
@@ -117,7 +117,7 @@ export const FancyButtonBlue = styled(FancyButton)`
     background-color: #b6e4ff;
     border-bottom-color: #b9d4ec;
   }
-`;
+`
 
 const FancyButtonYellow = styled(FancyButton)`
   background-color: #f9d71c;
@@ -131,7 +131,7 @@ const FancyButtonYellow = styled(FancyButton)`
     background-color: #fff6b0;
     border-bottom-color: #ece793;
   }
-`;
+`
 
 const FancyButtonRed = styled(FancyButton)`
   background-color: #ff3e3e;
@@ -145,7 +145,7 @@ const FancyButtonRed = styled(FancyButton)`
     background-color: #f4d2d2;
     border-bottom-color: #dfc1c1;
   }
-`;
+`
 
 const TextAreaFormStyle = styled.form`
   width: 100%;
@@ -158,71 +158,71 @@ const TextAreaFormStyle = styled.form`
     margin: 20px 0;
     box-sizing: border-box;
   }
-`;
+`
 
 export default (props) => {
   const { authGet, authPost, user, authPatch, authDelete } =
-    useContext(AuthContext);
-  const { violation } = useParams();
-  const history = useHistory();
-  const [data, setData] = useState(null);
+    useContext(AuthContext)
+  const { violation } = useParams()
+  const history = useHistory()
+  const [data, setData] = useState(null)
   const [buttonLoading, setButtonLoading] = useState({
     assign: false,
     process: false,
     reject: false,
-  });
+  })
 
-  const [modalState, setModalState] = useState({ isOpen: false });
+  const [modalState, setModalState] = useState({ isOpen: false })
 
   useEffect(() => {
     authGet(`/violations/${violation}`).then((res) => {
-      setData(res.data);
-    });
-  }, []);
+      setData(res.data)
+    })
+  }, [])
 
   const assignYourself = () => {
     if (iAmAssignee) {
-      setButtonLoading({ ...buttonLoading, assign: true });
+      setButtonLoading({ ...buttonLoading, assign: true })
       authDelete(`/violations/${violation}/assignees/${user.id}`).then(
         (res) => {
-          setButtonLoading({ ...buttonLoading, assign: false });
+          setButtonLoading({ ...buttonLoading, assign: false })
           if (res.data.status === 'Accepted') {
-            setData({ ...data, assignees: [] });
+            setData({ ...data, assignees: [] })
           }
         }
-      );
+      )
     } else {
-      setButtonLoading({ ...buttonLoading, assign: true });
+      setButtonLoading({ ...buttonLoading, assign: true })
       authPost(`/violations/${violation}/assignees`, { id: user.id }).then(
         (res) => {
-          setButtonLoading({ ...buttonLoading, assign: false });
+          setButtonLoading({ ...buttonLoading, assign: false })
           if (res.data.status === 'Accepted') {
-            setData({ ...data, assignees: [user], status: 'processing' });
+            setData({ ...data, assignees: [user], status: 'processing' })
           }
         }
-      );
+      )
     }
-  };
+  }
 
   const goBack = () => {
-    history.goBack();
-  };
+    history.goBack()
+  }
 
   const processViolation = () => {
-    setButtonLoading({ ...buttonLoading, process: true });
+    setButtonLoading({ ...buttonLoading, process: true })
     authPost(`/violations/${violation}/process`).then((res) => {
-      setButtonLoading({ ...buttonLoading, process: false });
-      setData(res.data);
-    });
-  };
+      setButtonLoading({ ...buttonLoading, process: false })
+      setData(res.data)
+    })
+  }
 
   const rejectViolation = () => {
-    setButtonLoading({ ...buttonLoading, reject: true });
+    setButtonLoading({ ...buttonLoading, reject: true })
     authPost(`/violations/${violation}/reject`).then((res) => {
-      setButtonLoading({ ...buttonLoading, reject: false });
-      setData(res.data);
-    });
-  };
+      setButtonLoading({ ...buttonLoading, reject: false })
+      setData(res.data)
+    })
+  }
 
   const openPublishModal = () => {
     setModalState({
@@ -230,54 +230,52 @@ export default (props) => {
       violationText: data.publishedText ? data.publishedText : data.description,
       confirmHandler: publishViolation,
       cancelHandler: () => setModalState({ isOpen: false }),
-    });
-  };
+    })
+  }
 
   const publishViolation = (publishedText) => {
-    setButtonLoading({ ...buttonLoading, publish: true });
-    setModalState({ isOpen: false });
+    setButtonLoading({ ...buttonLoading, publish: true })
+    setModalState({ isOpen: false })
 
     const reqBody = {
       isPublished: !data.isPublished,
-    };
+    }
 
     if (!data.isPublished) {
-      reqBody['publishedText'] = publishedText;
+      reqBody['publishedText'] = publishedText
     }
 
     authPatch(`/violations/${violation}`, reqBody).then((res) => {
-      setButtonLoading({ ...buttonLoading, publish: false });
-      setData(res.data);
-    });
-  };
+      setButtonLoading({ ...buttonLoading, publish: false })
+      setData(res.data)
+    })
+  }
 
   const status = (apiStatus) => {
     switch (apiStatus) {
       case 'received':
-        return <ViolationStatus color={'#6c6cff'}>Получен</ViolationStatus>;
+        return <ViolationStatus color={'#6c6cff'}>Получен</ViolationStatus>
       case 'rejected':
-        return <ViolationStatus color={'#ff3939'}>Отхвърлен</ViolationStatus>;
+        return <ViolationStatus color={'#ff3939'}>Отхвърлен</ViolationStatus>
       case 'processed':
-        return <ViolationStatus color={'#46df00'}>Обработен</ViolationStatus>;
+        return <ViolationStatus color={'#46df00'}>Обработен</ViolationStatus>
       case 'processing':
-        return (
-          <ViolationStatus color={'#ecd40e'}>Обработва се</ViolationStatus>
-        );
+        return <ViolationStatus color={'#ecd40e'}>Обработва се</ViolationStatus>
       default:
-        return apiStatus;
+        return apiStatus
     }
-  };
+  }
 
   const iAmAssignee =
-    data && data.assignees.length !== 0 && data.assignees[0].id === user.id;
+    data && data.assignees.length !== 0 && data.assignees[0].id === user.id
 
   const assignPossible = () =>
-    (data.assignees.length === 0 || iAmAssignee) && !buttonLoading.assign;
+    (data.assignees.length === 0 || iAmAssignee) && !buttonLoading.assign
   const processPossible = () =>
-    iAmAssignee && data.status === 'processing' && !buttonLoading.process;
+    iAmAssignee && data.status === 'processing' && !buttonLoading.process
   const rejectPossible = () =>
-    iAmAssignee && data.status === 'processing' && !buttonLoading.reject;
-  const publishPossible = () => !buttonLoading.publish;
+    iAmAssignee && data.status === 'processing' && !buttonLoading.reject
+  const publishPossible = () => !buttonLoading.publish
 
   return (
     <ContentPanel>
@@ -463,16 +461,18 @@ export default (props) => {
                 </tr>
               </thead>
               <tbody>
-                {data.updates.sort((a, b) => a.timestamp.localeCompare(b.timestamp)).map((update) => (
-                  <tr key={update.id}>
-                    <td>{formatDateShort(update.timestamp)}</td>
-                    <td>{formatTime(update.timestamp)}</td>
-                    <td>
-                      {update.actor?.firstName} {update.actor?.lastName}
-                    </td>
-                    <td>{update.type}</td>
-                  </tr>
-                ))}
+                {data.updates
+                  .sort((a, b) => a.timestamp.localeCompare(b.timestamp))
+                  .map((update) => (
+                    <tr key={update.id}>
+                      <td>{formatDateShort(update.timestamp)}</td>
+                      <td>{formatTime(update.timestamp)}</td>
+                      <td>
+                        {update.actor?.firstName} {update.actor?.lastName}
+                      </td>
+                      <td>{update.type}</td>
+                    </tr>
+                  ))}
               </tbody>
             </UpdatesTable>
           </div>
@@ -491,5 +491,5 @@ export default (props) => {
         </>
       )}
     </ContentPanel>
-  );
-};
+  )
+}

@@ -6,7 +6,9 @@
   "scripts": {
     "build": "node --openssl-legacy-provider -r dotenv/config node_modules/.bin/webpack --config webpack/build.config.js",
     "serve": "node --openssl-legacy-provider -r dotenv/config node_modules/.bin/webpack serve --config webpack/serve.config.js",
-    "serve:local": "API_HOST=http://localhost:4000 node --openssl-legacy-provider -r dotenv/config node_modules/.bin/webpack serve --config webpack/serve.config.js"
+    "serve:local": "API_HOST=http://localhost:4000 node --openssl-legacy-provider -r dotenv/config node_modules/.bin/webpack serve --config webpack/serve.config.js",
+    "lint": "prettier -w '**/*.{js,json}'",
+    "prepare": "husky install"
   },
   "author": "",
   "dependencies": {
@@ -45,10 +47,13 @@
     "styled-components": "^5.2.1",
     "url-loader": "^4.1.1",
     "webpack": "^5.15.0",
-    "webpack-dev-server": "^3.11.2"
+    "webpack-dev-server": "^3.11.2",
+    "lint-staged": "^13.1.2"
   },
   "devDependencies": {
     "webpack-cli": "^4.3.1",
-    "webpack-merge": "^5.7.3"
+    "webpack-merge": "^5.7.3",
+    "prettier": "2.8.4",
+    "husky": "^8.0.0"
   }
 }

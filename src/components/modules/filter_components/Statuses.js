@@ -1,13 +1,16 @@
-import React from "react";
+import React from 'react'
 
 export default (props) => {
-  const { setStatus, status } = props;
+  const { setStatus, status } = props
 
-  const statuses = [{status: '00', statusLocalized: 'Всички'}, ...props.statuses]
+  const statuses = [
+    { status: '00', statusLocalized: 'Всички' },
+    ...props.statuses,
+  ]
 
   const changeHandler = (event) => {
-    setStatus(event.target.value);
-  };
+    setStatus(event.target.value)
+  }
 
   const filters = statuses
     .sort((a, b) => (a.statusLocalized > b.statusLocalized ? 1 : -1))
@@ -16,12 +19,12 @@ export default (props) => {
         <option key={index} value={status}>
           {statusLocalized}
         </option>
-      );
-    });
+      )
+    })
 
   return (
     <select value={status} onChange={changeHandler}>
       {filters}
     </select>
-  );
-};
+  )
+}

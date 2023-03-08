@@ -1,24 +1,24 @@
-import React from 'react';
+import React from 'react'
 
-import Navigation from './layout/Navigation';
+import Navigation from './layout/Navigation'
 
-import { Switch, Route, Redirect } from 'react-router-dom';
+import { Switch, Route, Redirect } from 'react-router-dom'
 
-import Admin from './admin/Admin';
-import AdminDetails from './admin/AdminDetails';
+import Admin from './admin/Admin'
+import AdminDetails from './admin/AdminDetails'
 
-import Posts from './Posts';
-import Profile from './Profile';
+import Posts from './Posts'
+import Profile from './Profile'
 
-import ProtocolsHome from './protocols/ProtocolsHome';
-import ProtocolDetails from './protocols/ProtocolDetails';
+import ProtocolsHome from './protocols/ProtocolsHome'
+import ProtocolDetails from './protocols/ProtocolDetails'
 
-import ViolationList from './violations/ViolationList';
-import ViolationDetails from './violations/ViolationDetails';
-import AllComments from './violations/AllComments';
+import ViolationList from './violations/ViolationList'
+import ViolationDetails from './violations/ViolationDetails'
+import AllComments from './violations/AllComments'
 
-import styled from 'styled-components';
-import Sections from './Sections';
+import styled from 'styled-components'
+import Sections from './Sections'
 
 const NavigationHalf = styled.div`
   width: 220px;
@@ -26,7 +26,7 @@ const NavigationHalf = styled.div`
   position: absolute;
   top: 0;
   left: 0;
-`;
+`
 
 const ContentHalf = styled.div`
   width: calc(100% - 220px);
@@ -36,7 +36,7 @@ const ContentHalf = styled.div`
   top: 0;
   right: 0;
   background-color: #eee;
-`;
+`
 
 export const ContentPanel = styled.div`
   background-color: white;
@@ -52,7 +52,7 @@ export const ContentPanel = styled.div`
     border: 1px solid #ddd;
     border-top: 0;
   }
-`;
+`
 
 export default (props) => {
   return (
@@ -79,5 +79,5 @@ export default (props) => {
         </Switch>
       </ContentHalf>
     </>
-  );
-};
+  )
+}

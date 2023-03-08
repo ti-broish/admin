@@ -1,15 +1,12 @@
-import React, { useContext, useEffect, useRef, useState } from 'react';
-import ProtocolPhotos from './protocol_photos/ProtocolPhotos';
-import ValidationFormState from './validation_form/ValidationFormState';
+import React, { useContext, useEffect, useRef, useState } from 'react'
+import ProtocolPhotos from './protocol_photos/ProtocolPhotos'
+import ValidationFormState from './validation_form/ValidationFormState'
 
-import useKeypress from 'react-use-keypress';
+import useKeypress from 'react-use-keypress'
 
-import {
-  faChevronDown,
-  faChevronLeft,
-} from '@fortawesome/free-solid-svg-icons';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import styled from 'styled-components';
+import { faChevronDown, faChevronLeft } from '@fortawesome/free-solid-svg-icons'
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+import styled from 'styled-components'
 
 const ProtocolInfoSection = styled.div`
   width: 50vw;
@@ -18,7 +15,7 @@ const ProtocolInfoSection = styled.div`
   position: absolute;
   top: 0;
   right: 0;
-`;
+`
 
 const ProtocolDetails = styled.div`
   padding: 20px;
@@ -37,13 +34,13 @@ const ProtocolDetails = styled.div`
     border: 1px solid #ddd;
     border-top: 0;
   }
-`;
+`
 
 const SectionHeader = styled.div`
   //padding: 10px;
   background-color: rgb(56, 222, 203);
   color: white;
-`;
+`
 
 const BackButton = styled.button`
   display: inline-block;
@@ -55,7 +52,7 @@ const BackButton = styled.button`
   padding: 15px;
   border-right: 1px solid white;
   margin-right: 20px;
-`;
+`
 
 const VerificationPanelButton = styled.button`
   border: none;
@@ -86,7 +83,7 @@ const VerificationPanelButton = styled.button`
       background-color: #aaa;
     }
   }
-`;
+`
 
 const AcceptButton = styled(VerificationPanelButton)`
   background-color: #44e644;
@@ -96,7 +93,7 @@ const AcceptButton = styled(VerificationPanelButton)`
   &:hover {
     background-color: #2ece2e;
   }
-`;
+`
 
 const CorrectButton = styled(VerificationPanelButton)`
   background-color: #f9de00;
@@ -106,7 +103,7 @@ const CorrectButton = styled(VerificationPanelButton)`
   &:hover {
     background-color: #ffe405;
   }
-`;
+`
 
 const RejectButton = styled(VerificationPanelButton)`
   background-color: #ff4545;
@@ -116,7 +113,7 @@ const RejectButton = styled(VerificationPanelButton)`
   &:hover {
     background-color: #ff2626;
   }
-`;
+`
 
 const ApproveAndSendViolationButton = styled(VerificationPanelButton)`
   background-color: #f19c48;
@@ -126,17 +123,17 @@ const ApproveAndSendViolationButton = styled(VerificationPanelButton)`
   &:hover {
     background-color: #ef8a25;
   }
-`;
+`
 
-import { AuthContext } from '../App';
-import ConfirmationModal from './ConfirmationModal';
-import SectionDetails from './validation_form/SectionDetails';
+import { AuthContext } from '../App'
+import ConfirmationModal from './ConfirmationModal'
+import SectionDetails from './validation_form/SectionDetails'
 
 export default (props) => {
-  const { parties, authPost, authGet } = useContext(AuthContext);
+  const { parties, authPost, authGet } = useContext(AuthContext)
 
-  const [allParties, setAllParties] = useState(true); //Math.random() < 0.5);
-  const [modalState, setModalState] = useState({ isOpen: false });
+  const [allParties, setAllParties] = useState(true) //Math.random() < 0.5);
+  const [modalState, setModalState] = useState({ isOpen: false })
   const [sectionData, setSectionData] = useState({
     country: null,
     electionRegion: null,
@@ -146,15 +143,15 @@ export default (props) => {
     cityRegion: null,
     address: null,
     isMachine: false,
-  });
+  })
 
   const [machineHash, setMachineHash] = useState([
     { startHash: '', endHash: '' },
-  ]);
+  ])
 
-  const [protocolType, setProtocolType] = useState('unset');
-  const [machineCount, setMachineCount] = useState(0);
-  const [isFinal, setIsFinal] = useState(false);
+  const [protocolType, setProtocolType] = useState('unset')
+  const [machineCount, setMachineCount] = useState(0)
+  const [isFinal, setIsFinal] = useState(false)
 
   const [formState, setFormState] = useState(
     () =>
@@ -164,7 +161,7 @@ export default (props) => {
         protocolType,
         machineCount,
       })
-  );
+  )
 
   const { fieldStatus, invalidFields, changedFields } =
     formState.getFieldStatus(
@@ -172,8 +169,8 @@ export default (props) => {
       parties,
       protocolType,
       machineCount
-    );
-  const ref = useRef();
+    )
+  const ref = useRef()
 
   //   useEffect(() => {
   //     setFormState(
@@ -209,43 +206,43 @@ export default (props) => {
   //   }, [machineCount]);
 
   useKeypress(['ArrowUp'], (event) => {
-    let lastInput = null;
+    let lastInput = null
 
     const traverseNodeTree = (node) => {
       if (node === document.activeElement && lastInput != null)
-        lastInput.focus();
+        lastInput.focus()
       else {
-        if (node.tagName === 'INPUT') lastInput = node;
-        [...node.children].forEach(traverseNodeTree);
+        if (node.tagName === 'INPUT') lastInput = node
+        ;[...node.children].forEach(traverseNodeTree)
       }
-    };
+    }
 
-    traverseNodeTree(ref.current);
-  });
+    traverseNodeTree(ref.current)
+  })
 
   useKeypress(['ArrowDown', 'Enter'], (event) => {
-    let shouldFocus = false;
+    let shouldFocus = false
 
     const traverseNodeTree = (node) => {
       if (node.tagName === 'INPUT' && shouldFocus) {
-        node.focus();
-        shouldFocus = false;
+        node.focus()
+        shouldFocus = false
       } else {
-        if (node === document.activeElement) shouldFocus = true;
-        [...node.children].forEach(traverseNodeTree);
+        if (node === document.activeElement) shouldFocus = true
+        ;[...node.children].forEach(traverseNodeTree)
       }
-    };
+    }
 
-    traverseNodeTree(ref.current);
-  });
+    traverseNodeTree(ref.current)
+  })
 
-  const violationMessage = useRef('');
+  const violationMessage = useRef('')
 
   useEffect(() => {
     if (formState.formData.sectionId?.length === 9) {
-      updateSectionData();
+      updateSectionData()
     }
-  }, [formState.formData.sectionId]);
+  }, [formState.formData.sectionId])
 
   const updateSectionData = async () => {
     setSectionData({
@@ -257,11 +254,11 @@ export default (props) => {
       cityRegion: null,
       address: null,
       isMachine: false,
-    });
+    })
 
-    const res = await authGet(`/sections/${formState.formData.sectionId}`);
+    const res = await authGet(`/sections/${formState.formData.sectionId}`)
 
-    const { town, electionRegion, cityRegion, place } = res.data;
+    const { town, electionRegion, cityRegion, place } = res.data
 
     setSectionData({
       country: town.country.name,
@@ -272,40 +269,40 @@ export default (props) => {
       cityRegion: !cityRegion ? null : cityRegion.name,
       address: place,
       isMachine: res.data.isMachine,
-    });
-  };
+    })
+  }
 
   const handleProtocolNumberChange = (e) => {
-    setFormState(formState.updateProtocolNumber(e.target.value));
-  };
+    setFormState(formState.updateProtocolNumber(e.target.value))
+  }
 
   const handleResultsChange = (e) => {
-    const key = e.target.name; //`${e.target.dataset.partyId}`;
-    setFormState(formState.updateResultsData(key, e.target.value));
-  };
+    const key = e.target.name //`${e.target.dataset.partyId}`;
+    setFormState(formState.updateResultsData(key, e.target.value))
+  }
 
   const handleNumberChange = (e) => {
-    const key = e.target.name;
-    setFormState(formState.updateFormData(key, e.target.value));
-  };
+    const key = e.target.name
+    setFormState(formState.updateFormData(key, e.target.value))
+  }
 
   const rejectProtocol = async (reason) => {
     if (reason?.rejectionReason) {
-      props.setLoading(true);
+      props.setLoading(true)
 
       authPost(`/protocols/${props.protocol.id}/reject`, {
         reason: reason?.rejectionReason,
       })
         .then((res) => {
-          props.setLoading(false);
-          props.processingDone(`Протокол ${props.protocol.id} ОТХВЪРЛЕН`);
+          props.setLoading(false)
+          props.processingDone(`Протокол ${props.protocol.id} ОТХВЪРЛЕН`)
         })
         .catch((err) => {
-          props.setLoading(false);
-          props.processingFailed('Възникна грешка, моля опитайте отново');
-        });
+          props.setLoading(false)
+          props.processingFailed('Възникна грешка, моля опитайте отново')
+        })
     }
-  };
+  }
 
   const openConfirmModal = () => {
     setModalState({
@@ -318,8 +315,8 @@ export default (props) => {
       cancelButtonName: 'Върни се',
       confirmHandler: replaceProtocol,
       cancelHandler: () => setModalState({ isOpen: false }),
-    });
-  };
+    })
+  }
 
   const openRejectModal = () => {
     setModalState({
@@ -331,8 +328,8 @@ export default (props) => {
       cancelButtonName: 'Върни се',
       confirmHandler: (reason) => rejectProtocol(reason),
       cancelHandler: () => setModalState({ isOpen: false }),
-    });
-  };
+    })
+  }
 
   const replaceProtocol = async () => {
     const postBody = {
@@ -355,55 +352,55 @@ export default (props) => {
       totalVotesCast: parseInt(formState.formData.totalVotesCast, 10),
       results: formState.generateResults(parties, protocolType, machineCount),
       pictures: props.protocol.pictures,
-    };
+    }
 
     if (protocolType === 'paper-machine') {
       postBody['nonMachineVotesCount'] = parseInt(
         formState.formData.nonMachineVotesCount,
         10
-      );
+      )
       postBody['machineVotesCount'] = parseInt(
         formState.formData.machineVotesCount,
         10
-      );
+      )
     }
 
     if (protocolType === 'paper' || protocolType === 'paper-machine') {
       postBody['invalidVotesCount'] = parseInt(
         formState.formData.invalidVotesCount,
         10
-      );
+      )
       postBody['validVotesCount'] = parseInt(
         formState.formData.validVotesCount,
         10
-      );
+      )
     }
 
     if (protocolType === 'machine' || protocolType === 'paper-machine') {
-      postBody['machineHashes'] = machineHash;
+      postBody['machineHashes'] = machineHash
     }
 
-    props.setLoading(true);
+    props.setLoading(true)
     try {
       const res = await authPost(
         `/protocols/${props.protocol.id}/replace`,
         postBody
-      );
+      )
     } catch (err) {
-      props.setLoading(false);
-      return;
+      props.setLoading(false)
+      return
     }
-    props.setLoading(false);
-    props.processingDone(`Протокол ${props.protocol.id} ОДОБРЕН с КОРЕКЦИЯ`);
-  };
+    props.setLoading(false)
+    props.processingDone(`Протокол ${props.protocol.id} ОДОБРЕН с КОРЕКЦИЯ`)
+  }
 
   const performSumCheck = () => {
-    return null;
-    if (protocolType === 'machine') return null;
+    return null
+    if (protocolType === 'machine') return null
 
-    let sum = 0;
+    let sum = 0
     for (const key of Object.keys(formState.resultsData)) {
-      sum += parseInt(formState.resultsData[key], 10);
+      sum += parseInt(formState.resultsData[key], 10)
     }
 
     if (sum !== parseInt(formState.formData.validVotesCount, 10)) {
@@ -415,9 +412,9 @@ export default (props) => {
         <br />,
         `Ако грешката идва от протокола, моля не го поправяйте!
             `,
-      ];
-    } else return null;
-  };
+      ]
+    } else return null
+  }
 
   return (
     <div>
@@ -488,5 +485,5 @@ export default (props) => {
         </ProtocolDetails>
       </ProtocolInfoSection>
     </div>
-  );
-};
+  )
+}

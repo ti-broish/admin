@@ -1,25 +1,25 @@
-import React, { useEffect, useContext, useState } from 'react';
+import React, { useEffect, useContext, useState } from 'react'
 
-import { Link, useLocation, useHistory } from 'react-router-dom';
+import { Link, useLocation, useHistory } from 'react-router-dom'
 
-import { AuthContext } from '../../App';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { AuthContext } from '../../App'
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import {
   faChevronLeft,
   faChevronRight,
   faFastForward,
   faFastBackward,
-} from '@fortawesome/free-solid-svg-icons';
+} from '@fortawesome/free-solid-svg-icons'
 
-import styled from 'styled-components';
-import Loading from '../../layout/Loading';
+import styled from 'styled-components'
+import Loading from '../../layout/Loading'
 
-import ProtocolFilter from './ProtocolFilter';
+import ProtocolFilter from './ProtocolFilter'
 
-import firebase from 'firebase/app';
-import 'firebase/auth';
+import firebase from 'firebase/app'
+import 'firebase/auth'
 
-import axios from 'axios';
+import axios from 'axios'
 
 const TableViewContainer = styled.div`
   padding: 40px;
@@ -28,7 +28,7 @@ const TableViewContainer = styled.div`
     border: 1px solid #ccc;
     border-bottom: none;
   }
-`;
+`
 
 const PaginationLinks = styled.div`
   padding: 20px;
@@ -48,7 +48,7 @@ const PaginationLinks = styled.div`
       pointer-events: none;
     }
   }
-`;
+`
 
 const ProtocolTable = styled.table`
   background-color: white;
@@ -79,38 +79,38 @@ const ProtocolTable = styled.table`
       background-color: rgb(202, 255, 249);
     }
   }
-`;
+`
 
 const ProtocolStatus = styled.span`
   font-weight: bold;
-`;
+`
 
 const useQuery = () => {
-  return new URLSearchParams(useLocation().search);
-};
+  return new URLSearchParams(useLocation().search)
+}
 
 export default (props) => {
-  const { authGet } = useContext(AuthContext);
-  const [data, setData] = useState(null);
-  const [loading, setLoading] = useState(false);
-  const query = useQuery();
-  const history = useHistory();
+  const { authGet } = useContext(AuthContext)
+  const [data, setData] = useState(null)
+  const [loading, setLoading] = useState(false)
+  const query = useQuery()
+  const history = useHistory()
 
   useEffect(() => {
-    let url = '/protocols';
+    let url = '/protocols'
 
-    const page = query.get('page');
+    const page = query.get('page')
     // const limit = query.get('limit');
-    const country = query.get('country');
-    const electionRegion = query.get('electionRegion');
-    const assignee = query.get('assignee');
-    const section = query.get('section');
-    const municipality = query.get('municipality');
-    const town = query.get('town');
-    const cityRegion = query.get('cityRegion');
-    const status = query.get('status');
-    const organization = query.get('organization');
-    const origin = query.get('origin');
+    const country = query.get('country')
+    const electionRegion = query.get('electionRegion')
+    const assignee = query.get('assignee')
+    const section = query.get('section')
+    const municipality = query.get('municipality')
+    const town = query.get('town')
+    const cityRegion = query.get('cityRegion')
+    const status = query.get('status')
+    const organization = query.get('organization')
+    const origin = query.get('origin')
 
     if (
       page ||
@@ -125,26 +125,26 @@ export default (props) => {
       organization ||
       origin
     )
-      url += '?';
+      url += '?'
 
-    if (country) url += `country=${country}`;
-    if (electionRegion) url += `&electionRegion=${electionRegion}`;
-    if (municipality) url += `&municipality=${municipality}`;
-    if (assignee) url += `&assignee=${assignee}`;
-    if (section) url += `&section=${section}`;
-    if (town) url += `&town=${town}`;
-    if (cityRegion) url += `&cityRegion=${cityRegion}`;
-    if (status) url += `&status=${status}`;
-    if (organization) url += `&organization=${organization}`;
-    if (origin) url += `&origin=${origin}`;
-    if (page) url += `page=${page}`;
+    if (country) url += `country=${country}`
+    if (electionRegion) url += `&electionRegion=${electionRegion}`
+    if (municipality) url += `&municipality=${municipality}`
+    if (assignee) url += `&assignee=${assignee}`
+    if (section) url += `&section=${section}`
+    if (town) url += `&town=${town}`
+    if (cityRegion) url += `&cityRegion=${cityRegion}`
+    if (status) url += `&status=${status}`
+    if (organization) url += `&organization=${organization}`
+    if (origin) url += `&origin=${origin}`
+    if (page) url += `page=${page}`
     // if (limit) url += `limit=${limit}`;
 
-    setLoading(true);
+    setLoading(true)
     authGet(url).then((res) => {
-      setLoading(false);
-      setData(res.data);
-    });
+      setLoading(false)
+      setData(res.data)
+    })
   }, [
     query.get('page'),
     query.get('country'),
@@ -157,59 +157,59 @@ export default (props) => {
     query.get('status'),
     query.get('organization'),
     query.get('origin'),
-  ]);
+  ])
 
   const origin = (apiOrigin) => {
     switch (apiOrigin) {
       case 'ti-broish':
-        return 'Ти Броиш';
+        return 'Ти Броиш'
       default:
-        return apiOrigin;
+        return apiOrigin
     }
-  };
+  }
 
   const status = (apiStatus) => {
     switch (apiStatus) {
       case 'received':
         return (
           <ProtocolStatus style={{ color: '#6c6cff' }}>Получен</ProtocolStatus>
-        );
+        )
       case 'rejected':
         return (
           <ProtocolStatus style={{ color: '#ff3939' }}>
             Отхвърлен
           </ProtocolStatus>
-        );
+        )
       case 'approved':
         return (
           <ProtocolStatus style={{ color: '#46df00' }}>Одобрен</ProtocolStatus>
-        );
+        )
       case 'replaced':
         return (
           <ProtocolStatus style={{ color: '#ecd40e' }}>
             Редактиран
           </ProtocolStatus>
-        );
+        )
       case 'published':
         return (
           <ProtocolStatus style={{ color: '#00bcd4' }}>
             Публикуван
           </ProtocolStatus>
-        );
+        )
       case 'ready':
         return (
           <ProtocolStatus style={{ color: '#009688' }}>Готов</ProtocolStatus>
-        );
+        )
       default:
-        return apiStatus;
+        return apiStatus
     }
-  };
+  }
 
   const renderLinks = () => {
-    const firstAvail = data.meta.currentPage !== 1;
-    const lastAvail = data.meta.currentPage !== data.meta.totalPages;
-    const nextAvail = data.links.next;
-    const prevAvail = data.links.previous;
+    const firstAvail = data.meta.currentPage !== 1
+    const lastAvail = data.meta.currentPage !== data.meta.totalPages
+    const nextAvail = data.links.next
+    const prevAvail = data.links.previous
 
     return (
       <PaginationLinks>
@@ -236,12 +236,12 @@ export default (props) => {
           Последна <FontAwesomeIcon icon={faFastForward} />
         </Link>
       </PaginationLinks>
-    );
-  };
+    )
+  }
 
   const openProtocol = (id) => {
-    history.push(`/protocol/${id}`);
-  };
+    history.push(`/protocol/${id}`)
+  }
 
   return (
     <TableViewContainer>
@@ -287,5 +287,5 @@ export default (props) => {
         </>
       )}
     </TableViewContainer>
-  );
-};
+  )
+}

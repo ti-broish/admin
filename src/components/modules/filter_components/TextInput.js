@@ -1,6 +1,6 @@
-import React from 'react';
+import React from 'react'
 
-import styled from 'styled-components';
+import styled from 'styled-components'
 
 const InputField = styled.input`
   background: white;
@@ -9,15 +9,15 @@ const InputField = styled.input`
   width: 230px;
   overflow: hidden;
   box-sizing: border-box;
-`;
+`
 
 export default (props) => {
-  const { setTextInput } = props;
+  const { setTextInput } = props
 
   const changeHandler = (event) => {
-    event.preventDefault();
-    setTextInput(event.target.value);
-  };
+    event.preventDefault()
+    setTextInput(event.target.value)
+  }
 
-  return <InputField value={props.textInput} onChange={changeHandler} />;
-};
+  return <InputField value={props.textInput} onChange={changeHandler} />
+}

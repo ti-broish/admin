@@ -1,15 +1,15 @@
-import React, { useState, useEffect, useContext } from 'react';
-import { ContentPanel } from '../Modules';
-import { useHistory, useParams } from 'react-router-dom';
-import { AuthContext } from '../../App';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faChevronLeft } from '@fortawesome/free-solid-svg-icons';
-import { TableStyle } from '../Profile';
-import { BackButton } from '../violations/ViolationDetails';
+import React, { useState, useEffect, useContext } from 'react'
+import { ContentPanel } from '../Modules'
+import { useHistory, useParams } from 'react-router-dom'
+import { AuthContext } from '../../App'
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+import { faChevronLeft } from '@fortawesome/free-solid-svg-icons'
+import { TableStyle } from '../Profile'
+import { BackButton } from '../violations/ViolationDetails'
 
-import Loading from '../../layout/Loading';
+import Loading from '../../layout/Loading'
 
-import styled from 'styled-components';
+import styled from 'styled-components'
 
 const CheckboxList = styled.div`
   list-style: none;
@@ -28,7 +28,7 @@ const CheckboxList = styled.div`
       margin-left: 0.5rem;
     }
   }
-`;
+`
 
 const ButtonStyle = styled.button`
   background-color: #4892e1;
@@ -52,55 +52,55 @@ const ButtonStyle = styled.button`
     border-bottom: none;
     margin-top: 3px;
   }
-`;
+`
 
 export default (props) => {
-  const { authGet, authPatch } = useContext(AuthContext);
-  const { userId } = useParams();
-  const history = useHistory();
-  const [userData, setUserData] = useState(null);
-  const [roles, setRoles] = useState(null);
-  const [rolesUpdateSuccessful, setRolesUpdateSuccessful] = useState(undefined);
+  const { authGet, authPatch } = useContext(AuthContext)
+  const { userId } = useParams()
+  const history = useHistory()
+  const [userData, setUserData] = useState(null)
+  const [roles, setRoles] = useState(null)
+  const [rolesUpdateSuccessful, setRolesUpdateSuccessful] = useState(undefined)
   useEffect(async () => {
-    const resUser = await authGet(`/users/${userId}`);
-    setUserData(resUser.data);
-    let allRoles = props.location.state;
+    const resUser = await authGet(`/users/${userId}`)
+    setUserData(resUser.data)
+    let allRoles = props.location.state
 
     if (resUser.data && allRoles) {
       allRoles = allRoles.map((role) => ({
         ...role,
         isChecked: resUser.data.roles.includes(role.role),
-      }));
+      }))
     }
-    setRoles(allRoles);
-  }, []);
+    setRoles(allRoles)
+  }, [])
 
   const goBack = () => {
-    history.goBack();
-  };
+    history.goBack()
+  }
 
   const saveRoles = () => {
-    setRolesUpdateSuccessful(undefined);
+    setRolesUpdateSuccessful(undefined)
 
     if (roles) {
       const rolesToSave = roles
         .filter((role) => role.isChecked)
-        .map((role) => role.role);
+        .map((role) => role.role)
 
       authPatch(`/users/${userData.id}`, {
         roles: rolesToSave,
       }).then((res) => {
-        setRolesUpdateSuccessful(res.status === 200);
-      });
+        setRolesUpdateSuccessful(res.status === 200)
+      })
     }
-  };
+  }
 
   const handleOnChange = (role) => {
     const updatedCheckedState = roles.map((item) =>
       item.role === role.role ? { ...item, isChecked: !item.isChecked } : item
-    );
-    setRoles(updatedCheckedState);
-  };
+    )
+    setRoles(updatedCheckedState)
+  }
 
   return (
     <ContentPanel>
@@ -182,7 +182,7 @@ export default (props) => {
                       </div>
                     </div>
                   </li>
-                );
+                )
               })}
             </CheckboxList>
           </ul>
@@ -201,5 +201,5 @@ export default (props) => {
         </>
       )}
     </ContentPanel>
-  );
-};
+  )
+}

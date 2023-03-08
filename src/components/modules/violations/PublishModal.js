@@ -1,6 +1,6 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react'
 
-import styled from 'styled-components';
+import styled from 'styled-components'
 
 const ModalOverlay = styled.div`
   position: fixed;
@@ -10,7 +10,7 @@ const ModalOverlay = styled.div`
   right: 0;
   background-color: rgba(0, 0, 0, 0.5);
   z-index: 1998;
-`;
+`
 
 const PublishModal = styled.div`
   background-color: white;
@@ -40,7 +40,7 @@ const PublishModal = styled.div`
     border-top: none;
     border-color: #ddd;
   }
-`;
+`
 
 const VerificationPanelButton = styled.button`
   border: none;
@@ -70,7 +70,7 @@ const VerificationPanelButton = styled.button`
       background-color: #aaa;
     }
   }
-`;
+`
 
 const AcceptButton = styled(VerificationPanelButton)`
   background-color: #44e644;
@@ -80,7 +80,7 @@ const AcceptButton = styled(VerificationPanelButton)`
   &:hover {
     background-color: #2ece2e;
   }
-`;
+`
 
 const CancelButton = styled(VerificationPanelButton)`
   background-color: #ccc;
@@ -90,22 +90,21 @@ const CancelButton = styled(VerificationPanelButton)`
   &:hover {
     background-color: #ddd;
   }
-`;
+`
 
 export default (props) => {
+  const [publishedText, setPublishedText] = useState()
 
-    const [publishedText, setPublishedText] = useState();
+  useEffect(() => {
+    if (props.isOpen) {
+      setPublishedText(props.violationText)
+    }
+  }, [props.isOpen])
 
-    useEffect(() => {
-        if(props.isOpen) {
-            setPublishedText(props.violationText);
-        }
-    }, [props.isOpen]);
-
-    const handleChange = e => {
-        console.log(e.target.value);
-        setPublishedText(e.target.value);
-    };
+  const handleChange = (e) => {
+    console.log(e.target.value)
+    setPublishedText(e.target.value)
+  }
 
   return !props.isOpen ? null : (
     <>
@@ -114,27 +113,35 @@ export default (props) => {
         <h1>Публикуване на сигнал</h1>
         <hr />
         <p>
-            Моля редактирайте текста, който ще се показва на публичния сайт
-            с резултати и нанесете нужните корекции, като например да 
-            <b> заличите личните данни</b>.
+          Моля редактирайте текста, който ще се показва на публичния сайт с
+          резултати и нанесете нужните корекции, като например да
+          <b> заличите личните данни</b>.
         </p>
 
-        <textarea 
-            style={{width: '100%', padding: '10px', boxSizing: 'border-box', resize: 'none'}}
-            value={publishedText}
-            onChange={handleChange}
-            rows="10"
+        <textarea
+          style={{
+            width: '100%',
+            padding: '10px',
+            boxSizing: 'border-box',
+            resize: 'none',
+          }}
+          value={publishedText}
+          onChange={handleChange}
+          rows="10"
         />
-        
-        <hr/>
 
-        <AcceptButton onClick={() => { console.log(publishedText); props.confirmHandler(publishedText) }}>
+        <hr />
+
+        <AcceptButton
+          onClick={() => {
+            console.log(publishedText)
+            props.confirmHandler(publishedText)
+          }}
+        >
           Публикувай
         </AcceptButton>
-        <CancelButton onClick={props.cancelHandler}>
-          Назад
-        </CancelButton>
+        <CancelButton onClick={props.cancelHandler}>Назад</CancelButton>
       </PublishModal>
     </>
-  );
-};
+  )
+}
