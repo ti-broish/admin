@@ -183,7 +183,7 @@ export default (props) => {
       })
     )
 
-    setMachineCount(0)
+    setMachineCount(protocolType == 'paper-machine' ? 1 : 0)
   }, [protocolType])
 
   useEffect(() => {

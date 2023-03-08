@@ -3,7 +3,7 @@ import React from 'react'
 import styled from 'styled-components'
 
 const ProtocolDetailsTable = styled.table`
-  table-layout: fixed;
+  table-layout: inherit;
 
   button {
     width: 100%;
@@ -11,8 +11,6 @@ const ProtocolDetailsTable = styled.table`
   }
 
   input {
-    width: 100%;
-    box-sizing: border-box;
     width: 100%;
     box-sizing: border-box;
     border: 1px solid #ddd;
@@ -44,7 +42,7 @@ const ProtocolDetailsTable = styled.table`
 `
 
 const PartyResultsTable = styled.table`
-  table-layout: fixed;
+  table-layout: inherit;
   width: 100%;
   border-collapse: collapse;
 
@@ -107,10 +105,12 @@ const PartyResultsTable = styled.table`
     `
       : props.colCount === 2
       ? `
-        td:nth-child(1), th:nth-child(1) { width: 8%; }
-        td:nth-child(2), th:nth-child(2) { width: 72%; }
+        td:nth-child(1), th:nth-child(1) { width: 7%; }
+        td:nth-child(2), th:nth-child(2) { width: 60%; }
         td:nth-child(3), th:nth-child(3) { width: 10%; }
         td:nth-child(4), th:nth-child(4) { width: 10%; }
+        td:nth-child(5), th:nth-child(5) { width: 10%; }
+
     `
       : props.colCount === 3
       ? `
@@ -190,6 +190,23 @@ export default (props) => {
             />
           </td>
         ))}
+        {props.protocolType === 'paper-machine' && (
+          <td>
+            <input
+              type="text"
+              className={
+                props.fieldStatus[`party${party.id}total`].invalid
+                  ? 'invalid'
+                  : props.fieldStatus[`party${party.id}total`].changed
+                  ? 'changed'
+                  : ''
+              }
+              name={`party${party.id}total`}
+              value={props.formState.resultsData[`party${party.id}total`] ?? ''}
+              onChange={props.handleResultsChange}
+            />
+          </td>
+        )}
       </tr>
     )
   }
@@ -360,6 +377,7 @@ export default (props) => {
             {[...Array(props.machineCount).keys()].map((i, index) => (
               <th key={index}>M{i + 1}</th>
             ))}
+            {props.protocolType === 'paper-machine' && <th>Общ</th>}
           </tr>
         </thead>
         <tbody>
@@ -368,7 +386,7 @@ export default (props) => {
             .map(partyRow)}
         </tbody>
       </PartyResultsTable>
-      {props.machineCount === 1 &&
+      {/* {props.machineCount === 1 &&
       props.machineHash.length === props.machineCount ? (
         <>
           <hr />
@@ -454,7 +472,7 @@ export default (props) => {
             </tbody>
           </ProtocolDetailsTable>
         </>
-      ) : null}
+      ) : null} */}
     </div>
   )
 }

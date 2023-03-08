@@ -189,13 +189,13 @@ export default (props) => {
       </ChooseProtocolType>
       <h5 style={{ margin: '10px 0' }}>Изберете вид протокол</h5>
       <ChooseProtocolType>
-        <input
+        {/* <input
           type="radio"
           id="machine"
           name="protocolType"
           onClick={() => props.setProtocolType('machine')}
         />
-        <label htmlFor="machine">Машинен</label>
+        <label htmlFor="machine">Машинен</label> */}
         <input
           type="radio"
           id="paper"
@@ -211,7 +211,7 @@ export default (props) => {
         />
         <label htmlFor="paper-machine">Хартиено-машинен</label>
       </ChooseProtocolType>
-      {props.protocolType === 'machine' ||
+      {/* {props.protocolType === 'machine' ||
       props.protocolType === 'paper-machine' ? (
         <>
           <h5 style={{ margin: '10px 0' }}>Брой машини</h5>
@@ -238,7 +238,7 @@ export default (props) => {
             <label htmlFor="2machines">2 машини</label>
           </ChooseProtocolType>
         </>
-      ) : null}
+      ) : null} */}
       <hr />
     </>
   )
