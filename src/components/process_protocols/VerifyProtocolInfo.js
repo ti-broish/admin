@@ -183,7 +183,7 @@ export default (props) => {
       })
     )
 
-    setMachineCount(0)
+    setMachineCount(protocolType == 'paper-machine' ? 1 : 0)
   }, [protocolType])
 
   useEffect(() => {
@@ -216,7 +216,7 @@ export default (props) => {
         lastInput.focus()
       else {
         if (node.tagName === 'INPUT') lastInput = node
-        ;[...node.children].forEach(traverseNodeTree)
+          ;[...node.children].forEach(traverseNodeTree)
       }
     }
 
@@ -232,7 +232,7 @@ export default (props) => {
         shouldFocus = false
       } else {
         if (node === document.activeElement) shouldFocus = true
-        ;[...node.children].forEach(traverseNodeTree)
+          ;[...node.children].forEach(traverseNodeTree)
       }
     }
 
@@ -461,8 +461,8 @@ export default (props) => {
             setIsFinal={setIsFinal}
           />
           {protocolType === 'unset' ||
-          (protocolType === 'machine' && machineCount === 0) ||
-          (protocolType === 'paper-machine' && machineCount === 0) ? null : (
+            (protocolType === 'machine' && machineCount === 0) ||
+            (protocolType === 'paper-machine' && machineCount === 0) ? null : (
             <ProtocolForm
               fieldStatus={fieldStatus}
               handleNumberChange={handleNumberChange}

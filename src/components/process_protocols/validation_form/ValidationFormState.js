@@ -38,6 +38,9 @@ export default class ValidationFormState {
         this.formData['machineVotesCount'] = zeroIfEmpty(
           protocol.results.machineVotesCount
         )
+        this.formData['totalVotesCount'] = zeroIfEmpty(
+          protocol.results.totalVotesCount
+        )
       }
 
       if (protocolType === 'paper' || protocolType === 'paper-machine') {
@@ -60,18 +63,21 @@ export default class ValidationFormState {
 
     for (const party of parties) {
       //check if should add paper
-      if (protocolType === 'paper' || protocolType === 'machine-paper') {
+      if (protocolType === 'paper' || protocolType === 'paper-machine') {
         this.resultsData[`party${party.id}paper`] = ''
       }
-
-      //add machines
+      //add machines and total votes
       for (let i = 0; i < machineCount; i++) {
         this.resultsData[`party${party.id}machine${i + 1}`] = ''
+      }
+
+      if (protocolType === 'paper-machine') {
+        this.resultsData[`party${party.id}total`] = ''
       }
     }
 
     for (const result of protocol.results) {
-      if (protocolType === 'paper' || protocolType === 'machine-paper') {
+      if (protocolType === 'paper' || protocolType === 'paper-machine') {
         this.resultsData[`party${result.party}paper`] = emptyStrIfNull(
           result.nonMachineVotesCount
         )
@@ -81,6 +87,12 @@ export default class ValidationFormState {
         if (result.machineVotes[i])
           this.resultsData[`party${result.party}machine${i + 1}`] =
             emptyStrIfNull(result.machineVotes[i])
+      }
+
+      if (protocolType === 'paper-machine') {
+        this.resultsData[`party${result.party}total`] = emptyStrIfNull(
+          result.totalVotes
+        )
       }
     }
   }
@@ -144,6 +156,11 @@ export default class ValidationFormState {
           originalResult
         )
       }
+      const originalTotalResult = emptyStrIfNull(result.totalVotes)
+      fieldStatus[`party${party.id}total`] = compareResult(
+        `party${party.id}total`,
+        originalTotalResult
+      )
     }
 
     const addStatusForResultField = (fieldName) => {
@@ -167,6 +184,8 @@ export default class ValidationFormState {
     if (protocolType === 'paper-machine') {
       addStatusForResultField('nonMachineVotesCount')
       addStatusForResultField('machineVotesCount')
+      addStatusForResultField('totalVotesCount')
+      addStatusForResultField('totalVotes')
     }
 
     if (protocolType === 'paper' || protocolType === 'paper-machine') {
@@ -220,6 +239,7 @@ export default class ValidationFormState {
 
       if (protocolType === 'machine' || protocolType === 'paper-machine') {
         result.machineVotes = []
+        result.totalVotes = []
       }
 
       if (protocolType === 'paper' || protocolType === 'paper-machine') {
@@ -232,6 +252,12 @@ export default class ValidationFormState {
       for (let i = 0; i < machineCount; i++) {
         result.machineVotes.push(
           parseInt(this.resultsData[`party${party.id}machine${i + 1}`], 10)
+        )
+      }
+
+      if (protocolType === 'paper-machine') {
+        result.totalVotes.push(
+          parseInt(this.resultsData[`party${party.id}total`], 10)
         )
       }
 

@@ -3,7 +3,7 @@ import React from 'react'
 import styled from 'styled-components'
 
 const ProtocolDetailsTable = styled.table`
-  table-layout: fixed;
+  table-layout: inherit;
 
   button {
     width: 100%;
@@ -11,8 +11,6 @@ const ProtocolDetailsTable = styled.table`
   }
 
   input {
-    width: 100%;
-    box-sizing: border-box;
     width: 100%;
     box-sizing: border-box;
     border: 1px solid #ddd;
@@ -44,7 +42,7 @@ const ProtocolDetailsTable = styled.table`
 `
 
 const PartyResultsTable = styled.table`
-  table-layout: fixed;
+  table-layout: inherit;
   width: 100%;
   border-collapse: collapse;
 
@@ -106,21 +104,23 @@ const PartyResultsTable = styled.table`
         td:nth-child(3), th:nth-child(3) { width: 20%; }
     `
       : props.colCount === 2
-      ? `
-        td:nth-child(1), th:nth-child(1) { width: 8%; }
-        td:nth-child(2), th:nth-child(2) { width: 72%; }
+        ? `
+        td:nth-child(1), th:nth-child(1) { width: 7%; }
+        td:nth-child(2), th:nth-child(2) { width: 60%; }
         td:nth-child(3), th:nth-child(3) { width: 10%; }
         td:nth-child(4), th:nth-child(4) { width: 10%; }
+        td:nth-child(5), th:nth-child(5) { width: 10%; }
+
     `
-      : props.colCount === 3
-      ? `
+        : props.colCount === 3
+          ? `
         td:nth-child(1), th:nth-child(1) { width: 8%; }
         td:nth-child(2), th:nth-child(2) { width: 71%; }
         td:nth-child(3), th:nth-child(3) { width: 7%; }
         td:nth-child(4), th:nth-child(4) { width: 7%; }
         td:nth-child(5), th:nth-child(5) { width: 7%; }
     `
-      : ``}
+          : ``}
 `
 
 const PartyNumber = styled.span`
@@ -152,7 +152,7 @@ export default (props) => {
         </td>
         <td>{party.displayName}</td>
         {props.protocolType === 'paper' ||
-        props.protocolType === 'paper-machine' ? (
+          props.protocolType === 'paper-machine' ? (
           <td>
             <input
               type="text"
@@ -160,8 +160,8 @@ export default (props) => {
                 props.fieldStatus[`party${party.id}paper`].invalid
                   ? 'invalid'
                   : props.fieldStatus[`party${party.id}paper`].changed
-                  ? 'changed'
-                  : ''
+                    ? 'changed'
+                    : ''
               }
               name={`party${party.id}paper`}
               value={props.formState.resultsData[`party${party.id}paper`] ?? ''}
@@ -177,19 +177,36 @@ export default (props) => {
                 props.fieldStatus[`party${party.id}machine${i + 1}`].invalid
                   ? 'invalid'
                   : props.fieldStatus[`party${party.id}machine${i + 1}`].changed
-                  ? 'changed'
-                  : ''
+                    ? 'changed'
+                    : ''
               }
               name={`party${party.id}machine${i + 1}`}
               value={
                 props.formState.resultsData[
-                  `party${party.id}machine${i + 1}`
+                `party${party.id}machine${i + 1}`
                 ] ?? ''
               }
               onChange={props.handleResultsChange}
             />
           </td>
         ))}
+        {props.protocolType === 'paper-machine' && (
+          <td>
+            <input
+              type="text"
+              className={
+                props.fieldStatus[`party${party.id}total`].invalid
+                  ? 'invalid'
+                  : props.fieldStatus[`party${party.id}total`].changed
+                    ? 'changed'
+                    : ''
+              }
+              name={`party${party.id}total`}
+              value={props.formState.resultsData[`party${party.id}total`] ?? ''}
+              onChange={props.handleResultsChange}
+            />
+          </td>
+        )}
       </tr>
     )
   }
@@ -217,8 +234,8 @@ export default (props) => {
         props.fieldStatus[varName].invalid
           ? 'invalid'
           : props.fieldStatus[varName].changed
-          ? 'changed'
-          : ''
+            ? 'changed'
+            : ''
       }
       value={props.formState.formData[varName] ?? ''}
       onChange={props.handleNumberChange}
@@ -287,7 +304,7 @@ export default (props) => {
           <tr>
             <td>
               {props.protocolType === 'paper' ||
-              props.protocolType === 'paper-machine'
+                props.protocolType === 'paper-machine'
                 ? '4б. Общ брой на недействителните бюлетини'
                 : '4б. Брой на унищожените от СИК бюлетини по други поводи'}
             </td>
@@ -304,10 +321,10 @@ export default (props) => {
               {props.protocolType === 'machine'
                 ? 'Общ брой на потвърдените гласове'
                 : props.protocolType === 'paper'
-                ? 'Брой на намерените в избирателната кутия бюлетини'
-                : props.protocolType === 'paper-machine'
-                ? 'Общ брой на намерените в избирателната кутия бюлетини и потвърдените гласове от машинното гласуване'
-                : null}
+                  ? 'Брой на намерените в избирателната кутия бюлетини'
+                  : props.protocolType === 'paper-machine'
+                    ? 'Общ брой на намерените в избирателната кутия бюлетини и потвърдените гласове от машинното гласуване'
+                    : null}
             </td>
             <td>{inputField('totalVotesCast')}</td>
           </tr>
@@ -326,7 +343,7 @@ export default (props) => {
             </>
           ) : null}
           {props.protocolType === 'paper-machine' ||
-          props.protocolType === 'paper' ? (
+            props.protocolType === 'paper' ? (
             <>
               <tr>
                 <td>
@@ -350,17 +367,15 @@ export default (props) => {
       <h1>РАЗПРЕДЕЛЕНИЕ НА ГЛАСОВЕТЕ ПО КАНДИДАТСКИ ЛИСТИ</h1>
       <PartyResultsTable colCount={calculateColCount()}>
         <thead>
-          <tr>
-            <th>#</th>
-            <th>Име</th>
-            {props.protocolType === 'paper' ||
+          <th>#</th>
+          <th>Име</th>
+          {props.protocolType === 'paper' ||
             props.protocolType === 'paper-machine' ? (
-              <th>Х</th>
-            ) : null}
-            {[...Array(props.machineCount).keys()].map((i, index) => (
-              <th key={index}>M{i + 1}</th>
-            ))}
-          </tr>
+            <th>Х</th>
+          ) : null}
+          {[...Array(props.machineCount).keys()].map((i) => (
+            <th>M{i + 1}</th>
+          ))}
         </thead>
         <tbody>
           {props.parties
@@ -368,7 +383,7 @@ export default (props) => {
             .map(partyRow)}
         </tbody>
       </PartyResultsTable>
-      {props.machineCount === 1 &&
+      {/* {props.machineCount === 1 &&
       props.machineHash.length === props.machineCount ? (
         <>
           <hr />
@@ -454,7 +469,7 @@ export default (props) => {
             </tbody>
           </ProtocolDetailsTable>
         </>
-      ) : null}
+      ) : null} */}
     </div>
   )
 }
