@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react'
+import React, { useEffect, useState } from 'react'
 
 import styled from 'styled-components'
 
@@ -102,7 +102,6 @@ export default (props) => {
   }, [props.isOpen])
 
   const handleChange = (e) => {
-    console.log(e.target.value)
     setPublishedText(e.target.value)
   }
 

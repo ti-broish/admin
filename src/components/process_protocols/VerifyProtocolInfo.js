@@ -398,7 +398,7 @@ export default (props) => {
   }
 
   const performSumCheck = () => {
-    return null
+    // return null
     if (protocolType === 'machine') return null
 
     let sum = 0
@@ -406,11 +406,11 @@ export default (props) => {
       sum += parseInt(formState.resultsData[key], 10)
     }
 
-    if (sum !== parseInt(formState.formData.validVotesCount, 10)) {
+    if (sum !== parseInt(formState.formData.validVotesTotalCount, 10)) {
       return [
         `
                 Сборът на гласовете на всички партии (${sum}) не се равнява на числото
-                въведено в т. 7.1 (${formState.formData.validVotesCount}).`,
+                въведено в т. 7 (${formState.formData.validVotesTotalCount}).`,
         <br />,
         <br />,
         `Ако грешката идва от протокола, моля не го поправяйте!

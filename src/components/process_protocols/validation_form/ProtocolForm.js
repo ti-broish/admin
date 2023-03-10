@@ -34,11 +34,22 @@ const ProtocolDetailsTable = styled.table`
   }
 
   td:nth-child(1) {
-    width: 80%;
+    width: 85%;
   }
   td:nth-child(2) {
-    width: 20%;
+    width: 15%;
   }
+
+  ${(props) =>
+    props.colCount === 2
+      ? `
+        td:nth-child(1), th:nth-child(1) { width: 70%; }
+        td:nth-child(2), th:nth-child(2) { width: 10%; }
+        td:nth-child(3), th:nth-child(3) { width: 10%; }
+        td:nth-child(4), th:nth-child(4) { width: 10%; }
+     
+    `
+      : ``}
 `
 
 const PartyResultsTable = styled.table`
@@ -99,26 +110,17 @@ const PartyResultsTable = styled.table`
   ${(props) =>
     props.colCount === 1
       ? `
-        td:nth-child(1), th:nth-child(1) { width: 8%; }
-        td:nth-child(2), th:nth-child(2) { width: 72%; }
-        td:nth-child(3), th:nth-child(3) { width: 20%; }
+        td:nth-child(1), th:nth-child(1) { width: 6%; }
+        td:nth-child(2), th:nth-child(2) { width: 80%; }
+        td:nth-child(3), th:nth-child(3) { width: 14%; }
     `
-      : props.colCount === 2
+      : props.colCount === 2 || props.colCount === 3
       ? `
-        td:nth-child(1), th:nth-child(1) { width: 7%; }
-        td:nth-child(2), th:nth-child(2) { width: 60%; }
+        td:nth-child(1), th:nth-child(1) { width: 6%; }
+        td:nth-child(2), th:nth-child(2) { width: 64%; }
         td:nth-child(3), th:nth-child(3) { width: 10%; }
         td:nth-child(4), th:nth-child(4) { width: 10%; }
         td:nth-child(5), th:nth-child(5) { width: 10%; }
-
-    `
-      : props.colCount === 3
-      ? `
-        td:nth-child(1), th:nth-child(1) { width: 8%; }
-        td:nth-child(2), th:nth-child(2) { width: 71%; }
-        td:nth-child(3), th:nth-child(3) { width: 7%; }
-        td:nth-child(4), th:nth-child(4) { width: 7%; }
-        td:nth-child(5), th:nth-child(5) { width: 7%; }
     `
       : ``}
 `
@@ -226,14 +228,15 @@ export default (props) => {
     return count
   }
 
-  const inputField = (varName) => (
+  const inputField = (varName, hidden) => (
     <input
       type="text"
       name={varName}
+      hidden={hidden}
       className={
-        props.fieldStatus[varName].invalid
+        props.fieldStatus[varName]?.invalid
           ? 'invalid'
-          : props.fieldStatus[varName].changed
+          : props.fieldStatus[varName]?.changed
           ? 'changed'
           : ''
       }
@@ -294,7 +297,8 @@ export default (props) => {
           </tr>
         </tbody>
       </ProtocolDetailsTable>
-      <h1>ДАННИ ИЗВЪН ИЗБИРАТЕЛНИЯ СПИСЪК</h1>
+      <hr />
+      <h1>ДАННИ ИЗВЪН ИЗБИРАТЕЛНАТА КУТИЯ</h1>
       <ProtocolDetailsTable>
         <tbody>
           <tr>
@@ -312,23 +316,44 @@ export default (props) => {
           </tr>
         </tbody>
       </ProtocolDetailsTable>
+      <hr />
       <h1>СЛЕД КАТО ОТВОРИ ИЗБИРАТЕЛНАТА КУТИЯ, СИК УСТАНОВИ:</h1>
-      <ProtocolDetailsTable>
-        <tbody>
-          <tr>
-            <td>
-              5.{' '}
-              {props.protocolType === 'machine'
-                ? 'Общ брой на потвърдените гласове'
-                : props.protocolType === 'paper'
-                ? 'Брой на намерените в избирателната кутия бюлетини'
-                : props.protocolType === 'paper-machine'
-                ? 'Общ брой на намерените в избирателната кутия бюлетини и потвърдените гласове от машинното гласуване'
-                : null}
-            </td>
-            <td>{inputField('totalVotesCast')}</td>
-          </tr>
-          {props.protocolType === 'paper-machine' ? (
+      <ProtocolDetailsTable colCount={calculateColCount()}>
+        <>
+          <thead>
+            <tr>
+              <th></th>
+              {props.protocolType === 'paper' ||
+              props.protocolType === 'paper-machine' ? (
+                <th>Х</th>
+              ) : null}
+              {[...Array(props.machineCount).keys()].map((i, index) => (
+                <th key={index}>M</th>
+              ))}
+              {props.protocolType === 'paper-machine' && <th>О</th>}
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>
+                5.
+                {props.protocolType === 'machine'
+                  ? 'Общ брой на потвърдените гласове'
+                  : props.protocolType === 'paper'
+                  ? 'Брой на намерените в избирателната кутия бюлетини'
+                  : props.protocolType === 'paper-machine'
+                  ? 'Брой на намерените в избирателните кутии бюлетини '
+                  : null}
+              </td>
+              {props.protocolType === 'paper-machine' && (
+                <>
+                  <td>{inputField('nonMachineVotesCount')}</td>
+                  <td>{inputField('machineVotesCount')}</td>
+                </>
+              )}
+              <td>{inputField('totalVotesCast')}</td>
+            </tr>
+            {/* {props.protocolType === 'paper-machine' ? (
             <>
               <tr>
                 <td>5.1. Брой на намерените в избирателните кутии бюлетини</td>
@@ -341,27 +366,68 @@ export default (props) => {
                 <td>{inputField('machineVotesCount')}</td>
               </tr>
             </>
-          ) : null}
-          {props.protocolType === 'paper-machine' ||
-          props.protocolType === 'paper' ? (
-            <>
-              <tr>
-                <td>
-                  6. Брой на намерените в избирателната кутия недействителни
-                  гласове (бюлетини)
-                </td>
-                <td>{inputField('invalidVotesCount')}</td>
-              </tr>
-              <tr>
-                <td>
-                  7.1. Брой на действителните гласове, подадени за кандидатските
-                  листи на партии, коалиции и инициативни комитети
-                </td>
-                <td>{inputField('validVotesCount')}</td>
-              </tr>
-            </>
-          ) : null}
-        </tbody>
+          ) : null} */}
+            {props.protocolType === 'paper-machine' ||
+            props.protocolType === 'paper' ? (
+              <>
+                <tr>
+                  <td>
+                    6. Брой на намерените в избирателната кутия недействителни
+                    гласове (бюлетини)
+                  </td>
+                  {props.protocolType === 'paper-machine' && (
+                    <>
+                      <td>{inputField('emptyField1', true)}</td>
+                      <td>{inputField('emptyField2', true)}</td>
+                    </>
+                  )}
+                  <td>{inputField('invalidVotesCount')}</td>
+                </tr>
+
+                <tr>
+                  <td>7. Общ брой на всички действителни гласове (бюлетини)</td>
+                  {props.protocolType === 'paper-machine' && (
+                    <>
+                      <td>{inputField('validNonMachineVotesCount')}</td>
+                      <td>{inputField('validMachineVotesCount')}</td>
+                    </>
+                  )}
+                  <td>{inputField('validVotesTotalCount')}</td>
+                </tr>
+                <tr>
+                  <td>
+                    7.1. Брой на действителните гласове, подадени за
+                    кандидатските листи на партии, коалиции и инициативни
+                    комитети
+                  </td>
+                  {props.protocolType === 'paper-machine' && (
+                    <>
+                      <td>{inputField('partiesNonMachineValidVotesCount')}</td>
+                      <td>{inputField('partiesMachinesValidVotesCount')}</td>
+                    </>
+                  )}
+                  <td>{inputField('partiesValidVotesTotalCount')}</td>
+                </tr>
+
+                <tr>
+                  <td>
+                    7.2. Брой на действителните гласове с отбелязан вот „Не
+                    подкрепям никого“
+                  </td>
+                  {props.protocolType === 'paper-machine' && (
+                    <>
+                      <td>
+                        {inputField('validNoCandidateNonMachineVotesCount')}
+                      </td>
+                      <td>{inputField('validNoCandidateMachineVotesCount')}</td>
+                    </>
+                  )}
+                  <td>{inputField('validNoCandidateTotalVotesCount')}</td>
+                </tr>
+              </>
+            ) : null}
+          </tbody>
+        </>
       </ProtocolDetailsTable>
       <hr />
       <h1>РАЗПРЕДЕЛЕНИЕ НА ГЛАСОВЕТЕ ПО КАНДИДАТСКИ ЛИСТИ</h1>
@@ -375,9 +441,9 @@ export default (props) => {
               <th>Х</th>
             ) : null}
             {[...Array(props.machineCount).keys()].map((i, index) => (
-              <th key={index}>M{i + 1}</th>
+              <th key={index}>M</th>
             ))}
-            {props.protocolType === 'paper-machine' && <th>Общ</th>}
+            {props.protocolType === 'paper-machine' && <th>О</th>}
           </tr>
         </thead>
         <tbody>
