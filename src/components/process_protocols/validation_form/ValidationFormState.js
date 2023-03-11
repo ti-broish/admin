@@ -46,11 +46,6 @@ export default class ValidationFormState {
         partiesValidVotesTotalCount: zeroIfEmpty(
           protocol.results.partiesValidVotesTotalCount
         ),
-
-        // 7.2. Брой на действителните гласове с отбелязан вот „Неподкрепям никого“
-        validNoCandidateTotalVotesCount: zeroIfEmpty(
-          protocol.results.validNoCandidateTotalVotesCount
-        ),
       }
 
       if (protocolType === 'paper-machine') {
@@ -76,14 +71,6 @@ export default class ValidationFormState {
         )
         this.formData['partiesMachinesValidVotesCount'] = zeroIfEmpty(
           protocol.results.partiesMachinesValidVotesCount
-        )
-
-        // 7.2. Брой на действителните гласове с отбелязан вот „Неподкрепям никого“
-        this.formData['validNoCandidateNonMachineVotesCount'] = zeroIfEmpty(
-          protocol.results.validNoCandidateNonMachineVotesCount
-        )
-        this.formData['validNoCandidateMachineVotesCount'] = zeroIfEmpty(
-          protocol.results.validNoCandidateMachineVotesCount
         )
       }
 
@@ -225,7 +212,6 @@ export default class ValidationFormState {
     addStatusForResultField('invalidVotesCount')
     addStatusForResultField('validVotesTotalCount')
     addStatusForResultField('partiesValidVotesTotalCount')
-    addStatusForResultField('validNoCandidateTotalVotesCount')
 
     if (protocolType === 'paper-machine') {
       addStatusForResultField('nonMachineVotesCount')
@@ -234,8 +220,6 @@ export default class ValidationFormState {
       addStatusForResultField('validMachineVotesCount')
       addStatusForResultField('partiesNonMachineValidVotesCount')
       addStatusForResultField('partiesMachinesValidVotesCount')
-      addStatusForResultField('validNoCandidateNonMachineVotesCount')
-      addStatusForResultField('validNoCandidateMachineVotesCount')
 
       // addStatusForResultField('totalVotesCount')
       addStatusForResultField('totalVotes')

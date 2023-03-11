@@ -126,7 +126,7 @@ const PartyResultsTable = styled.table`
 `
 
 const PartyNumber = styled.span`
-  color: ${(props) => (props.textColor ? props.textColor : 'white')};
+  color: ${(props) => (props.textColor ? '#' + props.textColor : 'white')};
   font-weight: bold;
   background-color: #${(props) => props.color};
   width: 21px;
@@ -147,12 +147,20 @@ export default (props) => {
           {party.id.toString() === '0' ? null : party.color ? (
             <PartyNumber color={party.color}>{party.id}</PartyNumber>
           ) : (
-            <PartyNumber color={'white'} textColor={'555'}>
+            <PartyNumber color={'white'} textColor={'333'}>
               {party.id}
             </PartyNumber>
           )}
         </td>
         <td>{party.displayName}</td>
+        {partyRowsInputs(props, party, i)}
+      </tr>
+    )
+  }
+
+  const partyRowsInputs = (props, party, i) => {
+    return (
+      <>
         {props.protocolType === 'paper' ||
         props.protocolType === 'paper-machine' ? (
           <td>
@@ -209,7 +217,7 @@ export default (props) => {
             />
           </td>
         )}
-      </tr>
+      </>
     )
   }
 
@@ -414,15 +422,7 @@ export default (props) => {
                     7.2. Брой на действителните гласове с отбелязан вот „Не
                     подкрепям никого“
                   </td>
-                  {props.protocolType === 'paper-machine' && (
-                    <>
-                      <td>
-                        {inputField('validNoCandidateNonMachineVotesCount')}
-                      </td>
-                      <td>{inputField('validNoCandidateMachineVotesCount')}</td>
-                    </>
-                  )}
-                  <td>{inputField('validNoCandidateTotalVotesCount')}</td>
+                  {partyRowsInputs(props, props.parties[0], 0)}
                 </tr>
               </>
             ) : null}
@@ -449,7 +449,9 @@ export default (props) => {
         <tbody>
           {props.parties
             .filter((party) => (props.allParties ? true : party.isFeatured))
-            .map(partyRow)}
+            .map((party, index) =>
+              party.id != 0 ? partyRow(party, index) : null
+            )}
         </tbody>
       </PartyResultsTable>
       {/* {props.machineCount === 1 &&
