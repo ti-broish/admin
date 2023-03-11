@@ -1,3 +1,4 @@
+//@ts-check
 import React, { useContext, useEffect, useRef, useState } from 'react'
 import ProtocolPhotos from './protocol_photos/ProtocolPhotos'
 import ValidationFormState from './validation_form/ValidationFormState'
@@ -12,8 +13,17 @@ import { AuthContext } from '../App'
 import ConfirmationModal from './ConfirmationModal'
 import ProtocolForm from './validation_form/ProtocolForm'
 import SectionDetails from './validation_form/SectionDetails'
+import { ProtocolType } from '../../common/enums/protocol-type'
+import { ProtocolStatus } from '../../common/enums/protocol-status'
+import {
+  generateInitialProtocolState,
+  generateProtocolResults,
+  getValidatedProtocolState,
+} from './validation_form/validation-form-utils'
 
-const ProtocolInfoSection = styled.div`
+// #region Styled components
+
+const ProtocolInfoSectionDiv = styled.div`
   width: 50vw;
   height: 100vh;
   overflow-y: auto;
@@ -22,7 +32,7 @@ const ProtocolInfoSection = styled.div`
   right: 0;
 `
 
-const ProtocolDetailsStyle = styled.div`
+const ProtocolDetailsStyleDiv = styled.div`
   padding: 20px;
 
   h1 {
@@ -41,7 +51,7 @@ const ProtocolDetailsStyle = styled.div`
   }
 `
 
-const SectionHeader = styled.div`
+const SectionHeaderDiv = styled.div`
   //padding: 10px;
   background-color: rgb(56, 222, 203);
   color: white;
@@ -130,11 +140,16 @@ const ApproveAndSendViolationButton = styled(VerificationPanelButton)`
   }
 `
 
-export default (props) => {
+// #endregion
+
+/** @type {FnComponent<VerifyProtocolInfoProps>} */
+export default function VerifyProtocolInfo(props) {
+  // TODO: Add types
   const { parties, authPost, authGet } = useContext(AuthContext)
 
-  const [allParties, setAllParties] = useState(true) //Math.random() < 0.5);
-  const [modalState, setModalState] = useState({ isOpen: false })
+  const [modalState, setModalState] = useState(
+    /** @type {ModalState} */ ({ isOpen: false })
+  )
   const [sectionData, setSectionData] = useState({
     country: null,
     electionRegion: null,
@@ -146,16 +161,24 @@ export default (props) => {
     isMachine: false,
   })
 
-  const [machineHash, setMachineHash] = useState([
-    { startHash: '', endHash: '' },
-  ])
+  const [protocolType, setProtocolType] = useState(
+    /** @type{ProtocolType} */ (ProtocolType.PAPER)
+  )
 
-  const [protocolType, setProtocolType] = useState('unset')
-  const [machineCount, setMachineCount] = useState(0)
-  const [isFinal, setIsFinal] = useState(false)
+  // TODO: Remove and use protocolType instead
+  const [machineCount, setMachineCount] = useState(/** @type{0 | 1} */ (0))
+
+  const [isFinal, setIsFinal] = useState(
+    /** @type{ProtocolStatus} */ (ProtocolStatus.DRAFT)
+  )
+
+  const [protocolState, setProtocolState] = useState(() =>
+    generateInitialProtocolState(parties)
+  )
 
   const [formState, setFormState] = useState(
     () =>
+      // @ts-ignore - left for compatibility with SectionDetails, remove when you refactor
       new ValidationFormState({
         protocol: props.protocol,
         parties,
@@ -171,44 +194,21 @@ export default (props) => {
       protocolType,
       machineCount
     )
-  const ref = useRef()
+
+  /** @type {Ref} */
+  const ref = useRef(null)
 
   useEffect(() => {
-    setFormState(
-      new ValidationFormState({
-        protocol: props.protocol,
-        parties,
-        protocolType,
-        machineCount,
-      })
-    )
+    setProtocolState(generateInitialProtocolState(parties))
 
-    setMachineCount(protocolType == 'paper-machine' ? 1 : 0)
+    setMachineCount(protocolType === ProtocolType.PAPER_MACHINE ? 1 : 0)
   }, [protocolType])
 
   useEffect(() => {
-    setFormState(
-      new ValidationFormState({
-        protocol: props.protocol,
-        parties,
-        protocolType,
-        machineCount,
-      })
-    )
+    setProtocolState(generateInitialProtocolState(parties))
+  }, [props.protocol.id])
 
-    if (machineCount === 0) {
-      setMachineHash([])
-    } else if (machineCount === 1) {
-      setMachineHash([{ startHash: '', endHash: '' }])
-    } else if (machineCount === 2) {
-      setMachineHash([
-        { startHash: '', endHash: '' },
-        { startHash: '', endHash: '' },
-      ])
-    }
-  }, [machineCount])
-
-  useKeypress(['ArrowUp'], (event) => {
+  useKeypress(['ArrowUp'], () => {
     let lastInput = null
 
     const traverseNodeTree = (node) => {
@@ -216,14 +216,14 @@ export default (props) => {
         lastInput.focus()
       else {
         if (node.tagName === 'INPUT') lastInput = node
-          ;[...node.children].forEach(traverseNodeTree)
+        ;[...node.children].forEach(traverseNodeTree)
       }
     }
 
     traverseNodeTree(ref.current)
   })
 
-  useKeypress(['ArrowDown', 'Enter'], (event) => {
+  useKeypress(['ArrowDown', 'Enter'], () => {
     let shouldFocus = false
 
     const traverseNodeTree = (node) => {
@@ -232,14 +232,12 @@ export default (props) => {
         shouldFocus = false
       } else {
         if (node === document.activeElement) shouldFocus = true
-          ;[...node.children].forEach(traverseNodeTree)
+        ;[...node.children].forEach(traverseNodeTree)
       }
     }
 
     traverseNodeTree(ref.current)
   })
-
-  const violationMessage = useRef('')
 
   useEffect(() => {
     if (formState.formData.sectionId?.length === 9) {
@@ -266,27 +264,18 @@ export default (props) => {
     setSectionData({
       country: town.country.name,
       electionRegion: electionRegion.name,
-      municipality: town.municipality ? town.municipality.name : null,
+      municipality: town.municipality?.name ?? null,
       town: town.name,
       townId: town.id,
-      cityRegion: !cityRegion ? null : cityRegion.name,
+      cityRegion: cityRegion?.name ?? null,
       address: place,
       isMachine: res.data.isMachine,
     })
   }
 
+  /** @type {ChangeEventHandler} */
   const handleProtocolNumberChange = (e) => {
     setFormState(formState.updateProtocolNumber(e.target.value))
-  }
-
-  const handleResultsChange = (e) => {
-    const key = e.target.name //`${e.target.dataset.partyId}`;
-    setFormState(formState.updateResultsData(key, e.target.value))
-  }
-
-  const handleNumberChange = (e) => {
-    const key = e.target.name
-    setFormState(formState.updateFormData(key, e.target.value))
   }
 
   const rejectProtocol = async (reason) => {
@@ -296,13 +285,14 @@ export default (props) => {
       authPost(`/protocols/${props.protocol.id}/reject`, {
         reason: reason?.rejectionReason,
       })
-        .then((res) => {
-          props.setLoading(false)
+        .then(() => {
           props.processingDone(`Протокол ${props.protocol.id} ОТХВЪРЛЕН`)
         })
-        .catch((err) => {
-          props.setLoading(false)
+        .catch(() => {
           props.processingFailed('Възникна грешка, моля опитайте отново')
+        })
+        .finally(() => {
+          props.setLoading(false)
         })
     }
   }
@@ -313,7 +303,9 @@ export default (props) => {
       isRejectionModal: false,
       title: 'Сигурни ли сте?',
       message: 'Сигурни ли сте, че искате да потвърдите този протокол?',
-      warningMessage: performSumCheck(),
+      warningMessage:
+        protocolState.errors.length > 0 &&
+        'Някои от валидациите на протокола не минават, моля прегледайте го отново.',
       confirmButtonName: 'Потвърди',
       cancelButtonName: 'Върни се',
       confirmHandler: replaceProtocol,
@@ -335,88 +327,57 @@ export default (props) => {
   }
 
   const replaceProtocol = async () => {
+    /** @type {ProtocolReplaceDto} */
     const postBody = {
       section: { id: formState.formData.sectionId },
-      hasPaperBallots:
-        protocolType === 'paper' || protocolType === 'paper-machine',
+      hasPaperBallots: true,
       machinesCount: machineCount,
-      isFinal: isFinal,
-      votersCount: parseInt(formState.formData.votersCount, 10),
-      additionalVotersCount: parseInt(
-        formState.formData.additionalVotersCount,
-        10
-      ),
-      votersVotedCount: parseInt(formState.formData.votersVotedCount, 10),
-      uncastBallots: parseInt(formState.formData.uncastBallots, 10),
-      invalidAndUncastBallots: parseInt(
-        formState.formData.invalidAndUncastBallots,
-        10
-      ),
-      totalVotesCast: parseInt(formState.formData.totalVotesCast, 10),
-      results: formState.generateResults(parties, protocolType, machineCount),
+      isFinal: isFinal === ProtocolStatus.ORIGINAL,
+      results: generateProtocolResults(protocolState, parties),
       pictures: props.protocol.pictures,
-    }
-
-    if (protocolType === 'paper-machine') {
-      postBody['nonMachineVotesCount'] = parseInt(
-        formState.formData.nonMachineVotesCount,
-        10
-      )
-      postBody['machineVotesCount'] = parseInt(
-        formState.formData.machineVotesCount,
-        10
-      )
-    }
-
-    if (protocolType === 'paper' || protocolType === 'paper-machine') {
-      postBody['invalidVotesCount'] = parseInt(
-        formState.formData.invalidVotesCount,
-        10
-      )
-      postBody['validVotesCount'] = parseInt(
-        formState.formData.validVotesCount,
-        10
-      )
-    }
-
-    if (protocolType === 'machine' || protocolType === 'paper-machine') {
-      postBody['machineHashes'] = machineHash
+      votersCount: +protocolState.inputs.votersCount.value,
+      additionalVotersCount: +protocolState.inputs.additionalVotersCount.value,
+      votersVotedCount: +protocolState.inputs.votersVotedCount.value,
+      uncastBallots: +protocolState.inputs.uncastBallots.value,
+      invalidAndUncastBallots:
+        +protocolState.inputs.invalidAndUncastBallots.value,
+      totalVotesCast: +protocolState.inputs.totalVotesCast.value,
+      // new fields below
+      receivedBallots: +protocolState.inputs.receivedBallots.value,
+      nonMachineVotesCount: +protocolState.inputs.nonMachineVotesCount.value,
+      machineVotesCount: +protocolState.inputs.machineVotesCount.value,
+      validVotesTotalCount: +protocolState.inputs.validVotesTotalCount.value,
+      partiesValidVotesTotalCount:
+        +protocolState.inputs.partiesValidVotesTotalCount.value,
+      partiesNonMachineValidVotesCount:
+        +protocolState.inputs.partiesNonMachineValidVotesCount.value,
+      partiesMachinesValidVotesCount:
+        +protocolState.inputs.partiesMachinesValidVotesCount.value,
+      validNoCandidateTotalVotesCount:
+        +protocolState.inputs.validNoCandidateTotalVotesCount.value,
+      validNonMachineVotesCount:
+        +protocolState.inputs.validNonMachineVotesCount.value,
+      validMachineVotesCount:
+        +protocolState.inputs.validMachineVotesCount.value,
     }
 
     props.setLoading(true)
+
     try {
-      const res = await authPost(
-        `/protocols/${props.protocol.id}/replace`,
-        postBody
-      )
-    } catch (err) {
+      await authPost(`/protocols/${props.protocol.id}/replace`, postBody)
+      props.processingDone(`Протокол ${props.protocol.id} ОДОБРЕН с КОРЕКЦИЯ`)
+    } catch {
+      // ignore error?
+    } finally {
       props.setLoading(false)
-      return
     }
-    props.setLoading(false)
-    props.processingDone(`Протокол ${props.protocol.id} ОДОБРЕН с КОРЕКЦИЯ`)
   }
 
-  const performSumCheck = () => {
-    return null
-    if (protocolType === 'machine') return null
-
-    let sum = 0
-    for (const key of Object.keys(formState.resultsData)) {
-      sum += parseInt(formState.resultsData[key], 10)
-    }
-
-    if (sum !== parseInt(formState.formData.validVotesCount, 10)) {
-      return [
-        `
-                Сборът на гласовете на всички партии (${sum}) не се равнява на числото
-                въведено в т. 7.1 (${formState.formData.validVotesCount}).`,
-        <br />,
-        <br />,
-        `Ако грешката идва от протокола, моля не го поправяйте!
-            `,
-      ]
-    } else return null
+  /** @type {(protocolState: ProtocolState) => void} */
+  const validateProtocolForm = (protocolState) => {
+    setProtocolState(
+      getValidatedProtocolState(protocolState, protocolType, parties)
+    )
   }
 
   return (
@@ -438,16 +399,17 @@ export default (props) => {
         protocol={props.protocol}
         reorderPictures={props.reorderPictures}
       />
-      <ProtocolInfoSection ref={ref}>
-        <SectionHeader>
+
+      <ProtocolInfoSectionDiv ref={ref}>
+        <SectionHeaderDiv>
           <BackButton onClick={props.returnProtocol}>
             <FontAwesomeIcon icon={faChevronLeft} />
           </BackButton>
           <h1 style={{ display: 'inline-block' }}>
             Секция {props.protocol.section?.id}
           </h1>
-        </SectionHeader>
-        <ProtocolDetailsStyle>
+        </SectionHeaderDiv>
+        <ProtocolDetailsStyleDiv>
           <SectionDetails
             fieldStatus={fieldStatus}
             handleProtocolNumberChange={handleProtocolNumberChange}
@@ -459,34 +421,73 @@ export default (props) => {
             machineCount={machineCount}
             setMachineCount={setMachineCount}
             setIsFinal={setIsFinal}
+            isFinal={isFinal}
           />
-          {protocolType === 'unset' ||
-            (protocolType === 'machine' && machineCount === 0) ||
-            (protocolType === 'paper-machine' && machineCount === 0) ? null : (
-            <ProtocolForm
-              fieldStatus={fieldStatus}
-              handleNumberChange={handleNumberChange}
-              handleResultsChange={handleResultsChange}
-              formState={formState}
-              parties={parties}
-              allParties={allParties}
-              protocolType={protocolType}
-              machineCount={machineCount}
-              machineHash={machineHash}
-              setMachineHash={setMachineHash}
-            />
+
+          <ProtocolForm
+            validateProtocolForm={validateProtocolForm}
+            parties={parties}
+            protocolType={protocolType}
+            protocolState={protocolState}
+          />
+
+          {protocolState.errors.length > 0 && (
+            <>
+              <hr />
+              {protocolState.acceptInvalidProtocol ? (
+                <>
+                  <h2 style={{ color: 'red' }}>
+                    Протоколът има грешки при валидация и <u>приемате</u> да го
+                    предадете в този вид.
+                  </h2>
+                </>
+              ) : (
+                <>
+                  <h2>Грешки при валидацията на протокола</h2>
+                  <ul>
+                    {protocolState.errors.map((e, i) => (
+                      <li key={i} style={{ color: 'red' }}>
+                        {e}
+                      </li>
+                    ))}
+                  </ul>
+                </>
+              )}
+              <input
+                type="checkbox"
+                name="accept-invalid-protocol"
+                id="accept-invalid-protocol"
+                checked={protocolState.acceptInvalidProtocol}
+                onChange={(e) =>
+                  setProtocolState({
+                    ...protocolState,
+                    acceptInvalidProtocol: !protocolState.acceptInvalidProtocol,
+                  })
+                }
+              />
+              <label htmlFor="accept-invalid-protocol">
+                {' '}
+                Съгласен съм, че протоколът има грешки и го предавам в този вид
+              </label>
+            </>
           )}
-          {protocolType !== 'unset' ? <hr /> : null}
+
+          <hr />
           {invalidFields || changedFields ? (
-            <AcceptButton disabled={invalidFields} onClick={openConfirmModal}>
+            <AcceptButton
+              disabled={
+                !protocolState.isValid && !protocolState.acceptInvalidProtocol
+              }
+              onClick={openConfirmModal}
+            >
               Потвърди
             </AcceptButton>
           ) : (
             <AcceptButton onClick={openConfirmModal}>Потвърди</AcceptButton>
           )}
           <RejectButton onClick={openRejectModal}>Отхвърли</RejectButton>
-        </ProtocolDetailsStyle>
-      </ProtocolInfoSection>
+        </ProtocolDetailsStyleDiv>
+      </ProtocolInfoSectionDiv>
     </div>
   )
 }

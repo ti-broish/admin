@@ -1,8 +1,12 @@
 import React from 'react'
 
 import styled from 'styled-components'
+import { ProtocolStatus } from '../../../common/enums/protocol-status'
+import { ProtocolType } from '../../../common/enums/protocol-type'
 
-const SectionInput = styled.div`
+// #region Styled components
+
+const SectionInputDiv = styled.div`
   width: 100%;
 
   span {
@@ -64,7 +68,7 @@ const SectionInput = styled.div`
   }
 `
 
-const ChooseProtocolType = styled.div`
+const ChooseProtocolTypeDiv = styled.div`
   input {
     margin-right: 5px;
   }
@@ -74,7 +78,9 @@ const ChooseProtocolType = styled.div`
   }
 `
 
-export default (props) => {
+// #endregion
+
+export default function SectionDetails(props) {
   const getBoxClass = (boxNum) => {
     const status = props.fieldStatus[`sectionId${boxNum}`]
     return status.invalid
@@ -91,7 +97,7 @@ export default (props) => {
           <tr>
             <td>Номер на секция</td>
             <td style={{ paddingBottom: '20px' }}>
-              <SectionInput>
+              <SectionInputDiv>
                 <div>
                   <div className={getBoxClass(1)}>
                     <input
@@ -119,7 +125,7 @@ export default (props) => {
                     Секция
                   </span>
                 </div>
-              </SectionInput>
+              </SectionInputDiv>
             </td>
           </tr>
         </tbody>
@@ -168,14 +174,16 @@ export default (props) => {
           </tr>
         </tbody>
       </table>
+
       <h5 style={{ margin: '10px 0' }}>Чернова ли е протоколът?</h5>
-      <ChooseProtocolType>
+      <ChooseProtocolTypeDiv>
         <input
           type="radio"
           id="isNotFinal"
           name="isFinal"
           value="false"
-          onClick={() => props.setIsFinal(false)}
+          checked={props.isFinal === ProtocolStatus.DRAFT}
+          onChange={(e) => props.setIsFinal(e.target.checked ? ProtocolStatus.DRAFT : null)}
         />
         <label htmlFor="isNotFinal">Чернова</label>
         <input
@@ -183,62 +191,31 @@ export default (props) => {
           id="isFinal"
           name="isFinal"
           value="true"
-          onClick={() => props.setIsFinal(true)}
+          checked={props.isFinal === ProtocolStatus.ORIGINAL}
+          onChange={(e) => props.setIsFinal(e.target.checked ? ProtocolStatus.ORIGINAL : null)}
         />
         <label htmlFor="isFinal">Оригинал</label>
-      </ChooseProtocolType>
+      </ChooseProtocolTypeDiv>
+
       <h5 style={{ margin: '10px 0' }}>Изберете вид протокол</h5>
-      <ChooseProtocolType>
-        {/* <input
-          type="radio"
-          id="machine"
-          name="protocolType"
-          onClick={() => props.setProtocolType('machine')}
-        />
-        <label htmlFor="machine">Машинен</label> */}
+      <ChooseProtocolTypeDiv>
         <input
           type="radio"
           id="paper"
           name="protocolType"
-          onClick={() => props.setProtocolType('paper')}
+          checked={props.protocolType === ProtocolType.PAPER}
+          onChange={(e) => props.setProtocolType(e.target.checked ? ProtocolType.PAPER : null)}
         />
         <label htmlFor="paper">Хартиен</label>
         <input
           type="radio"
           id="paper-machine"
           name="protocolType"
-          onClick={() => props.setProtocolType('paper-machine')}
+          checked={props.protocolType === ProtocolType.PAPER_MACHINE}
+          onChange={(e) => props.setProtocolType(e.target.checked ? ProtocolType.PAPER_MACHINE : null)}
         />
         <label htmlFor="paper-machine">Хартиено-машинен</label>
-      </ChooseProtocolType>
-      {/* {props.protocolType === 'machine' ||
-      props.protocolType === 'paper-machine' ? (
-        <>
-          <h5 style={{ margin: '10px 0' }}>Брой машини</h5>
-          <ChooseProtocolType>
-            <input
-              readOnly
-              type="radio"
-              id="1machine"
-              name="machineCount"
-              value="1machine"
-              onClick={() => props.setMachineCount(1)}
-              checked={props.machineCount === 1}
-            />
-            <label htmlFor="1machine">1 машина</label>
-            <input
-              readOnly
-              type="radio"
-              id="2machines"
-              name="machineCount"
-              value="2machines"
-              onClick={() => props.setMachineCount(2)}
-              checked={props.machineCount === 2}
-            />
-            <label htmlFor="2machines">2 машини</label>
-          </ChooseProtocolType>
-        </>
-      ) : null} */}
+      </ChooseProtocolTypeDiv>
       <hr />
     </>
   )
