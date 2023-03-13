@@ -5,4 +5,5 @@
 export const ProtocolType = {
   PAPER: 'PAPER',
   PAPER_MACHINE: 'PAPER_MACHINE',
+  UNKNOWN: 'UNKNOWN',
 }

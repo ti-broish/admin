@@ -6,7 +6,7 @@ import { ProtocolType } from '../../../common/enums/protocol-type'
  * @type {(protocolState: ProtocolState, parties: Party[]) => ProtocolResultDto[]}
  */
 export const generateProtocolResults = (state, parties) => {
-  parties = parties.filter((p) => p.isFeatured)
+  // parties = parties.filter((p) => p.isFeatured)
 
   return parties.map((p) => ({
     party: p.id,
@@ -20,45 +20,49 @@ export const generateProtocolResults = (state, parties) => {
  * @type {(parties: Party[]) => ProtocolState}
  */
 export const generateInitialProtocolState = (parties) => {
-  parties = parties.filter((p) => p.isFeatured)
+  // parties = parties.filter((p) => p.isFeatured)
 
   const state = {
     isValid: false,
     acceptInvalidProtocol: false,
     inputs: {
-      votersCount: { value: '', isValid: true, isTouched: false },
-      additionalVotersCount: { value: '', isValid: true, isTouched: false },
-      votersVotedCount: { value: '', isValid: true, isTouched: false },
-      receivedBallots: { value: '', isValid: true, isTouched: false },
-      uncastBallots: { value: '', isValid: true, isTouched: false },
-      invalidAndUncastBallots: { value: '', isValid: true, isTouched: false },
-      nonMachineVotesCount: { value: '', isValid: true, isTouched: false },
-      machineVotesCount: { value: '', isValid: true, isTouched: false },
-      totalVotesCast: { value: '', isValid: true, isTouched: false },
-      invalidVotesCount: { value: '', isValid: true, isTouched: false },
-      validVotesTotalCount: { value: '', isValid: true, isTouched: false },
+      votersCount: { value: '', isValid: false, isTouched: false },
+      additionalVotersCount: { value: '', isValid: false, isTouched: false },
+      votersVotedCount: { value: '', isValid: false, isTouched: false },
+      receivedBallots: { value: '', isValid: false, isTouched: false },
+      uncastBallots: { value: '', isValid: false, isTouched: false },
+      invalidAndUncastBallots: { value: '', isValid: false, isTouched: false },
+      nonMachineVotesCount: { value: '', isValid: false, isTouched: false },
+      machineVotesCount: { value: '', isValid: false, isTouched: false },
+      totalVotesCast: { value: '', isValid: false, isTouched: false },
+      invalidVotesCount: { value: '', isValid: false, isTouched: false },
+      validVotesTotalCount: { value: '', isValid: false, isTouched: false },
       partiesValidVotesTotalCount: {
         value: '',
-        isValid: true,
+        isValid: false,
         isTouched: false,
       },
       partiesNonMachineValidVotesCount: {
         value: '',
-        isValid: true,
+        isValid: false,
         isTouched: false,
       },
       partiesMachinesValidVotesCount: {
         value: '',
-        isValid: true,
+        isValid: false,
         isTouched: false,
       },
       validNoCandidateTotalVotesCount: {
         value: '',
-        isValid: true,
+        isValid: false,
         isTouched: false,
       },
-      validNonMachineVotesCount: { value: '', isValid: true, isTouched: false },
-      validMachineVotesCount: { value: '', isValid: true, isTouched: false },
+      validNonMachineVotesCount: {
+        value: '',
+        isValid: false,
+        isTouched: false,
+      },
+      validMachineVotesCount: { value: '', isValid: false, isTouched: false },
     },
     partyInputs: {
       paper: {},
@@ -71,21 +75,21 @@ export const generateInitialProtocolState = (parties) => {
   state.partyInputs.paper = parties.reduce(
     (paper, { id }) => ({
       ...paper,
-      [id]: { value: '', isValid: true, isTouched: false },
+      [id]: { value: '', isValid: false, isTouched: false },
     }),
     {}
   )
   state.partyInputs.machine = parties.reduce(
     (paper, { id }) => ({
       ...paper,
-      [id]: { value: '', isValid: true, isTouched: false },
+      [id]: { value: '', isValid: false, isTouched: false },
     }),
     {}
   )
   state.partyInputs.total = parties.reduce(
     (paper, { id }) => ({
       ...paper,
-      [id]: { value: '', isValid: true, isTouched: false },
+      [id]: { value: '', isValid: false, isTouched: false },
     }),
     {}
   )
@@ -120,7 +124,7 @@ const validateWithDependencies = (fn, dependencies) => {
  * @type {(value: ProtocolState, protocolType: ProtocolType, parties: Party[]) => ProtocolState}
  */
 export const getValidatedProtocolState = (state, type, parties) => {
-  parties = parties.filter((p) => p.isFeatured)
+  // parties = parties.filter((p) => p.isFeatured)
   // assume all inputs are valid
   for (const input of Object.values(state.inputs)) input.isValid = true
   for (const input of Object.values(state.partyInputs.machine))

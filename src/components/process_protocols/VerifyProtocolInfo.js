@@ -9,12 +9,12 @@ import { faChevronDown, faChevronLeft } from '@fortawesome/free-solid-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import styled from 'styled-components'
 
+import { ProtocolStatus } from '../../common/enums/protocol-status'
+import { ProtocolType } from '../../common/enums/protocol-type'
 import { AuthContext } from '../App'
 import ConfirmationModal from './ConfirmationModal'
 import ProtocolForm from './validation_form/ProtocolForm'
 import SectionDetails from './validation_form/SectionDetails'
-import { ProtocolType } from '../../common/enums/protocol-type'
-import { ProtocolStatus } from '../../common/enums/protocol-status'
 import {
   generateInitialProtocolState,
   generateProtocolResults,
@@ -162,14 +162,14 @@ export default function VerifyProtocolInfo(props) {
   })
 
   const [protocolType, setProtocolType] = useState(
-    /** @type{ProtocolType} */ (ProtocolType.PAPER)
+    /** @type{ProtocolType} */ (ProtocolType.UNKNOWN)
   )
 
   // TODO: Remove and use protocolType instead
   const [machineCount, setMachineCount] = useState(/** @type{0 | 1} */ (0))
 
   const [isFinal, setIsFinal] = useState(
-    /** @type{ProtocolStatus} */ (ProtocolStatus.DRAFT)
+    /** @type{ProtocolStatus}  */ (ProtocolStatus.UNKNOWN)
   )
 
   const [protocolState, setProtocolState] = useState(() =>
@@ -424,12 +424,14 @@ export default function VerifyProtocolInfo(props) {
             isFinal={isFinal}
           />
 
-          <ProtocolForm
-            validateProtocolForm={validateProtocolForm}
-            parties={parties}
-            protocolType={protocolType}
-            protocolState={protocolState}
-          />
+          {protocolType != ProtocolType.UNKNOWN && (
+            <ProtocolForm
+              validateProtocolForm={validateProtocolForm}
+              parties={parties}
+              protocolType={protocolType}
+              protocolState={protocolState}
+            />
+          )}
 
           {protocolState.errors.length > 0 && (
             <>

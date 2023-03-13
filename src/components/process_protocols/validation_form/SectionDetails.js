@@ -86,8 +86,8 @@ export default function SectionDetails(props) {
     return status.invalid
       ? 'box invalid'
       : status.changed
-        ? 'box changed'
-        : 'box'
+      ? 'box changed'
+      : 'box'
   }
 
   return (
@@ -131,92 +131,113 @@ export default function SectionDetails(props) {
         </tbody>
       </table>
       <p style={{ fontSize: '14px', margin: '0' }}>
-        {!props.sectionData.country ? null : (
+        {props.sectionData.country && (
           <>
             Държава: <b>{props.sectionData.country}</b>,{' '}
           </>
         )}
-        {!props.sectionData.electionRegion ? null : (
+        {props.sectionData.electionRegion && (
           <>
             Изборен район: <b>{props.sectionData.electionRegion}</b>,{' '}
           </>
         )}
         <br />
-        {!props.sectionData.municipality ? null : (
+        {props.sectionData.municipality && (
           <>
             Община: <b>{props.sectionData.municipality}</b>,{' '}
           </>
         )}
-        {!props.sectionData.town ? null : (
+        {props.sectionData.town && (
           <>
             Населено място: <b>{props.sectionData.town}</b>,{' '}
           </>
         )}
         <br />
-        {!props.sectionData.cityRegion ? null : (
+        {props.sectionData.cityRegion && (
           <>
             Район: <b>{props.sectionData.cityRegion}</b>,{' '}
           </>
         )}
-        {!props.sectionData.address ? null : (
+        {props.sectionData.address && (
           <>
             Локация: <b>{props.sectionData.address}</b>
           </>
         )}
       </p>
-      <table>
-        <tbody>
-          <tr>
-            <td style={{ paddingTop: '20px' }}>Изпратен от (организация):</td>
-            <td style={{ paddingTop: '20px' }}>
-              {props.protocol.author?.organization.name}
-            </td>
-          </tr>
-        </tbody>
-      </table>
 
-      <h5 style={{ margin: '10px 0' }}>Чернова ли е протоколът?</h5>
-      <ChooseProtocolTypeDiv>
-        <input
-          type="radio"
-          id="isNotFinal"
-          name="isFinal"
-          value="false"
-          checked={props.isFinal === ProtocolStatus.DRAFT}
-          onChange={(e) => props.setIsFinal(e.target.checked ? ProtocolStatus.DRAFT : null)}
-        />
-        <label htmlFor="isNotFinal">Чернова</label>
-        <input
-          type="radio"
-          id="isFinal"
-          name="isFinal"
-          value="true"
-          checked={props.isFinal === ProtocolStatus.ORIGINAL}
-          onChange={(e) => props.setIsFinal(e.target.checked ? ProtocolStatus.ORIGINAL : null)}
-        />
-        <label htmlFor="isFinal">Оригинал</label>
-      </ChooseProtocolTypeDiv>
+      {props.sectionData.country && (
+        <>
+          <table>
+            <tbody>
+              <tr>
+                <td style={{ paddingTop: '20px' }}>
+                  Изпратен от (организация):
+                </td>
+                <td style={{ paddingTop: '20px' }}>
+                  {props.protocol.author?.organization.name}
+                </td>
+              </tr>
+            </tbody>
+          </table>
 
-      <h5 style={{ margin: '10px 0' }}>Изберете вид протокол</h5>
-      <ChooseProtocolTypeDiv>
-        <input
-          type="radio"
-          id="paper"
-          name="protocolType"
-          checked={props.protocolType === ProtocolType.PAPER}
-          onChange={(e) => props.setProtocolType(e.target.checked ? ProtocolType.PAPER : null)}
-        />
-        <label htmlFor="paper">Хартиен</label>
-        <input
-          type="radio"
-          id="paper-machine"
-          name="protocolType"
-          checked={props.protocolType === ProtocolType.PAPER_MACHINE}
-          onChange={(e) => props.setProtocolType(e.target.checked ? ProtocolType.PAPER_MACHINE : null)}
-        />
-        <label htmlFor="paper-machine">Хартиено-машинен</label>
-      </ChooseProtocolTypeDiv>
-      <hr />
+          <h5 style={{ margin: '10px 0' }}>Чернова ли е протоколът?</h5>
+          <ChooseProtocolTypeDiv>
+            <input
+              type="radio"
+              id="isNotFinal"
+              name="isFinal"
+              value="false"
+              onChange={(e) =>
+                props.setIsFinal(e.target.checked ? ProtocolStatus.DRAFT : null)
+              }
+            />
+            <label htmlFor="isNotFinal">Чернова</label>
+            <input
+              type="radio"
+              id="isFinal"
+              name="isFinal"
+              value="true"
+              onChange={(e) =>
+                props.setIsFinal(
+                  e.target.checked ? ProtocolStatus.ORIGINAL : null
+                )
+              }
+            />
+            <label htmlFor="isFinal">Оригинал</label>
+          </ChooseProtocolTypeDiv>
+        </>
+      )}
+
+      {props.isFinal != 'UNKNOWN' && (
+        <>
+          <h5 style={{ margin: '10px 0' }}>Изберете вид протокол</h5>
+          <ChooseProtocolTypeDiv>
+            <input
+              type="radio"
+              id="paper"
+              name="protocolType"
+              onChange={(e) =>
+                props.setProtocolType(
+                  e.target.checked ? ProtocolType.PAPER : null
+                )
+              }
+            />
+            <label htmlFor="paper">Хартиен</label>
+            <input
+              type="radio"
+              id="paper-machine"
+              name="protocolType"
+              onChange={(e) =>
+                props.setProtocolType(
+                  e.target.checked ? ProtocolType.PAPER_MACHINE : null
+                )
+              }
+            />
+            <label htmlFor="paper-machine">Хартиено-машинен</label>
+          </ChooseProtocolTypeDiv>
+          <hr />
+        </>
+      )}
     </>
   )
 }

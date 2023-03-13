@@ -46,9 +46,9 @@ const ProtocolDetailsTable = styled.table`
   }
 
   ${(props) =>
-    props.colCount === 2
+    props.colCount === 2 || props.colCount === 3
       ? `
-        td:nth-child(1), th:nth-child(1) { width: 50%; }
+        td:nth-child(1), th:nth-child(1) { width: 70%; }
         td:nth-child(2), th:nth-child(2) { width: 10%; }
         td:nth-child(3), th:nth-child(3) { width: 10%; }
         td:nth-child(4), th:nth-child(4) { width: 10%; }
@@ -162,6 +162,14 @@ export default function ProtocolForm(props) {
           )}
         </td>
         <td>{party.displayName}</td>
+        {partyRowInputs(props, party)}
+      </tr>
+    )
+  }
+
+  const partyRowInputs = (props, party) => {
+    return (
+      <>
         {/* PAPER */}
         <td>
           <input
@@ -197,7 +205,7 @@ export default function ProtocolForm(props) {
           />
         </td>
 
-        {props.protocolType === ProtocolType.PAPER_MACHINE && (
+        {protocolType === ProtocolType.PAPER_MACHINE && (
           <>
             {/* MACHINE */}
             <td>
@@ -274,7 +282,7 @@ export default function ProtocolForm(props) {
             </td>
           </>
         )}
-      </tr>
+      </>
     )
   }
 
@@ -313,6 +321,21 @@ export default function ProtocolForm(props) {
       }
     />
   )
+
+  const CustomTableHeader = () => {
+    return (
+      <>
+        <th>{protocolType === ProtocolType.PAPER_MACHINE && 'Х'}</th>
+
+        {protocolType === ProtocolType.PAPER_MACHINE && (
+          <>
+            <th>M</th>
+            <th>О</th>
+          </>
+        )}
+      </>
+    )
+  }
 
   return (
     <div>
@@ -375,44 +398,20 @@ export default function ProtocolForm(props) {
           <thead>
             <tr>
               <th></th>
-
-              <th>
-                {props.protocolType === ProtocolType.PAPER_MACHINE &&
-                  'Хартиени'}
-              </th>
-
-              {props.protocolType === ProtocolType.PAPER_MACHINE && (
-                <>
-                  <th>Mашинни</th>
-                  <th>Общо</th>
-                </>
-              )}
+              <CustomTableHeader />
             </tr>
           </thead>
           <tbody>
             <tr>
               <td>5. Брой на намерените в избирателните кутии бюлетини</td>
+              {props.protocolType === ProtocolType.PAPER_MACHINE && (
+                <>
+                  <td>{inputField('machineVotesCount')}</td>
+                  <td>{inputField('totalVotesCast')}</td>
+                </>
+              )}
               <td>{inputField('nonMachineVotesCount')}</td>
             </tr>
-            {props.protocolType === ProtocolType.PAPER_MACHINE && (
-              <>
-                <tr>
-                  <td>
-                    5.1. Брой на потвърдените гласове от машинното гласуване
-                  </td>
-                  <td></td>
-                  <td>{inputField('machineVotesCount')}</td>
-                </tr>
-                <tr>
-                  <td>
-                    5.2. Ощб брой на гласовете от бюлетини и машинно гласуване
-                  </td>
-                  <td></td>
-                  <td></td>
-                  <td>{inputField('totalVotesCast')}</td>
-                </tr>
-              </>
-            )}
 
             <>
               <tr>
@@ -420,6 +419,12 @@ export default function ProtocolForm(props) {
                   6. Брой на намерените в избирателната кутия недействителни
                   гласове (бюлетини)
                 </td>
+                {props.protocolType === ProtocolType.PAPER_MACHINE && (
+                  <>
+                    <td>{inputField('invalidVotesCount', true)}</td>
+                    <td>{inputField('invalidVotesCount', true)}</td>
+                  </>
+                )}
                 <td>{inputField('invalidVotesCount')}</td>
               </tr>
 
@@ -452,118 +457,7 @@ export default function ProtocolForm(props) {
                   7.2. Брой на действителните гласове с отбелязан вот „Не
                   подкрепям никого“
                 </td>
-                <td>
-                  <input
-                    type="text"
-                    className={
-                      props.protocolState.partyInputs.paper[0].isValid === false
-                        ? 'invalid'
-                        : props.protocolState.partyInputs.paper[0].isTouched
-                        ? 'changed'
-                        : ''
-                    }
-                    name={`party0paper`}
-                    value={props.protocolState.partyInputs.paper[0].value}
-                    onChange={(e) =>
-                      props.validateProtocolForm({
-                        ...props.protocolState,
-                        partyInputs: {
-                          ...props.protocolState.partyInputs,
-                          paper: {
-                            ...props.protocolState.partyInputs.paper,
-                            [0]: {
-                              value: tryUpdateValue(
-                                e.target.value,
-                                props.protocolState.partyInputs.paper[0].value
-                              ),
-                              isValid: true, // reset to true, it will be updated upon validation
-                              isTouched: true,
-                            },
-                          },
-                        },
-                      })
-                    }
-                  />
-                </td>
-
-                {props.protocolType === ProtocolType.PAPER_MACHINE && (
-                  <>
-                    <td>
-                      <input
-                        type="text"
-                        className={
-                          props.protocolState.partyInputs?.machine[0]
-                            .isValid === false
-                            ? 'invalid'
-                            : props.protocolState.partyInputs?.machine[0]
-                                .isTouched
-                            ? 'changed'
-                            : ''
-                        }
-                        name={`party0machine`}
-                        value={
-                          props.protocolState.partyInputs?.machine[0].value
-                        }
-                        onChange={(e) =>
-                          props.validateProtocolForm({
-                            ...props.protocolState,
-                            partyInputs: {
-                              ...props.protocolState.partyInputs,
-                              machine: {
-                                ...props.protocolState.partyInputs.machine,
-                                [0]: {
-                                  value: tryUpdateValue(
-                                    e.target.value,
-                                    props.protocolState.partyInputs.machine[0]
-                                      .value
-                                  ),
-                                  isValid: true, // reset to true, it will be updated upon validation
-                                  isTouched: true,
-                                },
-                              },
-                            },
-                          })
-                        }
-                      />
-                    </td>
-                    <td>
-                      <input
-                        type="text"
-                        className={
-                          props.protocolState.partyInputs?.total[0].isValid ===
-                          false
-                            ? 'invalid'
-                            : props.protocolState.partyInputs?.total[0]
-                                .isTouched
-                            ? 'changed'
-                            : ''
-                        }
-                        name={`party0total`}
-                        value={props.protocolState.partyInputs?.total[0].value}
-                        onChange={(e) =>
-                          props.validateProtocolForm({
-                            ...props.protocolState,
-                            partyInputs: {
-                              ...props.protocolState.partyInputs,
-                              total: {
-                                ...props.protocolState.partyInputs.total,
-                                [0]: {
-                                  value: tryUpdateValue(
-                                    e.target.value,
-                                    props.protocolState.partyInputs.total[0]
-                                      .value
-                                  ),
-                                  isValid: true, // reset to true, it will be updated upon validation
-                                  isTouched: true,
-                                },
-                              },
-                            },
-                          })
-                        }
-                      />
-                    </td>
-                  </>
-                )}
+                {partyRowInputs(props, props.parties[0])}
               </tr>
             </>
           </tbody>
@@ -576,21 +470,11 @@ export default function ProtocolForm(props) {
           <tr>
             <th>#</th>
             <th>Име</th>
-            <th>
-              {props.protocolType === ProtocolType.PAPER_MACHINE && 'Хартиени'}
-            </th>
-            {protocolType === ProtocolType.PAPER_MACHINE && (
-              <>
-                <th>Машинни</th>
-                <th>Общо</th>
-              </>
-            )}
+            <CustomTableHeader />
           </tr>
         </thead>
         <tbody>
-          {props.parties
-            .filter((party) => party.isFeatured && party.id !== 0)
-            .map(partyRow)}
+          {props.parties.filter((party) => party.id !== 0).map(partyRow)}
         </tbody>
       </PartyResultsTable>
     </div>

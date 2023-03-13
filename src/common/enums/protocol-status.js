@@ -5,4 +5,5 @@
 export const ProtocolStatus = {
   DRAFT: 'DRAFT',
   ORIGINAL: 'ORIGINAL',
+  UNKNOWN: 'UNKNOWN',
 }
