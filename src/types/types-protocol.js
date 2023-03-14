@@ -1,9 +1,9 @@
 /**
  * @typedef {{
  *   party: number,
- *   machineVotesCount: number,
+ *   machineVotes: number,
  *   nonMachineVotesCount: number,
- *   totalVotes: number,
+ *   validVotesCount: number,
  * }} ProtocolResultDto
  */
 
@@ -19,18 +19,18 @@
  *   votersVotedCount: number,
  *   uncastBallots: number,
  *   invalidAndUncastBallots: number,
- *   totalVotesCast: number,
+ *   castBallotsCount: number,
  *   pictures: any,
- *   receivedBallots: number,
+ *   totalBallotsCount: number,
+ *   nonMachineCastBallotsCount: number,
+ *   machineCastBallotsCount: number,
+ *   validVotesCount: number,
+ *   partyValidVotesCount: number,
+ *   partyNonMachineVotesCount: number,
+ *   partyMachineVotesCount: number,
+ *   validNoCandidateTotalVotesCount: number,
  *   nonMachineVotesCount: number,
  *   machineVotesCount: number,
- *   validVotesTotalCount: number,
- *   partiesValidVotesTotalCount: number,
- *   partiesNonMachineValidVotesCount: number,
- *   partiesMachinesValidVotesCount: number,
- *   validNoCandidateTotalVotesCount: number,
- *   validNonMachineVotesCount: number,
- *   validMachineVotesCount: number,
  * }} ProtocolReplaceDto
  */
 
@@ -50,20 +50,20 @@
  *   votersCount: ControlledInput,
  *   additionalVotersCount: ControlledInput,
  *   votersVotedCount: ControlledInput,
- *   receivedBallots: ControlledInput,
+ *   totalBallotsCount: ControlledInput,
  *   uncastBallots: ControlledInput,
  *   invalidAndUncastBallots: ControlledInput,
+ *   nonMachineCastBallotsCount: ControlledInput,
+ *   machineCastBallotsCount: ControlledInput,
+ *   castBallotsCount: ControlledInput,
+ *   invalidVotesCount: ControlledInput,
+ *   validVotesCount: ControlledInput,
+ *   partyValidVotesCount: ControlledInput,
+ *   partyNonMachineVotesCount: ControlledInput,
+ *   partyMachineVotesCount: ControlledInput,
+ *   validNoCandidateTotalVotesCount: ControlledInput,
  *   nonMachineVotesCount: ControlledInput,
  *   machineVotesCount: ControlledInput,
- *   totalVotesCast: ControlledInput,
- *   invalidVotesCount: ControlledInput,
- *   validVotesTotalCount: ControlledInput,
- *   partiesValidVotesTotalCount: ControlledInput,
- *   partiesNonMachineValidVotesCount: ControlledInput,
- *   partiesMachinesValidVotesCount: ControlledInput,
- *   validNoCandidateTotalVotesCount: ControlledInput,
- *   validNonMachineVotesCount: ControlledInput,
- *   validMachineVotesCount: ControlledInput,
  * }} ProtocolStateInputs
  */
 

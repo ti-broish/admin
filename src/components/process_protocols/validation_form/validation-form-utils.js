@@ -10,9 +10,9 @@ export const generateProtocolResults = (state, parties) => {
 
   return parties.map((p) => ({
     party: p.id,
-    machineVotesCount: +state.partyInputs.machine[p.id].value,
+    machineVotes: +state.partyInputs.machine[p.id].value,
     nonMachineVotesCount: +state.partyInputs.paper[p.id].value,
-    totalVotes: +state.partyInputs.total[p.id].value,
+    validVotesCount: +state.partyInputs.total[p.id].value,
   }))
 }
 
@@ -29,25 +29,29 @@ export const generateInitialProtocolState = (parties) => {
       votersCount: { value: '', isValid: false, isTouched: false },
       additionalVotersCount: { value: '', isValid: false, isTouched: false },
       votersVotedCount: { value: '', isValid: false, isTouched: false },
-      receivedBallots: { value: '', isValid: false, isTouched: false },
+      totalBallotsCount: { value: '', isValid: false, isTouched: false },
       uncastBallots: { value: '', isValid: false, isTouched: false },
       invalidAndUncastBallots: { value: '', isValid: false, isTouched: false },
-      nonMachineVotesCount: { value: '', isValid: false, isTouched: false },
-      machineVotesCount: { value: '', isValid: false, isTouched: false },
-      totalVotesCast: { value: '', isValid: false, isTouched: false },
+      nonMachineCastBallotsCount: {
+        value: '',
+        isValid: false,
+        isTouched: false,
+      },
+      machineCastBallotsCount: { value: '', isValid: false, isTouched: false },
+      castBallotsCount: { value: '', isValid: false, isTouched: false },
       invalidVotesCount: { value: '', isValid: false, isTouched: false },
-      validVotesTotalCount: { value: '', isValid: false, isTouched: false },
-      partiesValidVotesTotalCount: {
+      validVotesCount: { value: '', isValid: false, isTouched: false },
+      partyValidVotesCount: {
         value: '',
         isValid: false,
         isTouched: false,
       },
-      partiesNonMachineValidVotesCount: {
+      partyNonMachineVotesCount: {
         value: '',
         isValid: false,
         isTouched: false,
       },
-      partiesMachinesValidVotesCount: {
+      partyMachineVotesCount: {
         value: '',
         isValid: false,
         isTouched: false,
@@ -57,12 +61,12 @@ export const generateInitialProtocolState = (parties) => {
         isValid: false,
         isTouched: false,
       },
-      validNonMachineVotesCount: {
+      nonMachineVotesCount: {
         value: '',
         isValid: false,
         isTouched: false,
       },
-      validMachineVotesCount: { value: '', isValid: false, isTouched: false },
+      machineVotesCount: { value: '', isValid: false, isTouched: false },
     },
     partyInputs: {
       paper: {},
@@ -148,34 +152,34 @@ export const getValidatedProtocolState = (state, type, parties) => {
   // числото в А. трябва да е по-голямо или равно на 100 / числото в А. трябва да е кратно на 100
   validateWithDependencies(() => {
     if (
-      +state.inputs.receivedBallots.value < 100 ||
-      +state.inputs.receivedBallots.value % 100 !== 0
+      +state.inputs.totalBallotsCount.value < 100 ||
+      +state.inputs.totalBallotsCount.value % 100 !== 0
     ) {
-      state.inputs.receivedBallots.isValid = false
+      state.inputs.totalBallotsCount.isValid = false
       errorStack.add(
         'Броят на получените бюлетини е невалиден (А. трябва да е точно 100 или кратно на 100)'
       )
     }
-  }, [state.inputs.receivedBallots])
+  }, [state.inputs.totalBallotsCount])
 
   // числото в А. трябва да е равно на сумата от числата в 4.а), 4.б) и 5.
   validateWithDependencies(() => {
     if (
-      +state.inputs.receivedBallots.value !==
+      +state.inputs.totalBallotsCount.value !==
       +state.inputs.uncastBallots.value +
         +state.inputs.invalidAndUncastBallots.value +
-        +state.inputs.nonMachineVotesCount.value
+        +state.inputs.nonMachineCastBallotsCount.value
     ) {
-      state.inputs.receivedBallots.isValid = false
+      state.inputs.totalBallotsCount.isValid = false
       errorStack.add(
         'Броят на получените бюлетини не отговаря на пълния брой бюлетини (числото в А. трябва да е равно на сумата от числата в 4.а), 4.б) и 5.)'
       )
     }
   }, [
-    state.inputs.receivedBallots,
+    state.inputs.totalBallotsCount,
     state.inputs.uncastBallots,
     state.inputs.invalidAndUncastBallots,
-    state.inputs.nonMachineVotesCount,
+    state.inputs.nonMachineCastBallotsCount,
   ])
 
   // числото в 3. трябва да е по-малко или равно на сумата от числата в 1. и 2.
@@ -199,54 +203,54 @@ export const getValidatedProtocolState = (state, type, parties) => {
   // числото в 5. трябва да е равно на сумата от числата в 6. и 7.
   validateWithDependencies(() => {
     if (
-      +state.inputs.nonMachineVotesCount.value !==
+      +state.inputs.nonMachineCastBallotsCount.value !==
       +state.inputs.invalidVotesCount.value +
-        +state.inputs.validNonMachineVotesCount.value
+        +state.inputs.nonMachineVotesCount.value
     ) {
-      state.inputs.validNonMachineVotesCount.isValid = false
+      state.inputs.nonMachineVotesCount.isValid = false
       errorStack.add(
         'Общият брой на валидните гласове не е валиден (числото в 5. трябва да е равно на сумата от числата в 6. и 7.)'
       )
     }
   }, [
-    state.inputs.nonMachineVotesCount,
+    state.inputs.nonMachineCastBallotsCount,
     state.inputs.invalidVotesCount,
-    state.inputs.validNonMachineVotesCount,
+    state.inputs.nonMachineVotesCount,
   ])
 
   // числото в 7. трябва да е равно на сумата от числата в 7.1 и 7.2.
   validateWithDependencies(() => {
     if (
-      +state.inputs.validNonMachineVotesCount.value !==
-      +state.inputs.partiesNonMachineValidVotesCount.value +
+      +state.inputs.nonMachineVotesCount.value !==
+      +state.inputs.partyNonMachineVotesCount.value +
         +state.partyInputs.paper[0].value
     ) {
-      state.inputs.validNonMachineVotesCount.isValid = false
+      state.inputs.nonMachineVotesCount.isValid = false
       errorStack.add(
         'Общият брой на всички действителни гласове не е валиден (числото в 7. трябва да е равно на сумата от числата в 7.1 и 7.2.)'
       )
     }
   }, [
-    state.inputs.validNonMachineVotesCount,
-    state.inputs.partiesNonMachineValidVotesCount,
+    state.inputs.nonMachineVotesCount,
+    state.inputs.partyNonMachineVotesCount,
     state.partyInputs.paper[0],
   ])
 
   // числото в 7.1. трябва да е равно на сумата от числата в 8.
   validateWithDependencies(() => {
     if (
-      +state.inputs.partiesNonMachineValidVotesCount.value !==
+      +state.inputs.partyNonMachineVotesCount.value !==
       Object.values(state.partyInputs.paper)
         .slice(1)
         .reduce((total, p) => total + +p.value, 0)
     ) {
-      state.inputs.partiesNonMachineValidVotesCount.isValid = false
+      state.inputs.partyNonMachineVotesCount.isValid = false
       errorStack.add(
         'Броят на действителнити гласове (хартиени бюлетини) не отговаря на сумата на гласовете по кандидатски листи на партии'
       )
     }
   }, [
-    state.inputs.partiesNonMachineValidVotesCount,
+    state.inputs.partyNonMachineVotesCount,
     ...Object.values(state.partyInputs.paper)
       .slice(1)
       .filter((p) => p.isTouched),
@@ -258,14 +262,14 @@ export const getValidatedProtocolState = (state, type, parties) => {
     validateWithDependencies(() => {
       if (
         +state.inputs.votersVotedCount.value !==
-        +state.inputs.nonMachineVotesCount.value
+        +state.inputs.nonMachineCastBallotsCount.value
       ) {
         state.inputs.votersVotedCount.isValid = false
         errorStack.add(
           'Брой на гласувалите избиратели според положените подписи в избирателния списък не е валиден (числото в 3. трябва да е равно на числото в 5.)'
         )
       }
-    }, [state.inputs.votersVotedCount, state.inputs.nonMachineVotesCount])
+    }, [state.inputs.votersVotedCount, state.inputs.nonMachineCastBallotsCount])
   }
 
   // mixex only specific validations
@@ -274,79 +278,79 @@ export const getValidatedProtocolState = (state, type, parties) => {
     validateWithDependencies(() => {
       if (
         +state.inputs.votersVotedCount.value !==
-        +state.inputs.totalVotesCast.value
+        +state.inputs.castBallotsCount.value
       ) {
         state.inputs.votersVotedCount.isValid = false
         errorStack.add(
           'Брой на гласувалите избиратели според положените подписи в избирателния списък не е валиден (числото в 3. трябва да е равно на числото в 5.2 (общо))'
         )
       }
-    }, [state.inputs.votersVotedCount, state.inputs.totalVotesCast])
+    }, [state.inputs.votersVotedCount, state.inputs.castBallotsCount])
 
     //числото в 5.(м) трябва да е равно на числото в 7.(м)
     validateWithDependencies(() => {
       if (
-        +state.inputs.machineVotesCount.value !==
-        +state.inputs.validMachineVotesCount.value
+        +state.inputs.machineCastBallotsCount.value !==
+        +state.inputs.machineVotesCount.value
       ) {
-        state.inputs.machineVotesCount.isValid = false
+        state.inputs.machineCastBallotsCount.isValid = false
         errorStack.add(
           'Броят на машинните бюлетини не отговаря на броя на действителните гласове от машини(/числото в 5.(машинни) трябва да е равно на числото в 7.(машинни))'
         )
       }
-    }, [state.inputs.machineVotesCount, state.inputs.validMachineVotesCount])
+    }, [state.inputs.machineCastBallotsCount, state.inputs.machineVotesCount])
 
     // числото в 7.(м) трябва да е равно на сумата от числата в 7.1.(м) и 7.2.(м)
     validateWithDependencies(() => {
       if (
-        +state.inputs.validMachineVotesCount.value !==
-        +state.inputs.partiesMachinesValidVotesCount.value +
+        +state.inputs.machineVotesCount.value !==
+        +state.inputs.partyMachineVotesCount.value +
           +state.partyInputs.machine[0].value
       ) {
-        state.inputs.validMachineVotesCount.isValid = false
+        state.inputs.machineVotesCount.isValid = false
         errorStack.add(
           'Общият брой на действителни гласове не е валиден (числото в 7.(машинни) трябва да е равно на сумата от числата в 7.1.(машинни) и 7.2.(машинни)'
         )
       }
     }, [
-      state.inputs.validMachineVotesCount,
-      state.inputs.partiesMachinesValidVotesCount,
+      state.inputs.machineVotesCount,
+      state.inputs.partyMachineVotesCount,
       state.partyInputs.machine[0],
     ])
 
     // числото в 7.(о) трябва да е равно на сумата от числата в 7.1.(о) и 7.2.(о)
     validateWithDependencies(() => {
       if (
-        +state.inputs.validVotesTotalCount.value !==
-        +state.inputs.partiesValidVotesTotalCount.value +
+        +state.inputs.validVotesCount.value !==
+        +state.inputs.partyValidVotesCount.value +
           +state.partyInputs.total[0].value
       ) {
-        state.inputs.validVotesTotalCount.isValid = false
+        state.inputs.validVotesCount.isValid = false
         errorStack.add(
           'Общият брой на действителните гласове (общо) не е валиден (числото в 7.(общи) трябва да е равно на сумата от числата в 7.1.(общи) и 7.2.(общи))'
         )
       }
     }, [
-      state.inputs.validVotesTotalCount,
-      state.inputs.partiesValidVotesTotalCount,
+      state.inputs.validVotesCount,
+      state.inputs.partyValidVotesCount,
       state.partyInputs.total[0],
     ])
 
     // числото в 7.1.(м) трябва да е равно на сумата от числата в 8(м)
     validateWithDependencies(() => {
       if (
-        +state.inputs.partiesMachinesValidVotesCount.value !==
+        +state.inputs.partyMachineVotesCount.value !==
         Object.values(state.partyInputs.machine)
           .slice(1)
           .reduce((total, p) => total + +p.value, 0)
       ) {
-        state.inputs.partiesMachinesValidVotesCount.isValid = false
+        state.inputs.partyMachineVotesCount.isValid = false
         errorStack.add(
           'Броят на действителнити гласове (машинни бюлетини) не отговаря на сумата на гласовете по кандидатски листи на партии'
         )
       }
     }, [
-      state.inputs.partiesMachinesValidVotesCount,
+      state.inputs.partyMachineVotesCount,
       ...Object.values(state.partyInputs.machine)
         .slice(1)
         .filter((p) => p.isTouched),
@@ -355,18 +359,18 @@ export const getValidatedProtocolState = (state, type, parties) => {
     // числото в 7.1.(о) трябва да е равно на сумата от числата в 8(о)
     validateWithDependencies(() => {
       if (
-        +state.inputs.partiesValidVotesTotalCount.value !==
+        +state.inputs.partyValidVotesCount.value !==
         Object.values(state.partyInputs.total)
           .slice(1)
           .reduce((total, p) => total + +p.value, 0)
       ) {
-        state.inputs.partiesValidVotesTotalCount.isValid = false
+        state.inputs.partyValidVotesCount.isValid = false
         errorStack.add(
           'Броят на действителнити гласове (машинни бюлетини) не отговаря на сумата на гласовете по кандидатски листи на партии'
         )
       }
     }, [
-      state.inputs.partiesValidVotesTotalCount,
+      state.inputs.partyValidVotesCount,
       ...Object.values(state.partyInputs.total)
         .slice(1)
         .filter((p) => p.isTouched),

@@ -32,6 +32,16 @@ const ProtocolDetailsTable = styled.table`
       background-color: #ff8f8f;
     }
   }
+  input::-webkit-outer-spin-button,
+  input::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+  }
+
+  /* Firefox */
+  input[type='number'] {
+    -moz-appearance: textfield;
+  }
 
   select {
     width: 100%;
@@ -292,7 +302,7 @@ export default function ProtocolForm(props) {
    */
   const inputField = (varName, hidden = false) => (
     <input
-      type="text"
+      type="number"
       name={varName}
       hidden={hidden}
       className={
@@ -344,7 +354,7 @@ export default function ProtocolForm(props) {
         <tbody>
           <tr>
             <td>А. Брой на получените бюлетини</td>
-            <td>{inputField('receivedBallots')}</td>
+            <td>{inputField('totalBallotsCount')}</td>
           </tr>
         </tbody>
       </ProtocolDetailsTable>
@@ -404,13 +414,13 @@ export default function ProtocolForm(props) {
           <tbody>
             <tr>
               <td>5. Брой на намерените в избирателните кутии бюлетини</td>
+              <td>{inputField('nonMachineCastBallotsCount')}</td>
               {props.protocolType === ProtocolType.PAPER_MACHINE && (
                 <>
-                  <td>{inputField('machineVotesCount')}</td>
-                  <td>{inputField('totalVotesCast')}</td>
+                  <td>{inputField('machineCastBallotsCount')}</td>
+                  <td>{inputField('castBallotsCount')}</td>
                 </>
               )}
-              <td>{inputField('nonMachineVotesCount')}</td>
             </tr>
 
             <>
@@ -430,11 +440,11 @@ export default function ProtocolForm(props) {
 
               <tr>
                 <td>7. Общ брой на всички действителни гласове (бюлетини)</td>
-                <td>{inputField('validNonMachineVotesCount')}</td>
+                <td>{inputField('nonMachineVotesCount')}</td>
                 {props.protocolType === ProtocolType.PAPER_MACHINE && (
                   <>
-                    <td>{inputField('validMachineVotesCount')}</td>
-                    <td>{inputField('validVotesTotalCount')}</td>
+                    <td>{inputField('machineVotesCount')}</td>
+                    <td>{inputField('validVotesCount')}</td>
                   </>
                 )}
               </tr>
@@ -443,11 +453,11 @@ export default function ProtocolForm(props) {
                   7.1. Брой на действителните гласове, подадени за кандидатските
                   листи на партии, коалиции и инициативни комитети
                 </td>
-                <td>{inputField('partiesNonMachineValidVotesCount')}</td>
+                <td>{inputField('partyNonMachineVotesCount')}</td>
                 {props.protocolType === ProtocolType.PAPER_MACHINE && (
                   <>
-                    <td>{inputField('partiesMachinesValidVotesCount')}</td>
-                    <td>{inputField('partiesValidVotesTotalCount')}</td>
+                    <td>{inputField('partyMachineVotesCount')}</td>
+                    <td>{inputField('partyValidVotesCount')}</td>
                   </>
                 )}
               </tr>

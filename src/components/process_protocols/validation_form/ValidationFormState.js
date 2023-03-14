@@ -32,58 +32,48 @@ export default class ValidationFormState {
 
         // СЛЕД КАТО ОТВОРИ ИЗБИРАТЕЛНАТА КУТИЯ, СИК УСТАНОВИ
         //5 Общ брой на намерените в избирателната кутия бюлетини
-        totalVotesCast: zeroIfEmpty(protocol.results.totalVotesCast),
+        nonMachineCastBallotsCount: zeroIfEmpty(
+          protocol.results.nonMachineCastBallotsCount
+        ),
 
         // 6 Брой на намерените в избирателната кутия недействителни гласове (бюлетини)
         invalidVotesCount: zeroIfEmpty(protocol.results.invalidVotesCount),
 
         // 7. Общ брой на всички действителни гласове (бюлетини)
-        validVotesTotalCount: zeroIfEmpty(
-          protocol.results.validVotesTotalCount
+        nonMachineVotesCount: zeroIfEmpty(
+          protocol.results.nonMachineVotesCount
         ),
 
         // 7.1. Брой на действителните гласов
-        partiesValidVotesTotalCount: zeroIfEmpty(
-          protocol.results.partiesValidVotesTotalCount
-        ),
-
-        // 7.2. Брой на действителните гласове с отбелязан вот „Неподкрепям никого“
-        validNoCandidateTotalVotesCount: zeroIfEmpty(
-          protocol.results.validNoCandidateTotalVotesCount
+        partyNonMachineVotesCount: zeroIfEmpty(
+          protocol.results.partyNonMachineVotesCount
         ),
       }
 
       if (protocolType === 'paper-machine') {
         //5 Общ брой на намерените в избирателната кутия бюлетини
-        this.formData['nonMachineVotesCount'] = zeroIfEmpty(
-          protocol.results.nonMachineVotesCount
+
+        this.formData['machineCastBallotsCount'] = zeroIfEmpty(
+          protocol.results.machineCastBallotsCount
         )
-        this.formData['machineVotesCount'] = zeroIfEmpty(
-          protocol.results.machineVotesCount
+        this.formData['castBallotsCount'] = zeroIfEmpty(
+          protocol.results.castBallotsCount
         )
 
         // 7. Общ брой на всички действителни гласове (бюлетини)
-        this.formData['validNonMachineVotesCount'] = zeroIfEmpty(
-          protocol.results.validNonMachineVotesCount
+        this.formData['machineVotesCount'] = zeroIfEmpty(
+          protocol.results.machineVotesCount
         )
-        this.formData['validMachineVotesCount'] = zeroIfEmpty(
-          protocol.results.validMachineVotesCount
+        this.formData['validVotesCount'] = zeroIfEmpty(
+          protocol.results.validVotesCount
         )
 
         //7.1. Брой на действителните гласове
-        this.formData['partiesNonMachineValidVotesCount'] = zeroIfEmpty(
-          protocol.results.partiesNonMachineValidVotesCount
+        this.formData['partyMachineVotesCount'] = zeroIfEmpty(
+          protocol.results.partyMachineVotesCount
         )
-        this.formData['partiesMachinesValidVotesCount'] = zeroIfEmpty(
-          protocol.results.partiesMachinesValidVotesCount
-        )
-
-        // 7.2. Брой на действителните гласове с отбелязан вот „Неподкрепям никого“
-        this.formData['validNoCandidateNonMachineVotesCount'] = zeroIfEmpty(
-          protocol.results.validNoCandidateNonMachineVotesCount
-        )
-        this.formData['validNoCandidateMachineVotesCount'] = zeroIfEmpty(
-          protocol.results.validNoCandidateMachineVotesCount
+        this.formData['partyValidVotesCount'] = zeroIfEmpty(
+          protocol.results.partyValidVotesCount
         )
       }
 
@@ -118,7 +108,7 @@ export default class ValidationFormState {
     for (const result of protocol.results) {
       if (protocolType === 'paper' || protocolType === 'paper-machine') {
         this.resultsData[`party${result.party}paper`] = emptyStrIfNull(
-          result.nonMachineVotesCount
+          result.nonMachineCastBallotsCount
         )
       }
 
@@ -178,10 +168,11 @@ export default class ValidationFormState {
 
     for (const party of parties) {
       let result = getPartyResult(party.id)
-      if (!result) result = { nonMachineVotesCount: null, machineVotes: [] }
+      if (!result)
+        result = { nonMachineCastBallotsCount: null, machineVotes: [] }
 
       if (protocolType === 'paper' || protocolType === 'paper-machine') {
-        const originalResult = emptyStrIfNull(result.nonMachineVotesCount)
+        const originalResult = emptyStrIfNull(result.nonMachineCastBallotsCount)
         fieldStatus[`party${party.id}paper`] = compareResult(
           `party${party.id}paper`,
           originalResult
@@ -221,19 +212,19 @@ export default class ValidationFormState {
 
     addStatusForResultField('uncastBallots')
     addStatusForResultField('invalidAndUncastBallots')
-    addStatusForResultField('totalVotesCast')
+    addStatusForResultField('castBallotsCount')
     addStatusForResultField('invalidVotesCount')
-    addStatusForResultField('validVotesTotalCount')
-    addStatusForResultField('partiesValidVotesTotalCount')
+    addStatusForResultField('validVotesCount')
+    addStatusForResultField('partyValidVotesCount')
     addStatusForResultField('validNoCandidateTotalVotesCount')
 
     if (protocolType === 'paper-machine') {
+      addStatusForResultField('nonMachineCastBallotsCount')
+      addStatusForResultField('machineCastBallotsCount')
       addStatusForResultField('nonMachineVotesCount')
       addStatusForResultField('machineVotesCount')
-      addStatusForResultField('validNonMachineVotesCount')
-      addStatusForResultField('validMachineVotesCount')
-      addStatusForResultField('partiesNonMachineValidVotesCount')
-      addStatusForResultField('partiesMachinesValidVotesCount')
+      addStatusForResultField('partyNonMachineVotesCount')
+      addStatusForResultField('partyMachineVotesCount')
       addStatusForResultField('validNoCandidateNonMachineVotesCount')
       addStatusForResultField('validNoCandidateMachineVotesCount')
 
@@ -296,7 +287,7 @@ export default class ValidationFormState {
       }
 
       if (protocolType === 'paper' || protocolType === 'paper-machine') {
-        result.nonMachineVotesCount = parseInt(
+        result.nonMachineCastBallotsCount = parseInt(
           this.resultsData[`party${party.id}paper`],
           10
         )

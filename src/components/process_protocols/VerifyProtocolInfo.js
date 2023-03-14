@@ -18,7 +18,6 @@ import SectionDetails from './validation_form/SectionDetails'
 import {
   generateInitialProtocolState,
   generateProtocolResults,
-  getValidatedProtocolState,
 } from './validation_form/validation-form-utils'
 
 // #region Styled components
@@ -333,32 +332,32 @@ export default function VerifyProtocolInfo(props) {
       hasPaperBallots: true,
       machinesCount: machineCount,
       isFinal: isFinal === ProtocolStatus.ORIGINAL,
-      results: generateProtocolResults(protocolState, parties),
-      pictures: props.protocol.pictures,
+
+      totalBallotsCount: +protocolState.inputs.totalBallotsCount.value,
       votersCount: +protocolState.inputs.votersCount.value,
       additionalVotersCount: +protocolState.inputs.additionalVotersCount.value,
       votersVotedCount: +protocolState.inputs.votersVotedCount.value,
       uncastBallots: +protocolState.inputs.uncastBallots.value,
       invalidAndUncastBallots:
         +protocolState.inputs.invalidAndUncastBallots.value,
-      totalVotesCast: +protocolState.inputs.totalVotesCast.value,
+      castBallotsCount: +protocolState.inputs.castBallotsCount.value,
       // new fields below
-      receivedBallots: +protocolState.inputs.receivedBallots.value,
-      nonMachineVotesCount: +protocolState.inputs.nonMachineVotesCount.value,
-      machineVotesCount: +protocolState.inputs.machineVotesCount.value,
-      validVotesTotalCount: +protocolState.inputs.validVotesTotalCount.value,
-      partiesValidVotesTotalCount:
-        +protocolState.inputs.partiesValidVotesTotalCount.value,
-      partiesNonMachineValidVotesCount:
-        +protocolState.inputs.partiesNonMachineValidVotesCount.value,
-      partiesMachinesValidVotesCount:
-        +protocolState.inputs.partiesMachinesValidVotesCount.value,
+      nonMachineCastBallotsCount:
+        +protocolState.inputs.nonMachineCastBallotsCount.value,
+      machineCastBallotsCount:
+        +protocolState.inputs.machineCastBallotsCount.value,
+      validVotesCount: +protocolState.inputs.validVotesCount.value,
+      partyValidVotesCount: +protocolState.inputs.partyValidVotesCount.value,
+      partyNonMachineVotesCount:
+        +protocolState.inputs.partyNonMachineVotesCount.value,
+      partyMachineVotesCount:
+        +protocolState.inputs.partyMachineVotesCount.value,
       validNoCandidateTotalVotesCount:
         +protocolState.inputs.validNoCandidateTotalVotesCount.value,
-      validNonMachineVotesCount:
-        +protocolState.inputs.validNonMachineVotesCount.value,
-      validMachineVotesCount:
-        +protocolState.inputs.validMachineVotesCount.value,
+      nonMachineVotesCount: +protocolState.inputs.nonMachineVotesCount.value,
+      machineVotesCount: +protocolState.inputs.machineVotesCount.value,
+      results: generateProtocolResults(protocolState, parties),
+      pictures: props.protocol.pictures,
     }
 
     props.setLoading(true)
@@ -375,9 +374,8 @@ export default function VerifyProtocolInfo(props) {
 
   /** @type {(protocolState: ProtocolState) => void} */
   const validateProtocolForm = (protocolState) => {
-    setProtocolState(
-      getValidatedProtocolState(protocolState, protocolType, parties)
-    )
+    //getValidatedProtocolState(protocolState, protocolType, parties)
+    setProtocolState(protocolState)
   }
 
   return (
@@ -433,7 +431,8 @@ export default function VerifyProtocolInfo(props) {
             />
           )}
 
-          {protocolState.errors.length > 0 && (
+          {/* {protocolState.errors.length > 0 && ( */}
+          {protocolType != ProtocolType.UNKNOWN && (
             <>
               <hr />
               {protocolState.acceptInvalidProtocol ? (
@@ -467,12 +466,15 @@ export default function VerifyProtocolInfo(props) {
                   })
                 }
               />
-              <label htmlFor="accept-invalid-protocol">
-                {' '}
+              <label
+                style={{ marginLeft: '8px' }}
+                htmlFor="accept-invalid-protocol"
+              >
                 Съгласен съм, че протоколът има грешки и го предавам в този вид
               </label>
             </>
           )}
+          {/* )} */}
 
           <hr />
           {invalidFields || changedFields ? (
