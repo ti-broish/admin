@@ -6,8 +6,6 @@ import { ProtocolType } from '../../../common/enums/protocol-type'
  * @type {(protocolState: ProtocolState, parties: Party[]) => ProtocolResultDto[]}
  */
 export const generateProtocolResults = (state, parties) => {
-  // parties = parties.filter((p) => p.isFeatured)
-
   return parties.map((p) => ({
     party: p.id,
     machineVotes: +state.partyInputs.machine[p.id].value,
@@ -20,8 +18,6 @@ export const generateProtocolResults = (state, parties) => {
  * @type {(parties: Party[]) => ProtocolState}
  */
 export const generateInitialProtocolState = (parties) => {
-  // parties = parties.filter((p) => p.isFeatured)
-
   const state = {
     isValid: false,
     acceptInvalidProtocol: false,
@@ -128,7 +124,6 @@ const validateWithDependencies = (fn, dependencies) => {
  * @type {(value: ProtocolState, protocolType: ProtocolType, parties: Party[]) => ProtocolState}
  */
 export const getValidatedProtocolState = (state, type, parties) => {
-  // parties = parties.filter((p) => p.isFeatured)
   // assume all inputs are valid
   for (const input of Object.values(state.inputs)) input.isValid = true
   for (const input of Object.values(state.partyInputs.machine))
