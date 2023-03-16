@@ -399,17 +399,21 @@ export default (props) => {
               <tr>
                 <td>Имена</td>
                 <td>
-                  {data.author?.firstName} {data.author?.lastName}
+                  {data.author.firstName
+                    ? `${data.author.firstName} ${data.author.lastName}`
+                    : data.author.name}
                 </td>
               </tr>
-              <tr>
-                <td>Организация</td>
-                <td>
-                  {data.author?.organization
-                    ? data.author.organization.name
-                    : null}
-                </td>
-              </tr>
+              {data.author?.organization && (
+                <tr>
+                  <td>Организация</td>
+                  <td>
+                    {data.author?.organization
+                      ? data.author.organization.name
+                      : null}
+                  </td>
+                </tr>
+              )}
               <tr>
                 <td>Ел. поща</td>
                 <td>{data.author?.email}</td>
