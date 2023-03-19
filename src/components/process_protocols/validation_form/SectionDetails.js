@@ -167,19 +167,20 @@ export default function SectionDetails(props) {
 
       {props.sectionData.country && (
         <>
-          <table>
-            <tbody>
-              <tr>
-                <td style={{ paddingTop: '20px' }}>
-                  Изпратен от (организация):
-                </td>
-                <td style={{ paddingTop: '20px' }}>
-                  {props.protocol.author?.organization.name}
-                </td>
-              </tr>
-            </tbody>
-          </table>
-
+          {props.protocol.author?.organization.name && (
+            <table>
+              <tbody>
+                <tr>
+                  <td style={{ paddingTop: '20px' }}>
+                    Изпратен от (организация):
+                  </td>
+                  <td style={{ paddingTop: '20px' }}>
+                    {props.protocol.author?.organization.name}
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          )}
           <h5 style={{ margin: '10px 0' }}>Чернова ли е протоколът?</h5>
           <ChooseProtocolTypeDiv>
             <input
