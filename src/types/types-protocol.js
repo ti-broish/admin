@@ -28,7 +28,6 @@
  *   partyValidVotesCount: number,
  *   partyNonMachineVotesCount: number,
  *   partyMachineVotesCount: number,
- *   validNoCandidateTotalVotesCount: number,
  *   nonMachineVotesCount: number,
  *   machineVotesCount: number,
  * }} ProtocolReplaceDto

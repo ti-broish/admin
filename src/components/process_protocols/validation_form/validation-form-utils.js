@@ -52,11 +52,6 @@ export const generateInitialProtocolState = (parties) => {
         isValid: false,
         isTouched: false,
       },
-      validNoCandidateTotalVotesCount: {
-        value: '',
-        isValid: false,
-        isTouched: false,
-      },
       nonMachineVotesCount: {
         value: '',
         isValid: false,

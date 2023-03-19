@@ -355,8 +355,6 @@ export default function VerifyProtocolInfo(props) {
         +protocolState.inputs.partyNonMachineVotesCount.value,
       partyMachineVotesCount:
         +protocolState.inputs.partyMachineVotesCount.value,
-      validNoCandidateTotalVotesCount:
-        +protocolState.inputs.validNoCandidateTotalVotesCount.value,
       nonMachineVotesCount: +protocolState.inputs.nonMachineVotesCount.value,
       machineVotesCount: +protocolState.inputs.machineVotesCount.value,
       results: generateProtocolResults(protocolState, parties),

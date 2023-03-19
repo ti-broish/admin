@@ -216,7 +216,6 @@ export default class ValidationFormState {
     addStatusForResultField('invalidVotesCount')
     addStatusForResultField('validVotesCount')
     addStatusForResultField('partyValidVotesCount')
-    addStatusForResultField('validNoCandidateTotalVotesCount')
 
     if (protocolType === 'paper-machine') {
       addStatusForResultField('nonMachineCastBallotsCount')
