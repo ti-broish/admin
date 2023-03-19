@@ -208,7 +208,8 @@ export default function VerifyProtocolInfo(props) {
     setProtocolState(generateInitialProtocolState(parties))
   }, [props.protocol.id])
 
-  useKeypress(['ArrowUp'], () => {
+  useKeypress(['ArrowUp'], (event) => {
+    event.preventDefault()
     let lastInput = null
 
     const traverseNodeTree = (node) => {
@@ -223,7 +224,8 @@ export default function VerifyProtocolInfo(props) {
     traverseNodeTree(ref.current)
   })
 
-  useKeypress(['ArrowDown', 'Enter'], () => {
+  useKeypress(['ArrowDown', 'Enter'], (event) => {
+    event.preventDefault()
     let shouldFocus = false
 
     const traverseNodeTree = (node) => {
