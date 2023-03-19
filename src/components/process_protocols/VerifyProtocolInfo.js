@@ -18,6 +18,7 @@ import SectionDetails from './validation_form/SectionDetails'
 import {
   generateInitialProtocolState,
   generateProtocolResults,
+  getValidatedProtocolState,
 } from './validation_form/validation-form-utils'
 
 // #region Styled components
@@ -374,8 +375,9 @@ export default function VerifyProtocolInfo(props) {
 
   /** @type {(protocolState: ProtocolState) => void} */
   const validateProtocolForm = (protocolState) => {
-    //getValidatedProtocolState(protocolState, protocolType, parties)
-    setProtocolState(protocolState)
+    setProtocolState(
+      getValidatedProtocolState(protocolState, protocolType, parties)
+    )
   }
 
   return (
