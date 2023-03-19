@@ -433,50 +433,40 @@ export default function VerifyProtocolInfo(props) {
             />
           )}
 
-          {/* {protocolState.errors.length > 0 && ( */}
-          {protocolType != ProtocolType.UNKNOWN && (
-            <>
-              <hr />
-              {protocolState.acceptInvalidProtocol ? (
-                <>
-                  <h2 style={{ color: 'red' }}>
-                    Протоколът има грешки при валидация и <u>приемате</u> да го
-                    предадете в този вид.
-                  </h2>
-                </>
-              ) : (
-                <>
-                  <h2>Грешки при валидацията на протокола</h2>
-                  <ul>
-                    {protocolState.errors.map((e, i) => (
-                      <li key={i} style={{ color: 'red' }}>
-                        {e}
-                      </li>
-                    ))}
-                  </ul>
-                </>
-              )}
-              <input
-                type="checkbox"
-                name="accept-invalid-protocol"
-                id="accept-invalid-protocol"
-                checked={protocolState.acceptInvalidProtocol}
-                onChange={(e) =>
-                  setProtocolState({
-                    ...protocolState,
-                    acceptInvalidProtocol: !protocolState.acceptInvalidProtocol,
-                  })
-                }
-              />
-              <label
-                style={{ marginLeft: '8px' }}
-                htmlFor="accept-invalid-protocol"
-              >
-                Съгласен съм, че протоколът има грешки и го предавам в този вид
-              </label>
-            </>
-          )}
-          {/* )} */}
+          {protocolState.errors.length > 0 &&
+            protocolType !== ProtocolType.UNKNOWN && (
+              <>
+                <hr />
+                <h2>Контролни проверки</h2>
+                <ul>
+                  {protocolState.errors.map((e, i) => (
+                    <li key={i} style={{ color: 'red' }}>
+                      {e}
+                    </li>
+                  ))}
+                </ul>
+                <input
+                  type="checkbox"
+                  name="accept-invalid-protocol"
+                  id="accept-invalid-protocol"
+                  checked={protocolState.acceptInvalidProtocol}
+                  onChange={(e) =>
+                    setProtocolState({
+                      ...protocolState,
+                      acceptInvalidProtocol:
+                        !protocolState.acceptInvalidProtocol,
+                    })
+                  }
+                />
+                <label
+                  style={{ marginLeft: '8px' }}
+                  htmlFor="accept-invalid-protocol"
+                >
+                  Потвърждавам, че протоколът има грешки при контролните
+                  проверки и е въведен точно както е попълнен от СИК.
+                </label>
+              </>
+            )}
 
           <hr />
           {invalidFields || changedFields ? (
