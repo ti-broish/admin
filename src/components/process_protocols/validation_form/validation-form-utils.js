@@ -15,49 +15,34 @@ export const generateProtocolResults = (state, parties) => {
 }
 
 /**
- * @type {(parties: Party[]) => ProtocolState}
+ * @type {(parties: Party[], protocolType: ProtocolType) => ProtocolState}
  */
-export const generateInitialProtocolState = (parties) => {
+export const generateInitialProtocolState = (parties, protocolType) => {
+  const otherInitial = { value: '', isValid: false, isTouched: false }
+  const machineInitial =
+    protocolType === ProtocolType.PAPER
+      ? { value: '0', isValid: true, isTouched: true }
+      : otherInitial
   const state = {
     isValid: false,
     acceptInvalidProtocol: false,
     inputs: {
-      votersCount: { value: '', isValid: false, isTouched: false },
-      additionalVotersCount: { value: '', isValid: false, isTouched: false },
-      votersVotedCount: { value: '', isValid: false, isTouched: false },
-      totalBallotsCount: { value: '', isValid: false, isTouched: false },
-      uncastBallots: { value: '', isValid: false, isTouched: false },
-      invalidAndUncastBallots: { value: '', isValid: false, isTouched: false },
-      nonMachineCastBallotsCount: {
-        value: '',
-        isValid: false,
-        isTouched: false,
-      },
-      machineCastBallotsCount: { value: '', isValid: false, isTouched: false },
-      castBallotsCount: { value: '', isValid: false, isTouched: false },
-      invalidVotesCount: { value: '', isValid: false, isTouched: false },
-      validVotesCount: { value: '', isValid: false, isTouched: false },
-      partyValidVotesCount: {
-        value: '',
-        isValid: false,
-        isTouched: false,
-      },
-      partyNonMachineVotesCount: {
-        value: '',
-        isValid: false,
-        isTouched: false,
-      },
-      partyMachineVotesCount: {
-        value: '',
-        isValid: false,
-        isTouched: false,
-      },
-      nonMachineVotesCount: {
-        value: '',
-        isValid: false,
-        isTouched: false,
-      },
-      machineVotesCount: { value: '', isValid: false, isTouched: false },
+      votersCount: otherInitial,
+      additionalVotersCount: otherInitial,
+      votersVotedCount: otherInitial,
+      totalBallotsCount: otherInitial,
+      uncastBallots: otherInitial,
+      invalidAndUncastBallots: otherInitial,
+      nonMachineCastBallotsCount: otherInitial,
+      machineCastBallotsCount: machineInitial,
+      castBallotsCount: otherInitial,
+      invalidVotesCount: otherInitial,
+      validVotesCount: otherInitial,
+      partyValidVotesCount: otherInitial,
+      partyNonMachineVotesCount: otherInitial,
+      partyMachineVotesCount: machineInitial,
+      nonMachineVotesCount: otherInitial,
+      machineVotesCount: machineInitial,
     },
     partyInputs: {
       paper: {},
@@ -70,21 +55,21 @@ export const generateInitialProtocolState = (parties) => {
   state.partyInputs.paper = parties.reduce(
     (paper, { id }) => ({
       ...paper,
-      [id]: { value: '', isValid: false, isTouched: false },
+      [id]: otherInitial,
     }),
     {}
   )
   state.partyInputs.machine = parties.reduce(
     (paper, { id }) => ({
       ...paper,
-      [id]: { value: '', isValid: false, isTouched: false },
+      [id]: machineInitial,
     }),
     {}
   )
   state.partyInputs.total = parties.reduce(
     (paper, { id }) => ({
       ...paper,
-      [id]: { value: '', isValid: false, isTouched: false },
+      [id]: otherInitial,
     }),
     {}
   )

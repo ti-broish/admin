@@ -173,7 +173,7 @@ export default function VerifyProtocolInfo(props) {
   )
 
   const [protocolState, setProtocolState] = useState(() =>
-    generateInitialProtocolState(parties)
+    generateInitialProtocolState(parties, protocolType)
   )
 
   const [formState, setFormState] = useState(
@@ -196,13 +196,13 @@ export default function VerifyProtocolInfo(props) {
     )
 
   useEffect(() => {
-    setProtocolState(generateInitialProtocolState(parties))
+    setProtocolState(generateInitialProtocolState(parties, protocolType))
 
     setMachineCount(protocolType === ProtocolType.PAPER_MACHINE ? 1 : 0)
   }, [protocolType])
 
   useEffect(() => {
-    setProtocolState(generateInitialProtocolState(parties))
+    setProtocolState(generateInitialProtocolState(parties, protocolType))
   }, [props.protocol.id])
 
   /** @type {Ref} */
