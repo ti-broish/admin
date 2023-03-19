@@ -1,7 +1,7 @@
 /**
  * @typedef {{
  *   party: number,
- *   machineVotes: number,
+ *   machineVotes: number[],
  *   nonMachineVotesCount: number,
  *   validVotesCount: number,
  * }} ProtocolResultDto

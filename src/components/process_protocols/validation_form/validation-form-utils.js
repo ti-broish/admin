@@ -8,7 +8,7 @@ import { ProtocolType } from '../../../common/enums/protocol-type'
 export const generateProtocolResults = (state, parties) => {
   return parties.map((p) => ({
     party: p.id,
-    machineVotes: +state.partyInputs.machine[p.id].value,
+    machineVotes: [+state.partyInputs.machine[p.id].value],
     nonMachineVotesCount: +state.partyInputs.paper[p.id].value,
     validVotesCount: +state.partyInputs.total[p.id].value,
   }))
