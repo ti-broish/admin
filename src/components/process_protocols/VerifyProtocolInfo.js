@@ -263,7 +263,7 @@ export default function VerifyProtocolInfo(props) {
 
     setSectionData({
       country: town.country.name,
-      electionRegion: electionRegion.name,
+      electionRegion: `${electionRegion.code} - ${electionRegion.name}`,
       municipality: town.municipality?.name ?? null,
       town: town.name,
       townId: town.id,

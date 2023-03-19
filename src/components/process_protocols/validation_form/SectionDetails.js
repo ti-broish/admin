@@ -131,36 +131,38 @@ export default function SectionDetails(props) {
         </tbody>
       </table>
       <p style={{ fontSize: '14px', margin: '0' }}>
-        {props.sectionData.country && (
-          <>
-            Държава: <b>{props.sectionData.country}</b>,{' '}
-          </>
-        )}
-        {props.sectionData.electionRegion && (
-          <>
-            Изборен район: <b>{props.sectionData.electionRegion}</b>,{' '}
-          </>
-        )}
-        <br />
+        {props.sectionData.country &&
+          props.sectionData.country !== 'България' && (
+            <>
+              държава <b>{props.sectionData.country}</b>,{' '}
+            </>
+          )}
         {props.sectionData.municipality && (
           <>
-            Община: <b>{props.sectionData.municipality}</b>,{' '}
+            община <b>{props.sectionData.municipality}</b>,{' '}
           </>
         )}
         {props.sectionData.town && (
           <>
-            Населено място: <b>{props.sectionData.town}</b>,{' '}
+            населено място <b>{props.sectionData.town}</b>
+          </>
+        )}
+        {props.sectionData.cityRegion && (
+          <>
+            <br />
+            административен район <b>{props.sectionData.cityRegion}</b>
           </>
         )}
         <br />
-        {props.sectionData.cityRegion && (
+        {props.sectionData.electionRegion && (
           <>
-            Район: <b>{props.sectionData.cityRegion}</b>,{' '}
+            изборен район <b>{props.sectionData.electionRegion}</b>
           </>
         )}
+        <br />
         {props.sectionData.address && (
           <>
-            Локация: <b>{props.sectionData.address}</b>
+            адрес: <b>{props.sectionData.address}</b>
           </>
         )}
       </p>
