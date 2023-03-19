@@ -96,6 +96,9 @@ export const generateInitialProtocolState = (parties) => {
  * @type {(value: string, oldValue: string) => string}
  */
 export const tryUpdateValue = (value, oldValue) => {
+  if (value === oldValue) {
+    return value
+  }
   // isNaN works with string argument, typedefs in IDE are wrong
   return window.isNaN(/** @type {number} */ (/** @type {unknown} */ (value))) ||
     // || Number(value) < 0 // Don't force positive numbers
