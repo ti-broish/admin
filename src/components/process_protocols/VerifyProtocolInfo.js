@@ -195,9 +195,6 @@ export default function VerifyProtocolInfo(props) {
       machineCount
     )
 
-  /** @type {Ref} */
-  const ref = useRef(null)
-
   useEffect(() => {
     setProtocolState(generateInitialProtocolState(parties))
 
@@ -208,15 +205,16 @@ export default function VerifyProtocolInfo(props) {
     setProtocolState(generateInitialProtocolState(parties))
   }, [props.protocol.id])
 
+  /** @type {Ref} */
+  const ref = useRef(null)
   useKeypress(['ArrowUp'], (event) => {
-    event.preventDefault()
     let lastInput = null
 
     const traverseNodeTree = (node) => {
       if (node === document.activeElement && lastInput != null)
         lastInput.focus()
       else {
-        if (node.tagName === 'INPUT') lastInput = node
+        if (node.tagName === 'INPUT' && node.type === 'text') lastInput = node
         ;[...node.children].forEach(traverseNodeTree)
       }
     }
@@ -225,11 +223,10 @@ export default function VerifyProtocolInfo(props) {
   })
 
   useKeypress(['ArrowDown', 'Enter'], (event) => {
-    event.preventDefault()
     let shouldFocus = false
 
     const traverseNodeTree = (node) => {
-      if (node.tagName === 'INPUT' && shouldFocus) {
+      if (node.tagName === 'INPUT' && node.type === 'text' && shouldFocus) {
         node.focus()
         shouldFocus = false
       } else {
