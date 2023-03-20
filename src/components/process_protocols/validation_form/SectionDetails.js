@@ -1,8 +1,12 @@
 import React from 'react'
 
 import styled from 'styled-components'
+import { ProtocolStatus } from '../../../common/enums/protocol-status'
+import { ProtocolType } from '../../../common/enums/protocol-type'
 
-const SectionInput = styled.div`
+// #region Styled components
+
+const SectionInputDiv = styled.div`
   width: 100%;
 
   span {
@@ -64,7 +68,7 @@ const SectionInput = styled.div`
   }
 `
 
-const ChooseProtocolType = styled.div`
+const ChooseProtocolTypeDiv = styled.div`
   input {
     margin-right: 5px;
   }
@@ -74,7 +78,9 @@ const ChooseProtocolType = styled.div`
   }
 `
 
-export default (props) => {
+// #endregion
+
+export default function SectionDetails(props) {
   const getBoxClass = (boxNum) => {
     const status = props.fieldStatus[`sectionId${boxNum}`]
     return status.invalid
@@ -91,11 +97,14 @@ export default (props) => {
           <tr>
             <td>Номер на секция</td>
             <td style={{ paddingBottom: '20px' }}>
-              <SectionInput>
+              <SectionInputDiv>
                 <div>
                   <div className={getBoxClass(1)}>
                     <input
                       type="text"
+                      inputMode="numeric"
+                      tabIndex={1}
+                      autoFocus={true}
                       style={{ width: '333px' }}
                       value={props.formState.formData.sectionId}
                       maxLength={9}
@@ -119,84 +128,123 @@ export default (props) => {
                     Секция
                   </span>
                 </div>
-              </SectionInput>
+              </SectionInputDiv>
             </td>
           </tr>
         </tbody>
       </table>
       <p style={{ fontSize: '14px', margin: '0' }}>
-        {!props.sectionData.country ? null : (
+        {props.sectionData.country &&
+          props.sectionData.country !== 'България' && (
+            <>
+              държава <b>{props.sectionData.country}</b>,{' '}
+            </>
+          )}
+        {props.sectionData.municipality && (
           <>
-            Държава: <b>{props.sectionData.country}</b>,{' '}
+            община <b>{props.sectionData.municipality}</b>,{' '}
           </>
         )}
-        {!props.sectionData.electionRegion ? null : (
+        {props.sectionData.town && (
           <>
-            Изборен район: <b>{props.sectionData.electionRegion}</b>,{' '}
+            населено място <b>{props.sectionData.town}</b>
+          </>
+        )}
+        {props.sectionData.cityRegion && (
+          <>
+            <br />
+            административен район <b>{props.sectionData.cityRegion}</b>
           </>
         )}
         <br />
-        {!props.sectionData.municipality ? null : (
+        {props.sectionData.electionRegion && (
           <>
-            Община: <b>{props.sectionData.municipality}</b>,{' '}
-          </>
-        )}
-        {!props.sectionData.town ? null : (
-          <>
-            Населено място: <b>{props.sectionData.town}</b>,{' '}
+            изборен район <b>{props.sectionData.electionRegion}</b>
           </>
         )}
         <br />
-        {!props.sectionData.cityRegion ? null : (
+        {props.sectionData.address && (
           <>
-            Район: <b>{props.sectionData.cityRegion}</b>,{' '}
-          </>
-        )}
-        {!props.sectionData.address ? null : (
-          <>
-            Локация: <b>{props.sectionData.address}</b>
+            адрес: <b>{props.sectionData.address}</b>
           </>
         )}
       </p>
-      <table>
-        <tbody>
-          <tr>
-            <td style={{ paddingTop: '20px' }}>Изпратен от (организация):</td>
-            <td style={{ paddingTop: '20px' }}>
-              {props.protocol.author?.organization.name}
-            </td>
-          </tr>
-        </tbody>
-      </table>
-      {/* <h5 style={{margin: '10px 0'}}>Чернова ли е протоколът?</h5>
-            <ChooseProtocolType>
-                <input type="radio" id="isNotFinal" name="isFinal" value="false" onClick={() => props.setIsFinal(false)}/>
-                <label htmlFor="isNotFinal">Чернова</label>
-                <input type="radio" id="isFinal" name="isFinal" value="true" onClick={() => props.setIsFinal(true)}/>
-                <label htmlFor="isFinal">Оригинал</label>
-            </ChooseProtocolType>
-            <h5 style={{margin: '10px 0'}}>Изберете вид протокол</h5>
-            <ChooseProtocolType>
-                <input type="radio" id="machine" name="protocolType" value="machine" onClick={() => props.setProtocolType('machine')}/>
-                <label htmlFor="machine">Машинен</label>
-                <input type="radio" id="paper" name="protocolType" value="paper" onClick={() => props.setProtocolType('paper')}/>
-                <label htmlFor="paper">Хартиен</label>
-                <input type="radio" id="paper-machine" name="protocolType" value="paper-machine" onClick={() => props.setProtocolType('paper-machine')}/>
-                <label htmlFor="paper-machine">Хартиено-машинен</label>
-            </ChooseProtocolType>
-            {
-                props.protocolType === 'machine' || props.protocolType === 'paper-machine'?
-                    <>
-                    <h5 style={{margin: '10px 0'}}>Брой машини</h5>
-                    <ChooseProtocolType>
-                        <input type="radio" id="1machine" name="machineCount" value="1machine" onClick={() => props.setMachineCount(1)} checked={props.machineCount ===  1}/>
-                        <label htmlFor="1machine">1 машина</label>
-                        <input type="radio" id="2machines" name="machineCount" value="2machines" onClick={() => props.setMachineCount(2)} checked={props.machineCount ===  2}/>
-                        <label htmlFor="2machines">2 машини</label>
-                    </ChooseProtocolType>
-                    </> : null
-            } */}
-      <hr />
+
+      {props.sectionData.country && (
+        <>
+          {props.protocol.author?.organization.name && (
+            <table>
+              <tbody>
+                <tr>
+                  <td style={{ paddingTop: '20px' }}>
+                    Изпратен от (организация):
+                  </td>
+                  <td style={{ paddingTop: '20px' }}>
+                    {props.protocol.author?.organization.name}
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          )}
+          <h5 style={{ margin: '10px 0' }}>Чернова ли е протоколът?</h5>
+          <ChooseProtocolTypeDiv>
+            <label>
+              <input
+                type="radio"
+                tabIndex={2}
+                name="isFinal"
+                value={ProtocolStatus.DRAFT}
+                onChange={(e) =>
+                  e.target.checked && props.setIsFinal(ProtocolStatus.DRAFT)
+                }
+              />
+              Чернова
+            </label>
+            <label>
+              <input
+                type="radio"
+                name="isFinal"
+                value={ProtocolStatus.FINAL}
+                onChange={(e) =>
+                  e.target.checked && props.setIsFinal(ProtocolStatus.FINAL)
+                }
+              />
+              Оригинал
+            </label>
+          </ChooseProtocolTypeDiv>
+        </>
+      )}
+
+      {props.isFinal != 'UNKNOWN' && (
+        <>
+          <h5 style={{ margin: '10px 0' }}>Изберете вид протокол</h5>
+          <ChooseProtocolTypeDiv>
+            <input
+              type="radio"
+              id="paper"
+              name="protocolType"
+              onChange={(e) =>
+                props.setProtocolType(
+                  e.target.checked ? ProtocolType.PAPER : null
+                )
+              }
+            />
+            <label htmlFor="paper">Хартиен</label>
+            <input
+              type="radio"
+              id="paper-machine"
+              name="protocolType"
+              onChange={(e) =>
+                props.setProtocolType(
+                  e.target.checked ? ProtocolType.PAPER_MACHINE : null
+                )
+              }
+            />
+            <label htmlFor="paper-machine">Хартиено-машинен</label>
+          </ChooseProtocolTypeDiv>
+          <hr />
+        </>
+      )}
     </>
   )
 }

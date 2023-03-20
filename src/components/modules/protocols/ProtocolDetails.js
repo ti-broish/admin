@@ -1,16 +1,16 @@
-import React, { useState, useEffect, useContext } from 'react'
+import React, { useContext, useEffect, useState } from 'react'
 
 import { ContentPanel } from '../Modules'
 
 import { useHistory, useParams } from 'react-router-dom'
 
 import { AuthContext } from '../../App'
-import ImageGallery from '../../utils/ImageGallery'
 import Loading from '../../layout/Loading'
+import ImageGallery from '../../utils/ImageGallery'
 import { TableStyle } from '../Profile'
 
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faChevronLeft } from '@fortawesome/free-solid-svg-icons'
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { BackButton } from '../violations/ViolationDetails'
 
 export default (props) => {
@@ -89,7 +89,7 @@ export default (props) => {
               </tr>
               <tr>
                 <td>Машинни гласове</td>
-                <td>{data.results.machineVotesCount}</td>
+                <td>{data.results.machineCastBallotsCount}</td>
               </tr>
             </tbody>
           </TableStyle>
@@ -102,8 +102,8 @@ export default (props) => {
                   <td>{result.party.name}</td>
                   <td>{result.validVotesCount}</td>
                   <td>{result.invalidVotesCount}</td>
-                  <td>{result.machineVotesCount}</td>
-                  <td>{result.nonMachineVotesCount}</td>
+                  <td>{result.machineCastBallotsCount}</td>
+                  <td>{result.nonMachineCastBallotsCount}</td>
                 </tr>
               ))}
             </tbody>

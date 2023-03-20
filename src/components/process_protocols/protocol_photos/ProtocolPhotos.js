@@ -12,8 +12,14 @@ export default (props) => {
   const nextAvail = page < maxPage
   const prevAvail = page > 0
 
-  useKeypress(['ArrowLeft'], (event) => prevPage())
-  useKeypress(['ArrowRight'], (event) => nextPage())
+  useKeypress(['ArrowLeft'], (event) => {
+    event.preventDefault()
+    prevPage()
+  })
+  useKeypress(['ArrowRight'], (event) => {
+    event.preventDefault()
+    nextPage()
+  })
 
   const prevPage = () => {
     if (prevAvail) setPage(page - 1)

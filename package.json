@@ -5,7 +5,7 @@
   "main": "index.js",
   "scripts": {
     "build": "node --openssl-legacy-provider -r dotenv/config node_modules/.bin/webpack --config webpack/build.config.js",
-    "serve": "node --openssl-legacy-provider -r dotenv/config node_modules/.bin/webpack serve --config webpack/serve.config.js",
+    "serve": "node --openssl-legacy-provider -r dotenv/config node_modules/webpack/bin/webpack.js serve --config webpack/serve.config.js",
     "serve:local": "API_HOST=http://localhost:4000 node --openssl-legacy-provider -r dotenv/config node_modules/.bin/webpack serve --config webpack/serve.config.js",
     "lint": "prettier -w '**/*.{js,json}'",
     "prepare": "husky install"

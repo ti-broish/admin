@@ -1,9 +1,17 @@
+//@ts-check
 import React from 'react'
 
 import styled from 'styled-components'
+import { ProtocolType } from '../../../common/enums/protocol-type'
+import {
+  mapNonMachineToTotalFields,
+  tryUpdateValue,
+} from './validation-form-utils'
+
+// #region Styled components
 
 const ProtocolDetailsTable = styled.table`
-  table-layout: fixed;
+  table-layout: inherit;
 
   button {
     width: 100%;
@@ -11,8 +19,6 @@ const ProtocolDetailsTable = styled.table`
   }
 
   input {
-    width: 100%;
-    box-sizing: border-box;
     width: 100%;
     box-sizing: border-box;
     border: 1px solid #ddd;
@@ -29,6 +35,16 @@ const ProtocolDetailsTable = styled.table`
       background-color: #ff8f8f;
     }
   }
+  input::-webkit-outer-spin-button,
+  input::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+  }
+
+  /* Firefox */
+  input[type='number'] {
+    -moz-appearance: textfield;
+  }
 
   select {
     width: 100%;
@@ -36,15 +52,26 @@ const ProtocolDetailsTable = styled.table`
   }
 
   td:nth-child(1) {
-    width: 80%;
+    width: 85%;
   }
   td:nth-child(2) {
-    width: 20%;
+    width: 15%;
   }
+
+  ${(props) =>
+    props.colCount === 2 || props.colCount === 3
+      ? `
+        td:nth-child(1), th:nth-child(1) { width: 70%; }
+        td:nth-child(2), th:nth-child(2) { width: 10%; }
+        td:nth-child(3), th:nth-child(3) { width: 10%; }
+        td:nth-child(4), th:nth-child(4) { width: 10%; }
+     
+    `
+      : ``}
 `
 
 const PartyResultsTable = styled.table`
-  table-layout: fixed;
+  table-layout: inherit;
   width: 100%;
   border-collapse: collapse;
 
@@ -101,29 +128,22 @@ const PartyResultsTable = styled.table`
   ${(props) =>
     props.colCount === 1
       ? `
-        td:nth-child(1), th:nth-child(1) { width: 8%; }
-        td:nth-child(2), th:nth-child(2) { width: 72%; }
-        td:nth-child(3), th:nth-child(3) { width: 20%; }
+        td:nth-child(1), th:nth-child(1) { width: 6%; }
+        td:nth-child(2), th:nth-child(2) { width: 80%; }
+        td:nth-child(3), th:nth-child(3) { width: 14%; }
     `
-      : props.colCount === 2
+      : props.colCount === 2 || props.colCount === 3
       ? `
-        td:nth-child(1), th:nth-child(1) { width: 8%; }
-        td:nth-child(2), th:nth-child(2) { width: 72%; }
+        td:nth-child(1), th:nth-child(1) { width: 6%; }
+        td:nth-child(2), th:nth-child(2) { width: 64%; }
         td:nth-child(3), th:nth-child(3) { width: 10%; }
         td:nth-child(4), th:nth-child(4) { width: 10%; }
-    `
-      : props.colCount === 3
-      ? `
-        td:nth-child(1), th:nth-child(1) { width: 8%; }
-        td:nth-child(2), th:nth-child(2) { width: 71%; }
-        td:nth-child(3), th:nth-child(3) { width: 7%; }
-        td:nth-child(4), th:nth-child(4) { width: 7%; }
-        td:nth-child(5), th:nth-child(5) { width: 7%; }
+        td:nth-child(5), th:nth-child(5) { width: 10%; }
     `
       : ``}
 `
 
-const PartyNumber = styled.span`
+const PartyNumberSpan = styled.span`
   color: ${(props) => (props.textColor ? props.textColor : 'white')};
   font-weight: bold;
   background-color: #${(props) => props.color};
@@ -137,125 +157,252 @@ const PartyNumber = styled.span`
 const svgIcon =
   '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><path fill="#ccc" d="M207.029 381.476L12.686 187.132c-9.373-9.373-9.373-24.569 0-33.941l22.667-22.667c9.357-9.357 24.522-9.375 33.901-.04L224 284.505l154.745-154.021c9.379-9.335 24.544-9.317 33.901.04l22.667 22.667c9.373 9.373 9.373 24.569 0 33.941L240.971 381.476c-9.373 9.372-24.569 9.372-33.942 0z"></path></svg>'
 
-export default (props) => {
-  const partyRow = (party, i) => {
+// #endregion
+
+/** @type {FnComponent<ProtocolFormProps>} */
+export default function ProtocolForm(props) {
+  const { protocolType } = props
+  const partyRow = (party) => {
     return (
-      <tr key={i}>
+      <tr key={party.id}>
         <td>
-          {party.id.toString() === '0' ? null : party.color ? (
-            <PartyNumber color={party.color}>{party.id}</PartyNumber>
+          {party.id === 0 ? null : party.color ? (
+            <PartyNumberSpan color={party.color}>{party.id}</PartyNumberSpan>
           ) : (
-            <PartyNumber color={'white'} textColor={'555'}>
+            <PartyNumberSpan color={'white'} textColor={'555'}>
               {party.id}
-            </PartyNumber>
+            </PartyNumberSpan>
           )}
         </td>
-        <td>{party.displayName}</td>
-        {props.protocolType === 'paper' ||
-        props.protocolType === 'paper-machine' ? (
-          <td>
-            <input
-              type="text"
-              className={
-                props.fieldStatus[`party${party.id}paper`].invalid
-                  ? 'invalid'
-                  : props.fieldStatus[`party${party.id}paper`].changed
-                  ? 'changed'
-                  : ''
-              }
-              name={`party${party.id}paper`}
-              value={props.formState.resultsData[`party${party.id}paper`]}
-              onChange={props.handleResultsChange}
-            />
-          </td>
-        ) : null}
-        {[...Array(props.machineCount).keys()].map((i) => (
-          <td>
-            <input
-              type="text"
-              className={
-                props.fieldStatus[`party${party.id}machine${i + 1}`].invalid
-                  ? 'invalid'
-                  : props.fieldStatus[`party${party.id}machine${i + 1}`].changed
-                  ? 'changed'
-                  : ''
-              }
-              name={`party${party.id}machine${i + 1}`}
-              value={
-                props.formState.resultsData[`party${party.id}machine${i + 1}`]
-              }
-              onChange={props.handleResultsChange}
-            />
-          </td>
-        ))}
+        <td>{party.name}</td>
+        {partyRowInputs(props, party)}
       </tr>
     )
   }
 
-  const calculateColCount = () => {
-    let count = 0
+  const partyRowInputs = (props, party) => {
+    return (
+      <>
+        {/* PAPER */}
+        <td>
+          <input
+            type="text"
+            inputMode="numeric"
+            className={
+              props.protocolState.partyInputs.paper[party.id].isValid &&
+              props.protocolState.partyInputs.paper[party.id].isTouched
+                ? 'changed'
+                : 'invalid'
+            }
+            style={{ margin: '10px 0' }}
+            name={`party${party.id}paper`}
+            value={props.protocolState.partyInputs.paper[party.id].value}
+            onChange={(e) => {
+              const totalField =
+                protocolType !== ProtocolType.PAPER
+                  ? {}
+                  : {
+                      total: {
+                        ...props.protocolState.partyInputs.total,
+                        [party.id]: {
+                          value: tryUpdateValue(
+                            e.target.value,
+                            props.protocolState.partyInputs.total[party.id]
+                              .value
+                          ),
+                          isValid: true, // reset to true, it will be updated upon validation
+                          isTouched: true,
+                        },
+                      },
+                    }
+              return props.validateProtocolForm({
+                ...props.protocolState,
+                partyInputs: {
+                  ...props.protocolState.partyInputs,
+                  paper: {
+                    ...props.protocolState.partyInputs.paper,
+                    [party.id]: {
+                      value: tryUpdateValue(
+                        e.target.value,
+                        props.protocolState.partyInputs.paper[party.id].value
+                      ),
+                      isValid: true, // reset to true, it will be updated upon validation
+                      isTouched: true,
+                    },
+                  },
+                  ...totalField,
+                },
+              })
+            }}
+          />
+        </td>
 
-    if (
-      props.protocolType === 'paper' ||
-      props.protocolType === 'paper-machine'
-    ) {
-      count += 1
-    }
-
-    count += props.machineCount
-
-    return count
+        {protocolType === ProtocolType.PAPER_MACHINE && (
+          <>
+            {/* MACHINE */}
+            <td>
+              <input
+                type="text"
+                inputMode="numeric"
+                className={
+                  props.protocolState.partyInputs?.machine[party.id].isValid &&
+                  props.protocolState.partyInputs?.machine[party.id].isTouched
+                    ? 'changed'
+                    : 'invalid'
+                }
+                name={`party${party.id}machine`}
+                value={props.protocolState.partyInputs?.machine[party.id].value}
+                onChange={(e) =>
+                  props.validateProtocolForm({
+                    ...props.protocolState,
+                    partyInputs: {
+                      ...props.protocolState.partyInputs,
+                      machine: {
+                        ...props.protocolState.partyInputs.machine,
+                        [party.id]: {
+                          value: tryUpdateValue(
+                            e.target.value,
+                            props.protocolState.partyInputs.machine[party.id]
+                              .value
+                          ),
+                          isValid: true, // reset to true, it will be updated upon validation
+                          isTouched: true,
+                        },
+                      },
+                    },
+                  })
+                }
+              />
+            </td>
+            {/* TOTAL */}
+            <td>
+              <input
+                type="text"
+                inputMode="numeric"
+                className={
+                  props.protocolState.partyInputs?.total[party.id].isValid &&
+                  props.protocolState.partyInputs?.total[party.id].isTouched
+                    ? 'changed'
+                    : 'invalid'
+                }
+                name={`party${party.id}total`}
+                value={props.protocolState.partyInputs?.total[party.id].value}
+                onChange={(e) =>
+                  props.validateProtocolForm({
+                    ...props.protocolState,
+                    partyInputs: {
+                      ...props.protocolState.partyInputs,
+                      total: {
+                        ...props.protocolState.partyInputs.total,
+                        [party.id]: {
+                          value: tryUpdateValue(
+                            e.target.value,
+                            props.protocolState.partyInputs.total[party.id]
+                              .value
+                          ),
+                          isValid: true, // reset to true, it will be updated upon validation
+                          isTouched: true,
+                        },
+                      },
+                    },
+                  })
+                }
+              />
+            </td>
+          </>
+        )}
+      </>
+    )
   }
 
+  /**
+   * @param {keyof ProtocolStateInputs} varName
+   */
   const inputField = (varName) => (
     <input
       type="text"
+      inputMode="numeric"
       name={varName}
       className={
-        props.fieldStatus[varName].invalid
-          ? 'invalid'
-          : props.fieldStatus[varName].changed
+        props.protocolState.inputs[varName].isValid &&
+        props.protocolState.inputs[varName].isTouched
           ? 'changed'
-          : ''
+          : 'invalid'
       }
-      value={props.formState.formData[varName]}
-      onChange={props.handleNumberChange}
+      value={props.protocolState.inputs[varName].value}
+      onChange={(e) => {
+        const relatedTotalField =
+          protocolType !== ProtocolType.PAPER ||
+          !mapNonMachineToTotalFields[varName]
+            ? {}
+            : {
+                [mapNonMachineToTotalFields[varName]]: {
+                  value: tryUpdateValue(
+                    e.target.value,
+                    props.protocolState.inputs[
+                      mapNonMachineToTotalFields[varName]
+                    ].value
+                  ),
+                  isValid: true, // reset to true, it will be updated upon validation
+                  isTouched: true,
+                },
+              }
+        props.validateProtocolForm({
+          ...props.protocolState,
+          inputs: {
+            ...props.protocolState.inputs,
+            [varName]: {
+              value: tryUpdateValue(
+                e.target.value,
+                props.protocolState.inputs[varName].value
+              ),
+              isValid: true, // reset to true, it will be updated upon validation
+              isTouched: true,
+            },
+            ...relatedTotalField,
+          },
+        })
+      }}
     />
   )
 
-  const handleMachine1StartChange = (e) => {
-    let machineHash = props.machineHash
-    machineHash[0].startHash = e.target.value
-    props.setMachineHash([...machineHash])
-  }
+  const CustomTableHeader = () => {
+    return (
+      <>
+        <th>{protocolType === ProtocolType.PAPER_MACHINE && 'Х'}</th>
 
-  const handleMachine1EndChange = (e) => {
-    let machineHash = props.machineHash
-    machineHash[0].endHash = e.target.value
-    props.setMachineHash([...machineHash])
-  }
-
-  const handleMachine2StartChange = (e) => {
-    let machineHash = props.machineHash
-    machineHash[1].startHash = e.target.value
-    props.setMachineHash([...machineHash])
-  }
-
-  const handleMachine2EndChange = (e) => {
-    let machineHash = props.machineHash
-    machineHash[1].endHash = e.target.value
-    props.setMachineHash([...machineHash])
+        {protocolType === ProtocolType.PAPER_MACHINE && (
+          <>
+            <th>M</th>
+            <th>О</th>
+          </>
+        )}
+      </>
+    )
   }
 
   return (
     <div>
-      <h1>ДАННИ ОТ ИЗБИРАТЕЛНИЯ СПИСЪК</h1>
+      <h1 style={{ textAlign: 'center' }}>ЧАСТ I</h1>
+      <ProtocolDetailsTable>
+        <tbody>
+          <tr>
+            <td>А. Брой на получените бюлетини по реда на чл. 215 ИК </td>
+            <td>{inputField('totalBallotsCount')}</td>
+          </tr>
+        </tbody>
+      </ProtocolDetailsTable>
+      <hr />
+      <h1 style={{ textAlign: 'center' }}>ДАННИ ОТ ИЗБИРАТЕЛНИЯ СПИСЪК</h1>
       <ProtocolDetailsTable>
         <tbody>
           <tr>
             <td>
-              1. Брой на избирателите в избирателния списък при предаването му
-              на СИК
+              1. Брой на избирателите в
+              {props.sectionData.country === 'България'
+                ? ' избирателния списък '
+                : ' списъка за гласуване извън страната '}
+              при предаването му на СИК
             </td>
             <td>{inputField('votersCount')}</td>
           </tr>
@@ -269,62 +416,70 @@ export default (props) => {
           <tr>
             <td>
               3. Брой на гласувалите избиратели според положените подписи в
-              избирателния списък (вкл. под чертата)
+              {props.sectionData.country === 'България'
+                ? ' избирателния списък, '
+                : ' списъка за гласуване извън страната, '}
+              включително и подписите в допълнителната страница (под чертата)
             </td>
             <td>{inputField('votersVotedCount')}</td>
           </tr>
         </tbody>
       </ProtocolDetailsTable>
-      <h1>ДАННИ ИЗВЪН ИЗБИРАТЕЛНИЯ СПИСЪК</h1>
+      <hr />
+      <h1 style={{ textAlign: 'center' }}>
+        ДАННИ ИЗВЪН ИЗБИРАТЕЛНИЯ СПИСЪК И ИЗВЪН ИЗБИРАТЕЛНАТА КУТИЯ:
+      </h1>
       <ProtocolDetailsTable>
         <tbody>
           <tr>
-            <td>4а. Брой на неизползваните бюлетини</td>
+            <td>
+              <b>4. Бюлетини извън избирателната кутия</b>
+            </td>
+          </tr>
+          <tr>
+            <td>а) брой на неизползваните бюлетини</td>
             <td>{inputField('uncastBallots')}</td>
           </tr>
           <tr>
             <td>
-              {props.protocolType === 'paper' ||
-              props.protocolType === 'paper-machine'
-                ? '4б. Общ брой на недействителните бюлетини'
-                : '4б. Брой на унищожените от СИК бюлетини по други поводи'}
+              <p>
+                б) общ брой на недействителните бюлетини по чл. 227, 228 и чл.
+                265, ал. 5, сгрешените бюлетини и унищожените от СИК бюлетини по
+                други поводи (за създаване на образци за таблата пред изборното
+                помещение и увредени механично при откъсване от кочана)
+              </p>
             </td>
             <td>{inputField('invalidAndUncastBallots')}</td>
           </tr>
         </tbody>
       </ProtocolDetailsTable>
-      <h1>СЛЕД КАТО ОТВОРИ ИЗБИРАТЕЛНАТА КУТИЯ, СИК УСТАНОВИ:</h1>
-      <ProtocolDetailsTable>
-        <tbody>
-          <tr>
-            <td>
-              5.{' '}
-              {props.protocolType === 'machine'
-                ? 'Общ брой на потвърдените гласове'
-                : props.protocolType === 'paper'
-                ? 'Брой на намерените в избирателната кутия бюлетини'
-                : props.protocolType === 'paper-machine'
-                ? 'Общ брой на намерените в избирателната кутия бюлетини и потвърдените гласове от машинното гласуване'
-                : null}
-            </td>
-            <td>{inputField('totalVotesCast')}</td>
-          </tr>
-          {props.protocolType === 'paper-machine' ? (
-            <>
-              <tr>
-                <td>5.1. Брой на намерените в избирателните кутии бюлетини</td>
-                <td>{inputField('nonMachineVotesCount')}</td>
-              </tr>
-              <tr>
-                <td>
-                  5.2. Брой на потвърдените гласове от машинното гласуване
-                </td>
-                <td>{inputField('machineVotesCount')}</td>
-              </tr>
-            </>
-          ) : null}
-          {props.protocolType === 'paper-machine' ||
-          props.protocolType === 'paper' ? (
+      <hr />
+      <h1 style={{ textAlign: 'center' }}>ЧАСТ II</h1>
+      <h1 style={{ textAlign: 'center' }}>
+        СЛЕД КАТО ОТВОРИ ИЗБИРАТЕЛНАТА КУТИЯ, СИК УСТАНОВИ:
+      </h1>
+      <ProtocolDetailsTable
+        colCount={protocolType === ProtocolType.PAPER ? 1 : 3}
+      >
+        <>
+          <thead>
+            <tr>
+              <th></th>
+              <CustomTableHeader />
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>5. Брой на намерените в избирателната кутия бюлетини</td>
+              <td>{inputField('nonMachineCastBallotsCount')}</td>
+              {props.protocolType === ProtocolType.PAPER_MACHINE && (
+                <>
+                  <td>{inputField('machineCastBallotsCount')}</td>
+                  <td>{inputField('castBallotsCount')}</td>
+                </>
+              )}
+            </tr>
+
             <>
               <tr>
                 <td>
@@ -333,124 +488,61 @@ export default (props) => {
                 </td>
                 <td>{inputField('invalidVotesCount')}</td>
               </tr>
+
+              <tr>
+                <td>
+                  7. Общ брой на намерените в избирателната кутия действителни
+                  гласове (бюлетини)
+                </td>
+                <td>{inputField('nonMachineVotesCount')}</td>
+                {props.protocolType === ProtocolType.PAPER_MACHINE && (
+                  <>
+                    <td>{inputField('machineVotesCount')}</td>
+                    <td>{inputField('validVotesCount')}</td>
+                  </>
+                )}
+              </tr>
               <tr>
                 <td>
                   7.1. Брой на действителните гласове, подадени за кандидатските
                   листи на партии, коалиции и инициативни комитети
                 </td>
-                <td>{inputField('validVotesCount')}</td>
+                <td>{inputField('partyNonMachineVotesCount')}</td>
+                {props.protocolType === ProtocolType.PAPER_MACHINE && (
+                  <>
+                    <td>{inputField('partyMachineVotesCount')}</td>
+                    <td>{inputField('partyValidVotesCount')}</td>
+                  </>
+                )}
+              </tr>
+
+              <tr>
+                <td>
+                  7.2. Брой на действителните гласове с отбелязан вот в
+                  квадратчето „Не подкрепям никого“
+                </td>
+                {partyRowInputs(props, props.parties[0])}
               </tr>
             </>
-          ) : null}
-        </tbody>
+          </tbody>
+        </>
       </ProtocolDetailsTable>
       <hr />
-      <h1>РАЗПРЕДЕЛЕНИЕ НА ГЛАСОВЕТЕ ПО КАНДИДАТСКИ ЛИСТИ</h1>
-      <PartyResultsTable colCount={calculateColCount()}>
+      <h1 style={{ textAlign: 'center' }}>
+        8. РАЗПРЕДЕЛЕНИЕ НА ГЛАСОВЕТЕ ПО КАНДИДАТСКИ ЛИСТИ
+      </h1>
+      <PartyResultsTable colCount={protocolType === ProtocolType.PAPER ? 1 : 3}>
         <thead>
-          <th>#</th>
-          <th>Име</th>
-          {props.protocolType === 'paper' ||
-          props.protocolType === 'paper-machine' ? (
-            <th>Х</th>
-          ) : null}
-          {[...Array(props.machineCount).keys()].map((i) => (
-            <th>M{i + 1}</th>
-          ))}
+          <tr>
+            <th>№</th>
+            <th>Партия/Коалиция</th>
+            <CustomTableHeader />
+          </tr>
         </thead>
         <tbody>
-          {props.parties
-            .filter((party) => (props.allParties ? true : party.isFeatured))
-            .map(partyRow)}
+          {props.parties.filter((party) => party.id !== 0).map(partyRow)}
         </tbody>
       </PartyResultsTable>
-      {props.machineCount === 1 &&
-      props.machineHash.length === props.machineCount ? (
-        <>
-          <hr />
-          <h1>Хеш от машината за гласуване</h1>
-          <ProtocolDetailsTable>
-            <tbody>
-              <tr>
-                <td>Първите четири символа от М1:</td>
-                <td>
-                  <input
-                    type="text"
-                    value={props.machineHash[0].startHash}
-                    onChange={handleMachine1StartChange}
-                    maxLength="4"
-                  />
-                </td>
-              </tr>
-              <tr>
-                <td>Последните четири символа от М1:</td>
-                <td>
-                  <input
-                    type="text"
-                    value={props.machineHash[0].endHash}
-                    onChange={handleMachine1EndChange}
-                    maxLength="4"
-                  />
-                </td>
-              </tr>
-            </tbody>
-          </ProtocolDetailsTable>
-        </>
-      ) : props.machineCount === 2 &&
-        props.machineHash.length === props.machineCount ? (
-        <>
-          <hr />
-          <h1>Хеш от машините за гласуване</h1>
-          <ProtocolDetailsTable>
-            <tbody>
-              <tr>
-                <td>Първите четири символа от М1:</td>
-                <td>
-                  <input
-                    type="text"
-                    value={props.machineHash[0].startHash}
-                    onChange={handleMachine1StartChange}
-                    maxLength="4"
-                  />
-                </td>
-              </tr>
-              <tr>
-                <td>Последните четири символа от М1:</td>
-                <td>
-                  <input
-                    type="text"
-                    value={props.machineHash[0].endHash}
-                    onChange={handleMachine1EndChange}
-                    maxLength="4"
-                  />
-                </td>
-              </tr>
-              <tr>
-                <td>Първите четири символа от М2:</td>
-                <td>
-                  <input
-                    type="text"
-                    value={props.machineHash[1].startHash}
-                    onChange={handleMachine2StartChange}
-                    maxLength="4"
-                  />
-                </td>
-              </tr>
-              <tr>
-                <td>Последните четири символа от М2:</td>
-                <td>
-                  <input
-                    type="text"
-                    value={props.machineHash[1].endHash}
-                    onChange={handleMachine2EndChange}
-                    maxLength="4"
-                  />
-                </td>
-              </tr>
-            </tbody>
-          </ProtocolDetailsTable>
-        </>
-      ) : null}
     </div>
   )
 }
