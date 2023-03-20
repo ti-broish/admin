@@ -3,7 +3,10 @@ import React from 'react'
 
 import styled from 'styled-components'
 import { ProtocolType } from '../../../common/enums/protocol-type'
-import { tryUpdateValue } from './validation-form-utils'
+import {
+  mapNonMachineToTotalFields,
+  tryUpdateValue,
+} from './validation-form-utils'
 
 // #region Styled components
 
@@ -186,17 +189,33 @@ export default function ProtocolForm(props) {
             type="text"
             inputMode="numeric"
             className={
-              props.protocolState.partyInputs.paper[party.id].isValid === false
-                ? 'invalid'
-                : props.protocolState.partyInputs.paper[party.id].isTouched
+              props.protocolState.partyInputs.paper[party.id].isValid &&
+              props.protocolState.partyInputs.paper[party.id].isTouched
                 ? 'changed'
-                : ''
+                : 'invalid'
             }
             style={{ margin: '10px 0' }}
             name={`party${party.id}paper`}
             value={props.protocolState.partyInputs.paper[party.id].value}
-            onChange={(e) =>
-              props.validateProtocolForm({
+            onChange={(e) => {
+              const totalField =
+                protocolType !== ProtocolType.PAPER
+                  ? {}
+                  : {
+                      total: {
+                        ...props.protocolState.partyInputs.total,
+                        [party.id]: {
+                          value: tryUpdateValue(
+                            e.target.value,
+                            props.protocolState.partyInputs.total[party.id]
+                              .value
+                          ),
+                          isValid: true, // reset to true, it will be updated upon validation
+                          isTouched: true,
+                        },
+                      },
+                    }
+              return props.validateProtocolForm({
                 ...props.protocolState,
                 partyInputs: {
                   ...props.protocolState.partyInputs,
@@ -211,9 +230,10 @@ export default function ProtocolForm(props) {
                       isTouched: true,
                     },
                   },
+                  ...totalField,
                 },
               })
-            }
+            }}
           />
         </td>
 
@@ -225,13 +245,10 @@ export default function ProtocolForm(props) {
                 type="text"
                 inputMode="numeric"
                 className={
-                  props.protocolState.partyInputs?.machine[party.id].isValid ===
-                  false
-                    ? 'invalid'
-                    : props.protocolState.partyInputs?.machine[party.id]
-                        .isTouched
+                  props.protocolState.partyInputs?.machine[party.id].isValid &&
+                  props.protocolState.partyInputs?.machine[party.id].isTouched
                     ? 'changed'
-                    : ''
+                    : 'invalid'
                 }
                 name={`party${party.id}machine`}
                 value={props.protocolState.partyInputs?.machine[party.id].value}
@@ -263,12 +280,10 @@ export default function ProtocolForm(props) {
                 type="text"
                 inputMode="numeric"
                 className={
-                  props.protocolState.partyInputs?.total[party.id].isValid ===
-                  false
-                    ? 'invalid'
-                    : props.protocolState.partyInputs?.total[party.id].isTouched
+                  props.protocolState.partyInputs?.total[party.id].isValid &&
+                  props.protocolState.partyInputs?.total[party.id].isTouched
                     ? 'changed'
-                    : ''
+                    : 'invalid'
                 }
                 name={`party${party.id}total`}
                 value={props.protocolState.partyInputs?.total[party.id].value}
@@ -309,14 +324,29 @@ export default function ProtocolForm(props) {
       inputMode="numeric"
       name={varName}
       className={
-        props.protocolState.inputs[varName].isValid === false
-          ? 'invalid'
-          : props.protocolState.inputs[varName].isTouched
+        props.protocolState.inputs[varName].isValid &&
+        props.protocolState.inputs[varName].isTouched
           ? 'changed'
-          : ''
+          : 'invalid'
       }
       value={props.protocolState.inputs[varName].value}
-      onChange={(e) =>
+      onChange={(e) => {
+        const relatedTotalField =
+          protocolType !== ProtocolType.PAPER ||
+          !mapNonMachineToTotalFields[varName]
+            ? {}
+            : {
+                [mapNonMachineToTotalFields[varName]]: {
+                  value: tryUpdateValue(
+                    e.target.value,
+                    props.protocolState.inputs[
+                      mapNonMachineToTotalFields[varName]
+                    ].value
+                  ),
+                  isValid: true, // reset to true, it will be updated upon validation
+                  isTouched: true,
+                },
+              }
         props.validateProtocolForm({
           ...props.protocolState,
           inputs: {
@@ -329,9 +359,10 @@ export default function ProtocolForm(props) {
               isValid: true, // reset to true, it will be updated upon validation
               isTouched: true,
             },
+            ...relatedTotalField,
           },
         })
-      }
+      }}
     />
   )
 

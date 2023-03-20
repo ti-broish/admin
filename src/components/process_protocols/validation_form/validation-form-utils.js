@@ -14,6 +14,12 @@ export const generateProtocolResults = (state, parties) => {
   }))
 }
 
+export const mapNonMachineToTotalFields = {
+  nonMachineCastBallotsCount: 'castBallotsCount',
+  partyNonMachineVotesCount: 'partyValidVotesCount',
+  nonMachineVotesCount: 'validVotesCount',
+}
+
 /**
  * @type {(parties: Party[], protocolType: ProtocolType) => ProtocolState}
  */
@@ -119,14 +125,28 @@ export const getValidatedProtocolState = (state, type, parties) => {
     input.isValid = true
 
   const errorStack = new Set()
+
   // common validations
 
   // all numbers should be 0+
   for (const key of Object.keys(state.inputs)) {
-    if (state.inputs[key].value < 0) {
+    const val = state.inputs[key].value
+    const maybeInt = Number.parseInt(val, 10)
+    if (!Number.isInteger(maybeInt) || maybeInt < 0) {
       state.inputs[key].isValid = false
       errorStack.add('Една или повече клетки не съдържат валидни числа.')
     }
+
+    Object.entries(state.partyInputs).forEach(([key, val]) => {
+      for (const i of Object.keys(val)) {
+        const val = state.partyInputs[key][i].value
+        const maybeInt = Number.parseInt(val, 10)
+        if (!Number.isInteger(maybeInt) || maybeInt < 0) {
+          state.partyInputs[key][i].isValid = false
+          errorStack.add('Една или повече клетки не съдържат валидни числа.')
+        }
+      }
+    })
   }
 
   // числото в А. трябва да е по-голямо или равно на 100 / числото в А. трябва да е кратно на 100
