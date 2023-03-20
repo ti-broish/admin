@@ -197,13 +197,15 @@ export default class ValidationFormState {
     }
 
     const addStatusForResultField = (fieldName) => {
-      if (this.formData[fieldName] === '')
+      if (this.formData[fieldName] === '') {
         fieldStatus[fieldName] = { invalid: true }
-      else if (
+      } else if (
         this.formData[fieldName] !== zeroIfEmpty(protocol.results[fieldName])
-      )
+      ) {
         fieldStatus[fieldName] = { changed: true }
-      else fieldStatus[fieldName] = { unchanged: true }
+      } else {
+        fieldStatus[fieldName] = { unchanged: true }
+      }
     }
 
     addStatusForResultField('votersCount')
