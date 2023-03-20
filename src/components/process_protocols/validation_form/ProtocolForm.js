@@ -299,13 +299,11 @@ export default function ProtocolForm(props) {
 
   /**
    * @param {keyof ProtocolStateInputs} varName
-   * @param {boolean} hidden
    */
-  const inputField = (varName, hidden = false) => (
+  const inputField = (varName) => (
     <input
       type="number"
       name={varName}
-      hidden={hidden}
       className={
         props.protocolState.inputs[varName].isValid === false
           ? 'invalid'
@@ -453,12 +451,6 @@ export default function ProtocolForm(props) {
                   6. Брой на намерените в избирателната кутия недействителни
                   гласове (бюлетини)
                 </td>
-                {props.protocolType === ProtocolType.PAPER_MACHINE && (
-                  <>
-                    <td>{inputField('invalidVotesCount', true)}</td>
-                    <td>{inputField('invalidVotesCount', true)}</td>
-                  </>
-                )}
                 <td>{inputField('invalidVotesCount')}</td>
               </tr>
 
