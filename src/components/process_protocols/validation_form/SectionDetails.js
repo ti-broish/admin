@@ -204,9 +204,9 @@ export default function SectionDetails(props) {
               <input
                 type="radio"
                 name="isFinal"
-                value={ProtocolStatus.FINAL}
+                value={ProtocolStatus.ORIGINAL}
                 onChange={(e) =>
-                  e.target.checked && props.setIsFinal(ProtocolStatus.FINAL)
+                  e.target.checked && props.setIsFinal(ProtocolStatus.ORIGINAL)
                 }
               />
               Оригинал
