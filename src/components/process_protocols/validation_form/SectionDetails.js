@@ -186,28 +186,29 @@ export default function SectionDetails(props) {
           )}
           <h5 style={{ margin: '10px 0' }}>Чернова ли е протоколът?</h5>
           <ChooseProtocolTypeDiv>
-            <input
-              type="radio"
-              id="isNotFinal"
-              name="isFinal"
-              value="false"
-              onChange={(e) =>
-                props.setIsFinal(e.target.checked ? ProtocolStatus.DRAFT : null)
-              }
-            />
-            <label htmlFor="isNotFinal">Чернова</label>
-            <input
-              type="radio"
-              id="isFinal"
-              name="isFinal"
-              value="true"
-              onChange={(e) =>
-                props.setIsFinal(
-                  e.target.checked ? ProtocolStatus.ORIGINAL : null
-                )
-              }
-            />
-            <label htmlFor="isFinal">Оригинал</label>
+            <label>
+              <input
+                type="radio"
+                tabIndex={2}
+                name="isFinal"
+                value={ProtocolStatus.DRAFT}
+                onChange={(e) =>
+                  e.target.checked && props.setIsFinal(ProtocolStatus.DRAFT)
+                }
+              />
+              Чернова
+            </label>
+            <label>
+              <input
+                type="radio"
+                name="isFinal"
+                value={ProtocolStatus.FINAL}
+                onChange={(e) =>
+                  e.target.checked && props.setIsFinal(ProtocolStatus.FINAL)
+                }
+              />
+              Оригинал
+            </label>
           </ChooseProtocolTypeDiv>
         </>
       )}
