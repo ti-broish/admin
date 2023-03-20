@@ -393,7 +393,8 @@ export const getValidatedProtocolState = (state, type, parties) => {
   // check for lack of touched inputs - protocol should be invalid
   const isValid =
     errorStack.size === 0 &&
-    Object.values(state.inputs).filter((i) => i.isTouched).length > 5
+    Object.values(state.inputs).filter((i) => i.isTouched).length ===
+      Object.values(state.inputs).length
 
   return { ...state, errors: Array.from(errorStack), isValid }
 }
