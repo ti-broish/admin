@@ -427,6 +427,7 @@ export default function VerifyProtocolInfo(props) {
               parties={parties}
               protocolType={protocolType}
               protocolState={protocolState}
+              sectionData={sectionData}
             />
           )}
 

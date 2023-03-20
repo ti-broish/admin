@@ -86,5 +86,6 @@
  *   protocolType: ProtocolType,
  *   validateProtocolForm: (value: ProtocolState) => void,
  *   parties: Party[],
+ *   sectionData: any,
  * }} ProtocolFormProps
  */

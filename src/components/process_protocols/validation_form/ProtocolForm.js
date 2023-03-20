@@ -171,7 +171,7 @@ export default function ProtocolForm(props) {
             </PartyNumberSpan>
           )}
         </td>
-        <td>{party.displayName}</td>
+        <td>{party.name}</td>
         {partyRowInputs(props, party)}
       </tr>
     )
@@ -191,6 +191,7 @@ export default function ProtocolForm(props) {
                 ? 'changed'
                 : ''
             }
+            style={{ margin: '10px 0' }}
             name={`party${party.id}paper`}
             value={props.protocolState.partyInputs.paper[party.id].value}
             onChange={(e) =>
@@ -349,23 +350,26 @@ export default function ProtocolForm(props) {
 
   return (
     <div>
-      {/* <h1>ДАННИ ОТ ИЗБИРАТЕЛНИЯ СПИСЪК</h1> */}
+      <h1 style={{ textAlign: 'center' }}>ЧАСТ I</h1>
       <ProtocolDetailsTable>
         <tbody>
           <tr>
-            <td>А. Брой на получените бюлетини</td>
+            <td>А. Брой на получените бюлетини по реда на чл. 215 ИК </td>
             <td>{inputField('totalBallotsCount')}</td>
           </tr>
         </tbody>
       </ProtocolDetailsTable>
       <hr />
-      <h1>ДАННИ ОТ ИЗБИРАТЕЛНИЯ СПИСЪК</h1>
+      <h1 style={{ textAlign: 'center' }}>ДАННИ ОТ ИЗБИРАТЕЛНИЯ СПИСЪК</h1>
       <ProtocolDetailsTable>
         <tbody>
           <tr>
             <td>
-              1. Брой на избирателите в избирателния списък при предаването му
-              на СИК
+              1. Брой на избирателите в
+              {props.sectionData.country === 'България'
+                ? ' избирателния списък '
+                : ' списъка за гласуване извън страната '}
+              при предаването му на СИК
             </td>
             <td>{inputField('votersCount')}</td>
           </tr>
@@ -379,28 +383,48 @@ export default function ProtocolForm(props) {
           <tr>
             <td>
               3. Брой на гласувалите избиратели според положените подписи в
-              избирателния списък (вкл. под чертата)
+              {props.sectionData.country === 'България'
+                ? ' избирателния списък, '
+                : ' списъка за гласуване извън страната, '}
+              включително и подписите в допълнителната страница (под чертата)
             </td>
             <td>{inputField('votersVotedCount')}</td>
           </tr>
         </tbody>
       </ProtocolDetailsTable>
       <hr />
-      <h1>ДАННИ ИЗВЪН ИЗБИРАТЕЛНАТА КУТИЯ</h1>
+      <h1 style={{ textAlign: 'center' }}>
+        ДАННИ ИЗВЪН ИЗБИРАТЕЛНИЯ СПИСЪК И ИЗВЪН ИЗБИРАТЕЛНАТА КУТИЯ:
+      </h1>
       <ProtocolDetailsTable>
         <tbody>
           <tr>
-            <td>4а. Брой на неизползваните бюлетини</td>
+            <td>
+              <b>4. Бюлетини извън избирателната кутия</b>
+            </td>
+          </tr>
+          <tr>
+            <td>а) брой на неизползваните бюлетини</td>
             <td>{inputField('uncastBallots')}</td>
           </tr>
           <tr>
-            <td>4б. Общ брой на недействителните бюлетини</td>
+            <td>
+              <p>
+                б) общ брой на недействителните бюлетини по чл. 227, 228 и чл.
+                265, ал. 5, сгрешените бюлетини и унищожените от СИК бюлетини по
+                други поводи (за създаване на образци за таблата пред изборното
+                помещение и увредени механично при откъсване от кочана)
+              </p>
+            </td>
             <td>{inputField('invalidAndUncastBallots')}</td>
           </tr>
         </tbody>
       </ProtocolDetailsTable>
       <hr />
-      <h1>СЛЕД КАТО ОТВОРИ ИЗБИРАТЕЛНАТА КУТИЯ, СИК УСТАНОВИ:</h1>
+      <h1 style={{ textAlign: 'center' }}>ЧАСТ II</h1>
+      <h1 style={{ textAlign: 'center' }}>
+        СЛЕД КАТО ОТВОРИ ИЗБИРАТЕЛНАТА КУТИЯ, СИК УСТАНОВИ:
+      </h1>
       <ProtocolDetailsTable
         colCount={protocolType === ProtocolType.PAPER ? 1 : 3}
       >
@@ -413,7 +437,7 @@ export default function ProtocolForm(props) {
           </thead>
           <tbody>
             <tr>
-              <td>5. Брой на намерените в избирателните кутии бюлетини</td>
+              <td>5. Брой на намерените в избирателната кутия бюлетини</td>
               <td>{inputField('nonMachineCastBallotsCount')}</td>
               {props.protocolType === ProtocolType.PAPER_MACHINE && (
                 <>
@@ -439,7 +463,10 @@ export default function ProtocolForm(props) {
               </tr>
 
               <tr>
-                <td>7. Общ брой на всички действителни гласове (бюлетини)</td>
+                <td>
+                  7. Общ брой на намерените в избирателната кутия действителни
+                  гласове (бюлетини)
+                </td>
                 <td>{inputField('nonMachineVotesCount')}</td>
                 {props.protocolType === ProtocolType.PAPER_MACHINE && (
                   <>
@@ -464,8 +491,8 @@ export default function ProtocolForm(props) {
 
               <tr>
                 <td>
-                  7.2. Брой на действителните гласове с отбелязан вот „Не
-                  подкрепям никого“
+                  7.2. Брой на действителните гласове с отбелязан вот в
+                  квадратчето „Не подкрепям никого“
                 </td>
                 {partyRowInputs(props, props.parties[0])}
               </tr>
@@ -474,12 +501,14 @@ export default function ProtocolForm(props) {
         </>
       </ProtocolDetailsTable>
       <hr />
-      <h1>РАЗПРЕДЕЛЕНИЕ НА ГЛАСОВЕТЕ ПО КАНДИДАТСКИ ЛИСТИ</h1>
+      <h1 style={{ textAlign: 'center' }}>
+        8. РАЗПРЕДЕЛЕНИЕ НА ГЛАСОВЕТЕ ПО КАНДИДАТСКИ ЛИСТИ
+      </h1>
       <PartyResultsTable colCount={protocolType === ProtocolType.PAPER ? 1 : 3}>
         <thead>
           <tr>
-            <th>#</th>
-            <th>Име</th>
+            <th>№</th>
+            <th>Партия/Коалиция</th>
             <CustomTableHeader />
           </tr>
         </thead>
