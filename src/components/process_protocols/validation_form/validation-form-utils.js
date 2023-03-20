@@ -87,7 +87,9 @@ export const tryUpdateValue = (value, oldValue) => {
   // isNaN works with string argument, typedefs in IDE are wrong
   return window.isNaN(/** @type {number} */ (/** @type {unknown} */ (value))) ||
     // || Number(value) < 0 // Don't force positive numbers
-    Number(value) !== Math.floor(Number(value))
+    Number(value) !== Math.floor(Number(value)) ||
+    /^(|0|[1-9][0-9]*)$/.test(value) === false ||
+    parseInt(value, 10) > 5000
     ? oldValue
     : value
 }
