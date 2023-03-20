@@ -102,6 +102,7 @@ export default function SectionDetails(props) {
                   <div className={getBoxClass(1)}>
                     <input
                       type="text"
+                      inputMode="numeric"
                       style={{ width: '333px' }}
                       value={props.formState.formData.sectionId}
                       maxLength={9}

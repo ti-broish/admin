@@ -184,6 +184,7 @@ export default function ProtocolForm(props) {
         <td>
           <input
             type="text"
+            inputMode="numeric"
             className={
               props.protocolState.partyInputs.paper[party.id].isValid === false
                 ? 'invalid'
@@ -222,6 +223,7 @@ export default function ProtocolForm(props) {
             <td>
               <input
                 type="text"
+                inputMode="numeric"
                 className={
                   props.protocolState.partyInputs?.machine[party.id].isValid ===
                   false
@@ -259,6 +261,7 @@ export default function ProtocolForm(props) {
             <td>
               <input
                 type="text"
+                inputMode="numeric"
                 className={
                   props.protocolState.partyInputs?.total[party.id].isValid ===
                   false
@@ -302,7 +305,8 @@ export default function ProtocolForm(props) {
    */
   const inputField = (varName) => (
     <input
-      type="number"
+      type="text"
+      inputMode="numeric"
       name={varName}
       className={
         props.protocolState.inputs[varName].isValid === false
