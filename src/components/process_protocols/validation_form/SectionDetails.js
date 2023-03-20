@@ -103,6 +103,8 @@ export default function SectionDetails(props) {
                     <input
                       type="text"
                       inputMode="numeric"
+                      tabIndex={1}
+                      autoFocus={true}
                       style={{ width: '333px' }}
                       value={props.formState.formData.sectionId}
                       maxLength={9}
