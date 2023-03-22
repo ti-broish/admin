@@ -57,7 +57,7 @@ export default (props) => {
   }
 
   for (const [key, value] of Object.entries(params)) {
-    if (value !== '00' && value !== '' && value) {
+    if (value && !(value + '').match(/0{1,3}/) && value !== '') {
       url += `&${key}=${value}`
     } else {
       url.replace(`&${key}=${value}`, '')

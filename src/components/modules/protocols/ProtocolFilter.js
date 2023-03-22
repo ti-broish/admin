@@ -59,7 +59,7 @@ export default (props) => {
 
   const [organization, setOrganization] = useState('')
 
-  const [country, setCountry] = useState('00')
+  const [country, setCountry] = useState('000')
   const [selectedCountry, setSelectedCountry] = useState('')
 
   const [disabled, setDisabled] = useState(true) //sets callback function for disabling field
@@ -102,7 +102,7 @@ export default (props) => {
   }
 
   for (const [key, value] of Object.entries(params)) {
-    if (value !== '00' && value !== '' && value) {
+    if (value && !(value + '').match(/0{1,3}/) && value !== '') {
       url += `&${key}=${value}`
     } else {
       url.replace(`&${key}=${value}`, '')
@@ -120,7 +120,7 @@ export default (props) => {
     setOrigins(resOrigins.data)
 
     //if country is NOT Bulgaria: gets all the cities in the foreign country
-    if (country !== '00') {
+    if (country !== '000') {
       setElectionRegion('32')
 
       const resForeignTowns = await authGet(`/towns?country=${country}`)
@@ -130,7 +130,7 @@ export default (props) => {
     } else {
       //if country is Bulgaria: gets all towns in the given MIR and municipality
       const resDomesticTowns = await authGet(
-        `/towns?country=00&election_region=${electionRegion}&municipality=${municipality}`
+        `/towns?country=000&election_region=${electionRegion}&municipality=${municipality}`
       )
       //sets the cities in the given MIR && Municipality and sets the MIRs list to all MIRs except the last "Abroad" one
       setMirs(resElectionRegions.data.slice(0, -1))
@@ -143,7 +143,7 @@ export default (props) => {
     setOrigin('')
     setStatus('')
     setSelectedCountry('')
-    setCountry('00')
+    setCountry('000')
     setSelectedElectionRegion('')
     setIsAbroad(false)
     setDisabled(true)

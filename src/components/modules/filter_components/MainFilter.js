@@ -89,7 +89,7 @@ export default (props) => {
           })
 
           //if country is NOT Bulgaria: gets all the cities in the foreign country
-          if (country !== '00') {
+          if (country !== '000') {
             const res2 = await axios.get(
               `${apiHost}/towns?country=${country}`,
               {
