@@ -134,7 +134,9 @@ export const getValidatedProtocolState = (state, type, parties) => {
     const maybeInt = Number.parseInt(val, 10)
     if (!Number.isInteger(maybeInt) || maybeInt < 0) {
       state.inputs[key].isValid = false
-      errorStack.add('Една или повече клетки не съдържат валидни числа.')
+      errorStack.add(
+        'Всяка клетка трябва да съдържа цяло положително число или нула.'
+      )
     }
 
     Object.entries(state.partyInputs).forEach(([key, val]) => {
@@ -143,7 +145,9 @@ export const getValidatedProtocolState = (state, type, parties) => {
         const maybeInt = Number.parseInt(val, 10)
         if (!Number.isInteger(maybeInt) || maybeInt < 0) {
           state.partyInputs[key][i].isValid = false
-          errorStack.add('Една или повече клетки не съдържат валидни числа.')
+          errorStack.add(
+            'Всяка клетка трябва да съдържа цяло положително число или нула.'
+          )
         }
       }
     })
@@ -157,7 +161,7 @@ export const getValidatedProtocolState = (state, type, parties) => {
     ) {
       state.inputs.totalBallotsCount.isValid = false
       errorStack.add(
-        'Броят на получените бюлетини е невалиден (А. трябва да е точно 100 или кратно на 100)'
+        'А. трябва да е кратно на 100. Броят на получените бюлетини е невалиден.'
       )
     }
   }, [state.inputs.totalBallotsCount])
@@ -172,7 +176,7 @@ export const getValidatedProtocolState = (state, type, parties) => {
     ) {
       state.inputs.totalBallotsCount.isValid = false
       errorStack.add(
-        'Броят на получените бюлетини не отговаря на пълния брой бюлетини (числото в А. трябва да е равно на сумата от числата в 4.а), 4.б) и 5.)'
+        'А. трябва да е равно на сумата от 4.а), 4.б) и 5. Броят на получените бюлетини не отговаря на пълния брой бюлетини.'
       )
     }
   }, [
@@ -191,7 +195,7 @@ export const getValidatedProtocolState = (state, type, parties) => {
     ) {
       state.inputs.votersVotedCount.isValid = false
       errorStack.add(
-        'Броят на гласувалите избиратели не е валиден (числото в 3. трябва да е по-малко или равно на сумата от числата в 1. и 2.)'
+        '3. трябва да е по-малко или равно на сумата от 1. и 2. Броят на гласувалите избиратели не е валиден'
       )
     }
   }, [
@@ -209,7 +213,7 @@ export const getValidatedProtocolState = (state, type, parties) => {
     ) {
       state.inputs.nonMachineVotesCount.isValid = false
       errorStack.add(
-        'Общият брой на валидните гласове не е валиден (числото в 5. трябва да е равно на сумата от числата в 6. и 7.)'
+        '5.трябва да е равно на сумата от 6. и 7. Общият брой на валидните гласове не е валиден.'
       )
     }
   }, [
@@ -227,7 +231,7 @@ export const getValidatedProtocolState = (state, type, parties) => {
     ) {
       state.inputs.nonMachineVotesCount.isValid = false
       errorStack.add(
-        'Общият брой на всички действителни гласове не е валиден (числото в 7. трябва да е равно на сумата от числата в 7.1 и 7.2.)'
+        '7. трябва да е равно на сумата от 7.1 и 7.2. Общият брой на всички действителни гласове не е валиден.'
       )
     }
   }, [
@@ -246,7 +250,7 @@ export const getValidatedProtocolState = (state, type, parties) => {
     ) {
       state.inputs.partyNonMachineVotesCount.isValid = false
       errorStack.add(
-        'Броят на действителнити гласове (хартиени бюлетини) не отговаря на сумата на гласовете по кандидатски листи на партии'
+        '7.1. трябва да е равно на сумата от числата в 8. Броят на действителнити гласове не отговаря на сумата на гласовете по кандидатски листи на партии'
       )
     }
   }, [
@@ -266,7 +270,7 @@ export const getValidatedProtocolState = (state, type, parties) => {
       ) {
         state.inputs.votersVotedCount.isValid = false
         errorStack.add(
-          'Брой на гласувалите избиратели според положените подписи в избирателния списък не е валиден (числото в 3. трябва да е равно на числото в 5.)'
+          '3. трябва да е равно на 5. Брой на гласувалите избиратели според положените подписи в избирателния списък не е валиден.'
         )
       }
     }, [state.inputs.votersVotedCount, state.inputs.nonMachineCastBallotsCount])
@@ -282,7 +286,7 @@ export const getValidatedProtocolState = (state, type, parties) => {
       ) {
         state.inputs.votersVotedCount.isValid = false
         errorStack.add(
-          'Брой на гласувалите избиратели според положените подписи в избирателния списък не е валиден (числото в 3. трябва да е равно на числото в 5.2 (общо))'
+          '3. трябва да е равно на 5.2 (о). Брой на гласувалите избиратели според положените подписи в избирателния списък не е валиден.'
         )
       }
     }, [state.inputs.votersVotedCount, state.inputs.castBallotsCount])
@@ -295,7 +299,7 @@ export const getValidatedProtocolState = (state, type, parties) => {
       ) {
         state.inputs.machineCastBallotsCount.isValid = false
         errorStack.add(
-          'Броят на машинните бюлетини не отговаря на броя на действителните гласове от машини(/числото в 5.(машинни) трябва да е равно на числото в 7.(машинни))'
+          '5.(м) трябва да е равно на 7.(м). Броят на машинните бюлетини не отговаря на броя на действителните гласове от машини.'
         )
       }
     }, [state.inputs.machineCastBallotsCount, state.inputs.machineVotesCount])
@@ -309,7 +313,7 @@ export const getValidatedProtocolState = (state, type, parties) => {
       ) {
         state.inputs.machineVotesCount.isValid = false
         errorStack.add(
-          'Общият брой на действителни гласове не е валиден (числото в 7.(машинни) трябва да е равно на сумата от числата в 7.1.(машинни) и 7.2.(машинни)'
+          '7.(м) трябва да е равно на сумата от 7.1.(м) и 7.2.(м). Общият брой на действителни гласове не е валиден.'
         )
       }
     }, [
@@ -327,7 +331,7 @@ export const getValidatedProtocolState = (state, type, parties) => {
       ) {
         state.inputs.validVotesCount.isValid = false
         errorStack.add(
-          'Общият брой на действителните гласове (общо) не е валиден (числото в 7.(общи) трябва да е равно на сумата от числата в 7.1.(общи) и 7.2.(общи))'
+          '7.(общи) трябва да е равно на сумата от 7.1.(о) и 7.2.(о). Общият брой на действителните гласове (о) не е валиден.'
         )
       }
     }, [
@@ -346,7 +350,7 @@ export const getValidatedProtocolState = (state, type, parties) => {
       ) {
         state.inputs.partyMachineVotesCount.isValid = false
         errorStack.add(
-          'Броят на действителнити гласове (машинни бюлетини) не отговаря на сумата на гласовете по кандидатски листи на партии'
+          '7.1.(м) трябва да е равно на сумата от числата в 8(м). Броят на действителнити гласове (машинни бюлетини) не отговаря на сумата на гласовете по кандидатски листи на партии'
         )
       }
     }, [
@@ -366,7 +370,7 @@ export const getValidatedProtocolState = (state, type, parties) => {
       ) {
         state.inputs.partyValidVotesCount.isValid = false
         errorStack.add(
-          'Броят на действителнити гласове (машинни бюлетини) не отговаря на сумата на гласовете по кандидатски листи на партии'
+          '7.1.(о) трябва да е равно на сумата от числата в 8(о). Броят на действителнити гласове (общо) не отговаря на сумата на гласовете по кандидатски листи на партии'
         )
       }
     }, [
