@@ -95,7 +95,10 @@ export default (props) => {
 
   const authGet = async (path) => {
     const res = await axios.get(`${apiHost}${path}`, {
-      headers: { Authorization: `Bearer ${state.token}` },
+      headers: {
+        Authorization: `Bearer ${state.token}`,
+        'Accept-Language': 'bg-BG',
+      },
     })
     return res
   }
@@ -104,7 +107,10 @@ export default (props) => {
     let res
     try {
       res = await axios.post(`${apiHost}${path}`, body ? body : {}, {
-        headers: { Authorization: `Bearer ${state.token}` },
+        headers: {
+          Authorization: `Bearer ${state.token}`,
+          'Accept-Language': 'bg-BG',
+        },
       })
     } catch (err) {
       if (Array.isArray(err.response.data.message)) {
@@ -134,7 +140,10 @@ export default (props) => {
     let res
     try {
       res = await axios.put(`${apiHost}${path}`, body ? body : {}, {
-        headers: { Authorization: `Bearer ${state.token}` },
+        headers: {
+          Authorization: `Bearer ${state.token}`,
+          'Accept-Language': 'bg-BG',
+        },
       })
     } catch (err) {
       alert(
@@ -151,7 +160,10 @@ export default (props) => {
     let res
     try {
       res = await axios.patch(`${apiHost}${path}`, body ? body : {}, {
-        headers: { Authorization: `Bearer ${state.token}` },
+        headers: {
+          Authorization: `Bearer ${state.token}`,
+          'Accept-Language': 'bg-BG',
+        },
       })
     } catch (err) {
       alert(
