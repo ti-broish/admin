@@ -102,7 +102,7 @@ export default (props) => {
           } else {
             //if country is Bulgaria: gets all towns in the given MIR and municipality
             const res3 = await axios.get(
-              `${apiHost}/towns?country=00&election_region=${chosenMir}&municipality=${chosenMunicipality}`,
+              `${apiHost}/towns?country=000&election_region=${chosenMir}&municipality=${chosenMunicipality}`,
               {
                 headers: { Authorization: `Bearer ${idToken}` },
               }
