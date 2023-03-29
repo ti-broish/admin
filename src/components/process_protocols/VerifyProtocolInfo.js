@@ -434,6 +434,7 @@ export default function VerifyProtocolInfo(props) {
             setMachineCount={setMachineCount}
             setIsFinal={setIsFinal}
             isFinal={isFinal}
+            refetchNewSection={updateSectionData}
           />
 
           {protocolType != ProtocolType.UNKNOWN && (

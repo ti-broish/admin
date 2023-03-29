@@ -145,6 +145,8 @@ export default function SectionDetails(props) {
       id: props.formState.formData.sectionId,
       town: town,
     })
+
+    props.refetchNewSection()
   }
 
   return (
