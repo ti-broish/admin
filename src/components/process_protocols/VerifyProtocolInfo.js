@@ -159,6 +159,8 @@ export default function VerifyProtocolInfo(props) {
     cityRegion: null,
     address: null,
     isMachine: false,
+    sectionExist: false,
+    rawData: null,
   })
 
   const [protocolType, setProtocolType] = useState(
@@ -254,12 +256,23 @@ export default function VerifyProtocolInfo(props) {
       cityRegion: null,
       address: null,
       isMachine: false,
+      sectionExist: false,
+      rawData: null,
     })
 
-    const res = await authGet(`/sections/${formState.formData.sectionId}`)
+    let res
+    let sectionExist = false
+    try {
+      res = await authGet(`/sections/${formState.formData.sectionId}`)
+      sectionExist = true
+    } catch (error) {
+      if (error?.response?.status === 404 && error?.response?.data) {
+        res = { data: error?.response?.data }
+        sectionExist = false
+      }
+    }
 
     const { town, electionRegion, cityRegion, place } = res.data
-
     setSectionData({
       country: town.country.name,
       electionRegion: `${electionRegion.code} - ${electionRegion.name}`,
@@ -269,6 +282,8 @@ export default function VerifyProtocolInfo(props) {
       cityRegion: cityRegion?.name ?? null,
       address: place,
       isMachine: res.data.isMachine,
+      sectionExist: sectionExist,
+      rawData: res.data,
     })
   }
 
