@@ -293,9 +293,9 @@ export default (props) => {
                     </td>
                     <td>{violation.town.name}</td>
                     <td>
-                      {violation.author.firstName
+                      {violation?.author?.firstName
                         ? `${violation.author.firstName} ${violation.author.lastName}`
-                        : violation.author.name}
+                        : violation?.author?.name}
                     </td>
                     <td>{violation.description.slice(0, 40) + '...'}</td>
                     <td>

@@ -399,9 +399,9 @@ export default (props) => {
               <tr>
                 <td>Имена</td>
                 <td>
-                  {data.author.firstName
-                    ? `${data.author.firstName} ${data.author.lastName}`
-                    : data.author.name}
+                  {data?.author?.firstName
+                    ? `${data?.author?.firstName} ${data?.author?.lastName}`
+                    : data?.author?.name}
                 </td>
               </tr>
               {data.author?.organization && (
