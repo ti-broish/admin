@@ -1,8 +1,10 @@
-import React from 'react'
+import React, { useContext, useEffect, useState } from 'react'
 
 import styled from 'styled-components'
 import { ProtocolStatus } from '../../../common/enums/protocol-status'
 import { ProtocolType } from '../../../common/enums/protocol-type'
+import { AuthContext } from '../../App'
+import Towns from '../../modules/filter_components/Towns'
 
 // #region Styled components
 
@@ -78,9 +80,40 @@ const ChooseProtocolTypeDiv = styled.div`
   }
 `
 
+const ButtonStyle = styled.button`
+  background-color: #32d114;
+  color: white;
+  border: none;
+  font-size: 20px;
+  cursor: pointer;
+  font-weight: bold;
+  border-radius: 5px;
+  width: 14rem;
+  margin-left: 16px;
+  height: 36px;
+  &:hover {
+    background-color: #48c231;
+  }
+
+  &:active {
+    background-color: #5cbb4b;
+    border-bottom: none;
+  }
+
+  &:disabled {
+    background-color: #d5d5d5;
+  }
+`
+
 // #endregion
 
 export default function SectionDetails(props) {
+  const { authGet, authPost } = useContext(AuthContext)
+
+  const [towns, setTowns] = useState([]) //sets all towns in one municipality
+  const [town, setTown] = useState('')
+  const [selectedTown, setSelectedTown] = useState('')
+
   const getBoxClass = (boxNum) => {
     const status = props.fieldStatus[`sectionId${boxNum}`]
     return status.invalid
@@ -88,6 +121,32 @@ export default function SectionDetails(props) {
       : status.changed
       ? 'box changed'
       : 'box'
+  }
+
+  useEffect(async () => {
+    if (props.sectionData.rawData != null && !props.sectionData.sectionExist) {
+      const { town, electionRegion } = props.sectionData.rawData
+
+      const country = town?.country?.code
+      if (country !== '000') {
+        const resForeignTowns = await authGet(`/towns?country=${country}`)
+        setTowns(resForeignTowns.data)
+      } else {
+        const resDomesticTowns = await authGet(
+          `/towns?country=000&election_region=${electionRegion?.code}&municipality=${town.municipality.code}`
+        )
+        setTowns(resDomesticTowns.data)
+      }
+    }
+  }, [props.sectionData, props.sectionData.sectionExist])
+
+  const createNewSection = async () => {
+    await authPost(`/sections`, {
+      id: props.formState.formData.sectionId,
+      town: town,
+    })
+
+    props.refetchNewSection()
   }
 
   return (
@@ -169,8 +228,27 @@ export default function SectionDetails(props) {
           </>
         )}
       </p>
+      {props.sectionData.country && !props.sectionData.sectionExist && (
+        <>
+          <p style={{ fontSize: '14px', color: 'red' }}>
+            Въведената секция не е намерена. Искате ли да я създадете?
+          </p>
+          Населено място:<br></br>
+          <Towns
+            towns={towns}
+            isAbroad={props.sectionData.rawData.town.country.isAbroad}
+            setRegions={() => {}}
+            setTown={setTown}
+            selectedTown={selectedTown}
+            setSelectedTown={setSelectedTown}
+          />
+          <ButtonStyle disabled={town === ''} onClick={createNewSection}>
+            Създай секция
+          </ButtonStyle>
+        </>
+      )}
 
-      {props.sectionData.country && (
+      {props.sectionData.sectionExist && (
         <>
           {props.protocol.author?.organization.name && (
             <table>
