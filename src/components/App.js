@@ -94,9 +94,25 @@ export default (props) => {
   }
 
   const authGet = async (path) => {
+    let token = state.token
+    if (token) {
+      const user = firebase.auth().currentUser
+      const idToken = await user.getIdToken(true) // Force refresh the token
+      if (idToken !== token) {
+        token = idToken
+        setState({
+          user: state.user,
+          loading: state.loading,
+          token: idToken,
+          parties: state.parties,
+          countries: state.countries,
+          organizations: state.organizations,
+        })
+      }
+    }
     const res = await axios.get(`${apiHost}${path}`, {
       headers: {
-        Authorization: `Bearer ${state.token}`,
+        Authorization: `Bearer ${token}`,
         'Accept-Language': 'bg-BG',
       },
     })
