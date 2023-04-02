@@ -25,7 +25,7 @@ jobs:
         run: node --openssl-legacy-provider node_modules/.bin/webpack --config webpack/build.config.js
         env:
           NODE_ENV: production
-          API_HOST: https://api.tibroish.bg
+          API_HOST: ${{ secrets.PRODUCTION_API_HOST }}
           FIREBASE_API_KEY: ${{ secrets.FIREBASE_API_KEY }}
           FIREBASE_AUTH_DOMAIN: ${{ secrets.FIREBASE_AUTH_DOMAIN }}
           FIREBASE_DATABASE_URL: ${{ secrets.FIREBASE_DATABASE_URL }}
