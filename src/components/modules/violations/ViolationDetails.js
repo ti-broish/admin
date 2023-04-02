@@ -77,8 +77,7 @@ const FancyButton = styled.button`
   color: white;
 
   &:active:enabled {
-    top: 5px;
-    border-bottom: 0;
+    box-shadow: inset 0 5px 5px -5px rgba(0, 0, 0, 0.5);
   }
 
   &:disabled {

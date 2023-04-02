@@ -46,9 +46,7 @@ const NextProtocolButton = styled.button`
   }
 
   &:active {
-    top: 10px;
-    border-bottom: 0;
-    margin-bottom: 10px;
+    box-shadow: inset 0px 0px 10px #333;
   }
 `
 

@@ -94,8 +94,7 @@ const LoginFormSubmitButton = styled.input`
 
   &:active {
     background-color: #1d5a9b;
-    border-bottom: none;
-    margin-top: 3px;
+    box-shadow: inset 0 5px 5px -5px rgba(0, 0, 0, 0.5);
   }
 
   &:disabled {

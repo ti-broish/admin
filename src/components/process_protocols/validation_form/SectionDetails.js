@@ -97,7 +97,7 @@ const ButtonStyle = styled.button`
 
   &:active {
     background-color: #5cbb4b;
-    border-bottom: none;
+    box-shadow: inset 0 5px 5px -5px rgba(0, 0, 0, 0.5);
   }
 
   &:disabled {

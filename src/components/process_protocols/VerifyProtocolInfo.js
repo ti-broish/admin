@@ -83,9 +83,7 @@ const VerificationPanelButton = styled.button`
   position: relative;
 
   &:active {
-    top: 5px;
-    border-bottom: 0;
-    margin-bottom: 10px;
+    box-shadow: inset 0 0 10px 0 rgba(0, 0, 0, 0.2);
   }
 
   &:disabled {
