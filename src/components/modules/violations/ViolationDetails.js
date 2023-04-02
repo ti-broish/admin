@@ -425,9 +425,9 @@ export default (props) => {
             </tbody>
           </TableStyle>
           <hr />
-          {!data.section ? null : (
+          {data.section ? (
             <div>
-              <h2>Информация за секция</h2>
+              <h2>Секция</h2>
               <TableStyle>
                 <tbody>
                   <tr>
@@ -436,11 +436,48 @@ export default (props) => {
                   </tr>
                   <tr>
                     <td>Град</td>
-                    <td>{data.town.name}</td>
+                    <td>
+                      {data.town.name},{' '}
+                      {data.town.municipality
+                        ? `община ${data.town.municipality.name}`
+                        : `${data.town.country.name}`}
+                    </td>
+                  </tr>
+                  <tr>
+                    <td>MИР</td>
+                    <td>
+                      {data.section?.electionRegion?.name ||
+                        data.town.municipality?.electionRegions[0].name}
+                    </td>
                   </tr>
                   <tr>
                     <td>Локация</td>
                     <td>{data.section.place}</td>
+                  </tr>
+                </tbody>
+              </TableStyle>
+              <hr />
+            </div>
+          ) : (
+            <div>
+              <h2>Град</h2>
+              <TableStyle>
+                <tbody>
+                  <tr>
+                    <td>Град</td>
+                    <td>
+                      {data.town.name},{' '}
+                      {data.town.municipality
+                        ? `община ${data.town.municipality.name}`
+                        : `${data.town.country.name}`}
+                    </td>
+                  </tr>
+                  <tr>
+                    <td>MИР</td>
+                    <td>
+                      {data.section?.electionRegion?.name ||
+                        data.town.municipality?.electionRegions[0].name}
+                    </td>
                   </tr>
                 </tbody>
               </TableStyle>
