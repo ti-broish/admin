@@ -171,6 +171,28 @@ export default (props) => {
       <NextProtocolButton onClick={nextProtocol}>
         <FontAwesomeIcon icon={faFile} /> Следващ протокол
       </NextProtocolButton>
+      <br />
+      <br />
+      <br />
+      <p style={{ textAlign: 'center' }}>
+        <a
+          style={{ fontSize: '20px' }}
+          href="https://tibroish.bg/files/%D0%98%D0%BD%D1%81%D1%82%D1%80%D1%83%D0%BA%D1%86%D0%B8%D1%8F-%D0%B7%D0%B0-%D0%B2%D0%B0%D0%BB%D0%B8%D0%B4%D0%B8%D1%80%D0%B0%D0%BD%D0%B5-%D0%A2%D0%B8-%D0%B1%D1%80%D0%BE%D0%B8%D1%88.pdf"
+          target="_blank"
+        >
+          Инструкции за валидиране
+        </a>
+      </p>
+      <iframe
+        width="800"
+        height="450"
+        style={{ margin: '20px auto', display: 'block' }}
+        src="https://www.youtube-nocookie.com/embed/j2ChYutSk-c"
+        title="YouTube video player"
+        frameborder="0"
+        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+        allowfullscreen
+      ></iframe>
     </ReadyScreen>
   ) : (
     <VerifyProtocolInfo
