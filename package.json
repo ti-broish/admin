@@ -47,7 +47,7 @@
     "styled-components": "^5.2.1",
     "url-loader": "^4.1.1",
     "webpack": "^5.15.0",
-    "webpack-dev-server": "^3.11.2",
+    "webpack-dev-server": "^4.13.1",
     "lint-staged": "^13.1.2"
   },
   "devDependencies": {
