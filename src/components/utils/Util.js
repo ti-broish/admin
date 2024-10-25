@@ -135,6 +135,15 @@ const checkPaths = (path1, path2) => {
   return path1 === path2
 }
 
+const formatTextWithLinks = (text) => {
+  const urlRegex = /(https?:\/\/[^\s]+)/g
+  return text.replace(
+    urlRegex,
+    (url) =>
+      `<a href="${url}" target="_blank" rel="noopener noreferrer">${url}</a>`
+  )
+}
+
 module.exports = {
   formatLv,
   formatPop,
@@ -146,4 +155,5 @@ module.exports = {
   format,
   checkPaths,
   mapRoleLocalization,
+  formatTextWithLinks,
 }

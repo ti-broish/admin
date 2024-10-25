@@ -23,7 +23,11 @@ import { TableStyle } from '../Profile'
 import styled from 'styled-components'
 import CommentSection from './CommentSection'
 
-import { formatDateShort, formatTime } from '../../utils/Util'
+import {
+  formatDateShort,
+  formatTime,
+  formatTextWithLinks,
+} from '../../utils/Util'
 import PublishModal from './PublishModal'
 
 const UpdatesTable = styled(TableStyle)`
@@ -378,7 +382,12 @@ export default (props) => {
           </FancyButtonRed>
           <hr />
           <h2>Описание</h2>
-          <p>{data.description}</p>
+          <p
+            style={{ whiteSpace: 'pre-wrap' }}
+            dangerouslySetInnerHTML={{
+              __html: formatTextWithLinks(data.description),
+            }}
+          />
           <hr />
           {!data.publishedText ? null : (
             <>
