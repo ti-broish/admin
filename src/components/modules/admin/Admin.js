@@ -266,7 +266,6 @@ export default (props) => {
                   <th>Фамилия</th>
                   <th>Ел. поща</th>
                   <th>Телефон</th>
-                  <th>ПИН</th>
                   <th>Съгласие за данни</th>
                   {/* <th>Регистриран на</th> */}
                   <th>Роли</th>
@@ -286,7 +285,6 @@ export default (props) => {
                       <td>{user.lastName}</td>
                       <td>{user.email}</td>
                       <td>{user.phone}</td>
-                      <td>{user.pin}</td>
                       <td>{user.hasAgreedToKeepData ? 'Да' : 'Не'}</td>
                       {/* <td>{user.registeredAt}</td> */}
                       <td>
