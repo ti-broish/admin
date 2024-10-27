@@ -2,7 +2,11 @@ import React from 'react'
 
 import styled from 'styled-components'
 
-import { formatTime, formatDateShort } from '../../utils/Util'
+import {
+  formatTime,
+  formatDateShort,
+  formatTextWithLinks,
+} from '../../utils/Util'
 
 export const CommentStyle = styled.div`
   width: 100%;
@@ -61,7 +65,12 @@ export default (props) => {
         {formatTime(props.comment.createdAt)} –{' '}
         {formatDateShort(props.comment.createdAt)}
       </h2>
-      <p>{props.comment.text}</p>
+      <p
+        style={{ whiteSpace: 'pre-wrap' }}
+        dangerouslySetInnerHTML={{
+          __html: formatTextWithLinks(props.comment.text),
+        }}
+      />
     </CommentStyle>
   )
 }
