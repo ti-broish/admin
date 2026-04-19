@@ -9,6 +9,7 @@ import {
   faFastBackward,
   faCircle,
   faVideo,
+  faLocationDot,
 } from '@fortawesome/free-solid-svg-icons'
 
 import { AuthContext } from '../../App'
@@ -255,7 +256,6 @@ export default (props) => {
                 <th>№ на секция</th>
                 <th>Град</th>
                 <th>Автор</th>
-                <th>Тип</th>
                 <th>Описание</th>
                 <th>Статут</th>
               </tr>
@@ -263,7 +263,7 @@ export default (props) => {
             <tbody>
               {loading ? (
                 <tr key="loading">
-                  <td colSpan="9">
+                  <td colSpan="8">
                     <Loading />
                   </td>
                 </tr>
@@ -310,15 +310,22 @@ export default (props) => {
                         : violation?.author?.name}
                     </td>
                     <td>
-                      {violation.type === 'video' ? (
-                        <span style={{ color: '#e44', fontWeight: 'bold' }}>
-                          <FontAwesomeIcon icon={faVideo} /> Видео
-                        </span>
-                      ) : (
-                        'Стандартен'
-                      )}
+                      <FontAwesomeIcon
+                        icon={
+                          violation.type === 'video' ? faVideo : faLocationDot
+                        }
+                        style={{
+                          color: violation.type === 'video' ? '#e44' : '#888',
+                          marginRight: '6px',
+                        }}
+                        title={
+                          violation.type === 'video'
+                            ? 'Видео сигнал'
+                            : 'На място'
+                        }
+                      />
+                      {violation.description.slice(0, 40) + '...'}
                     </td>
-                    <td>{violation.description.slice(0, 40) + '...'}</td>
                     <td>{status(violation.status)}</td>
                   </tr>
                 ))
