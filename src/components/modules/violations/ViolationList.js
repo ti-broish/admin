@@ -8,13 +8,13 @@ import {
   faFastForward,
   faFastBackward,
   faCircle,
+  faVideo,
 } from '@fortawesome/free-solid-svg-icons'
 
 import { AuthContext } from '../../App'
 import Loading from '../../layout/Loading'
 
 import styled from 'styled-components'
-import { faVideo } from '@fortawesome/free-solid-svg-icons'
 import ViolationFilter from './ViolationFilter'
 
 const TableViewContainer = styled.div`
@@ -263,7 +263,7 @@ export default (props) => {
             <tbody>
               {loading ? (
                 <tr key="loading">
-                  <td colSpan="8">
+                  <td colSpan="9">
                     <Loading />
                   </td>
                 </tr>
