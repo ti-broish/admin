@@ -92,6 +92,8 @@ export default function ViolationFilter(props) {
   const [assigneeUsers, setAssigneeUsers] = useState([])
   const [assignee, setAssignee] = useState(query.get('assignee') || '')
 
+  const [type, setType] = useState(query.get('type') || '')
+
   const params = new URLSearchParams()
   const fields = {
     country,
@@ -103,6 +105,7 @@ export default function ViolationFilter(props) {
     status,
     published,
     assignee,
+    type,
   }
 
   for (const [key, value] of Object.entries(fields)) {
@@ -160,6 +163,7 @@ export default function ViolationFilter(props) {
     setSection('')
     setPublished('')
     setAssignee('')
+    setType('')
   }
 
   return (
@@ -182,7 +186,18 @@ export default function ViolationFilter(props) {
               setStatus={setStatus}
             />
           </td>
-          <td></td>
+          <td>
+            Тип:<br></br>
+            <select
+              value={type}
+              onChange={(e) => setType(e.target.value)}
+              style={{ padding: '5px', fontSize: '15px' }}
+            >
+              <option value="">Всички</option>
+              <option value="standard">Стандартен</option>
+              <option value="video">Видео</option>
+            </select>
+          </td>
         </tr>
         <tr>
           <td>
