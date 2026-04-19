@@ -176,7 +176,7 @@ export default (props) => {
   }
 
   const assignees = (assignees) => {
-    return assignees.length === 0 ? (
+    return !assignees || assignees.length === 0 ? (
       <i>Свободен</i>
     ) : (
       <AssigneeIcon>
