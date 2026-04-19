@@ -86,27 +86,26 @@ export default function ViolationFilter(props) {
   const [assigneeUsers, setAssigneeUsers] = useState([])
   const [assignee, setAssignee] = useState('')
 
-  let url = ''
-
-  let params = {
-    country: country,
-    electionRegion: electionRegion,
-    section: section,
-    municipality: municipality,
-    town: town,
-    cityRegion: cityRegion,
-    status: status,
-    published: published,
-    assignee: assignee,
+  const params = new URLSearchParams()
+  const fields = {
+    country,
+    electionRegion,
+    section,
+    municipality,
+    town,
+    cityRegion,
+    status,
+    published,
+    assignee,
   }
 
-  for (const [key, value] of Object.entries(params)) {
+  for (const [key, value] of Object.entries(fields)) {
     if (value && !(value + '').match(/^0{1,3}$/) && value !== '') {
-      url += `&${key}=${value}`
-    } else {
-      url.replace(`&${key}=${value}`, '')
+      params.set(key, value)
     }
   }
+
+  const url = params.toString()
 
   useEffect(async () => {
     //gets all the MIRs

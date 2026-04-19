@@ -5,8 +5,9 @@ export default (props) => {
 
   const options = [
     { id: '', label: 'Всички' },
+    { id: 'none', label: 'Неназначен' },
     ...assignees.map((user) => ({
-      id: user.id,
+      id: user.email,
       label: `${user.firstName} ${user.lastName}`,
     })),
   ]

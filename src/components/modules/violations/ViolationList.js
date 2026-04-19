@@ -105,44 +105,26 @@ export default (props) => {
   const history = useHistory()
 
   useEffect(() => {
-    let url = '/violations'
-    const page = query.get('page')
-    // const limit = query.get('limit');
-    const country = query.get('country')
-    const electionRegion = query.get('electionRegion')
-    const assignee = query.get('assignee')
-    const section = query.get('section')
-    const municipality = query.get('municipality')
-    const town = query.get('town')
-    const cityRegion = query.get('cityRegion')
-    const status = query.get('status')
-    const published = query.get('published')
+    const params = new URLSearchParams()
+    const fields = {
+      country: query.get('country'),
+      electionRegion: query.get('electionRegion'),
+      municipality: query.get('municipality'),
+      assignee: query.get('assignee'),
+      section: query.get('section'),
+      town: query.get('town'),
+      cityRegion: query.get('cityRegion'),
+      status: query.get('status'),
+      published: query.get('published'),
+      page: query.get('page'),
+    }
 
-    if (
-      page ||
-      country ||
-      electionRegion ||
-      assignee ||
-      section ||
-      municipality ||
-      town ||
-      cityRegion ||
-      status ||
-      published
-    )
-      url += '?'
+    for (const [key, value] of Object.entries(fields)) {
+      if (value) params.set(key, value)
+    }
 
-    if (country) url += `country=${country}`
-    if (electionRegion) url += `&electionRegion=${electionRegion}`
-    if (municipality) url += `&municipality=${municipality}`
-    if (assignee) url += `&assignee=${assignee}`
-    if (section) url += `&section=${section}`
-    if (town) url += `&town=${town}`
-    if (cityRegion) url += `&cityRegion=${cityRegion}`
-    if (status) url += `&status=${status}`
-    if (published) url += `&published=${published}`
-    if (page) url += `page=${page}`
-    // if (limit) url += `limit=${limit}`;
+    const qs = params.toString()
+    const url = '/violations' + (qs ? `?${qs}` : '')
 
     setLoading(true)
     authGet(url).then((res) => {
