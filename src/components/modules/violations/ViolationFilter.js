@@ -213,7 +213,14 @@ export default function ViolationFilter(props) {
               setSelectedElectionRegion={setSelectedElectionRegion}
             />
           </td>
-          <td></td>
+          <td>
+            Отговорник:<br></br>
+            <Assignees
+              assignee={assignee}
+              setAssignee={setAssignee}
+              assignees={assigneeUsers}
+            />
+          </td>
           <td>
             <br></br>
             <Link to="/violations">
@@ -247,14 +254,7 @@ export default function ViolationFilter(props) {
               setSelectedTown={setSelectedTown}
             />
           </td>
-          <td>
-            Отговорник:<br></br>
-            <Assignees
-              assignee={assignee}
-              setAssignee={setAssignee}
-              assignees={assigneeUsers}
-            />
-          </td>
+          <td></td>
           <td>
             <br></br>
             <Link to={`/violations?${url}`}>
