@@ -311,7 +311,7 @@ export default (props) => {
                     </td>
                     <td>
                       {violation?.author?.firstName
-                        ? `${violation.author.firstName[0]}. ${violation.author.lastName}`
+                        ? `${violation.author.firstName} ${violation.author.lastName[0]}.`
                         : violation?.author?.name}
                     </td>
                     <td>{violation.description.slice(0, 40) + '...'}</td>
