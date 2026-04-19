@@ -8,6 +8,7 @@ import {
   faFastForward,
   faFastBackward,
   faCircle,
+  faVideo,
 } from '@fortawesome/free-solid-svg-icons'
 
 import { AuthContext } from '../../App'
@@ -116,6 +117,7 @@ export default (props) => {
       cityRegion: query.get('cityRegion'),
       status: query.get('status'),
       published: query.get('published'),
+      type: query.get('type'),
       page: query.get('page'),
     }
 
@@ -142,6 +144,7 @@ export default (props) => {
     query.get('cityRegion'),
     query.get('status'),
     query.get('published'),
+    query.get('type'),
   ])
 
   const status = (apiStatus) => {
@@ -252,6 +255,7 @@ export default (props) => {
                 <th>№ на секция</th>
                 <th>Град</th>
                 <th>Автор</th>
+                <th>Тип</th>
                 <th>Описание</th>
                 <th>Статут</th>
               </tr>
@@ -259,7 +263,7 @@ export default (props) => {
             <tbody>
               {loading ? (
                 <tr key="loading">
-                  <td colSpan="8">
+                  <td colSpan="9">
                     <Loading />
                   </td>
                 </tr>
@@ -304,6 +308,15 @@ export default (props) => {
                       {violation?.author?.firstName
                         ? `${violation.author.firstName} ${violation.author.lastName[0]}.`
                         : violation?.author?.name}
+                    </td>
+                    <td>
+                      {violation.type === 'video' ? (
+                        <span style={{ color: '#e44', fontWeight: 'bold' }}>
+                          <FontAwesomeIcon icon={faVideo} /> Видео
+                        </span>
+                      ) : (
+                        'Стандартен'
+                      )}
                     </td>
                     <td>{violation.description.slice(0, 40) + '...'}</td>
                     <td>{status(violation.status)}</td>

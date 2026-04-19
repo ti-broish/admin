@@ -11,6 +11,7 @@ import {
   faUpload,
   faEyeSlash,
   faDove,
+  faVideo,
 } from '@fortawesome/free-solid-svg-icons'
 
 import { ContentPanel } from '../Modules'
@@ -380,6 +381,11 @@ export default (props) => {
               </>
             )}
           </FancyButtonRed>
+          {data.type === 'video' && (
+            <p style={{ color: '#e44', fontWeight: 'bold', fontSize: '16px' }}>
+              <FontAwesomeIcon icon={faVideo} /> Видео сигнал
+            </p>
+          )}
           <hr />
           <h2>Описание</h2>
           <p
