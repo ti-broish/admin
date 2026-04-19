@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useContext } from 'react'
 
-import { Link } from 'react-router-dom'
+import { Link, useLocation } from 'react-router-dom'
 
 import { AuthContext } from '../../App'
 
@@ -54,37 +54,43 @@ const ButtonStyle = styled.button`
 
 export default function ViolationFilter(props) {
   const { authGet } = useContext(AuthContext)
+  const query = new URLSearchParams(useLocation().search)
 
-  const [section, setSection] = useState('')
+  const [section, setSection] = useState(query.get('section') || '')
 
-  const [disabled, setDisabled] = useState(true) //sets callback function for disabling field
-  const [published, setPublished] = useState('')
+  const [disabled, setDisabled] = useState(!query.get('electionRegion'))
+  const [published, setPublished] = useState(query.get('published') || '')
 
-  const [country, setCountry] = useState('000')
+  const [country, setCountry] = useState(query.get('country') || '000')
   const [selectedCountry, setSelectedCountry] = useState('')
 
-  const [mirs, setMirs] = useState([]) //sets all MIRs in Bulgaria
-  const [electionRegion, setElectionRegion] = useState('00') //gets the chosen MIR
+  const [mirs, setMirs] = useState([])
+  const [electionRegion, setElectionRegion] = useState(
+    query.get('electionRegion') || '00'
+  )
   const [selectedElectionRegion, setSelectedElectionRegion] = useState('')
 
-  const [municipalities, setMunicipalities] = useState([]) //sets the municipalities in one MIR
-  const [municipality, setMunicipality] = useState('00') //gets the chosen municipality
+  const [municipalities, setMunicipalities] = useState([])
+  const [municipality, setMunicipality] = useState(
+    query.get('municipality') || '00'
+  )
   const [selectedMunicipality, setSelectedMunicipality] = useState('')
 
-  const [towns, setTowns] = useState([]) //sets all towns in one municipality
-  const [town, setTown] = useState('00')
+  const [towns, setTowns] = useState([])
+  const [town, setTown] = useState(query.get('town') || '00')
   const [selectedTown, setSelectedTown] = useState('')
 
-  const [regions, setRegions] = useState([]) //sets the election regions in one town
-  const [cityRegion, setCityRegion] = useState('00')
+  const [regions, setRegions] = useState([])
+  const [cityRegion, setCityRegion] = useState(query.get('cityRegion') || '00')
 
-  const [isAbroad, setIsAbroad] = useState(false) //sets if country is Bulgaria or not
+  const initCountry = query.get('country') || '000'
+  const [isAbroad, setIsAbroad] = useState(initCountry !== '000')
 
   const [statuses, setStatuses] = useState([])
-  const [status, setStatus] = useState('')
+  const [status, setStatus] = useState(query.get('status') || '')
 
   const [assigneeUsers, setAssigneeUsers] = useState([])
-  const [assignee, setAssignee] = useState('')
+  const [assignee, setAssignee] = useState(query.get('assignee') || '')
 
   const params = new URLSearchParams()
   const fields = {
