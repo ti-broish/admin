@@ -115,7 +115,7 @@ export default function ViolationFilter(props) {
     const resStatuses = await authGet('/violations/statuses')
     setStatuses(resStatuses.data)
 
-    const resUsers = await authGet('/users')
+    const resUsers = await authGet('/users?role=lawyer')
     if (resUsers.data && resUsers.data.items) {
       setAssigneeUsers(resUsers.data.items)
     }
@@ -177,14 +177,7 @@ export default function ViolationFilter(props) {
               setStatus={setStatus}
             />
           </td>
-          <td>
-            Назначен:<br></br>
-            <Assignees
-              assignee={assignee}
-              setAssignee={setAssignee}
-              assignees={assigneeUsers}
-            />
-          </td>
+          <td></td>
         </tr>
         <tr>
           <td>
@@ -255,6 +248,22 @@ export default function ViolationFilter(props) {
             />
           </td>
           <td>
+            Отговорник:<br></br>
+            <Assignees
+              assignee={assignee}
+              setAssignee={setAssignee}
+              assignees={assigneeUsers}
+            />
+          </td>
+          <td>
+            <br></br>
+            <Link to={`/violations?${url}`}>
+              <ButtonStyle>Търси</ButtonStyle>
+            </Link>
+          </td>
+        </tr>
+        <tr>
+          <td>
             Район:<br></br>
             <Regions
               isAbroad={isAbroad}
@@ -263,12 +272,6 @@ export default function ViolationFilter(props) {
               setCityRegion={setCityRegion}
               cityRegion={cityRegion}
             />
-          </td>
-          <td>
-            <br></br>
-            <Link to={`/violations?${url}`}>
-              <ButtonStyle>Търси</ButtonStyle>
-            </Link>
           </td>
         </tr>
       </tbody>

@@ -7,6 +7,7 @@ import {
   faChevronRight,
   faFastForward,
   faFastBackward,
+  faCircle,
 } from '@fortawesome/free-solid-svg-icons'
 
 import { AuthContext } from '../../App'
@@ -255,19 +256,19 @@ export default (props) => {
           <ViolationTable>
             <thead>
               <tr>
-                <th>Назначен</th>
+                <th></th>
+                <th>Отговорник</th>
                 <th>№ на секция</th>
                 <th>Град</th>
                 <th>Автор</th>
                 <th>Описание</th>
-                <th>Публикуван</th>
                 <th>Статут</th>
               </tr>
             </thead>
             <tbody>
               {loading ? (
                 <tr key="loading">
-                  <td colSpan="7">
+                  <td colSpan="8">
                     <Loading />
                   </td>
                 </tr>
@@ -277,6 +278,18 @@ export default (props) => {
                     key={violation.id}
                     onClick={() => openViolation(violation.id)}
                   >
+                    <td style={{ padding: '0 4px', width: '8px' }}>
+                      <FontAwesomeIcon
+                        icon={faCircle}
+                        style={{
+                          color: violation.isPublished ? 'green' : '#ddd',
+                          fontSize: '8px',
+                        }}
+                        title={
+                          violation.isPublished ? 'Публикуван' : 'Непубликуван'
+                        }
+                      />
+                    </td>
                     <td
                       style={
                         violation.assignees.length === 0 ? {} : { padding: 0 }
@@ -298,17 +311,10 @@ export default (props) => {
                     </td>
                     <td>
                       {violation?.author?.firstName
-                        ? `${violation.author.firstName} ${violation.author.lastName}`
+                        ? `${violation.author.firstName[0]}. ${violation.author.lastName}`
                         : violation?.author?.name}
                     </td>
                     <td>{violation.description.slice(0, 40) + '...'}</td>
-                    <td>
-                      {violation.isPublished ? (
-                        <span style={{ color: 'green' }}>Да</span>
-                      ) : (
-                        <span style={{ color: 'red' }}>Не</span>
-                      )}
-                    </td>
                     <td>{status(violation.status)}</td>
                   </tr>
                 ))
