@@ -196,10 +196,6 @@ export default (props) => {
     const nextAvail = data.links.next
     const prevAvail = data.links.previous
 
-    const isFiltered =
-      data.meta.totalUnfilteredItems !== undefined &&
-      data.meta.totalItems !== data.meta.totalUnfilteredItems
-
     return (
       <PaginationLinks>
         <Link className={firstAvail ? '' : 'disabled'} to={data.links.first}>
@@ -225,9 +221,7 @@ export default (props) => {
           Последна <FontAwesomeIcon icon={faFastForward} />
         </Link>
         <div style={{ marginTop: '8px', color: '#666' }}>
-          {isFiltered
-            ? `${data.meta.totalItems} от ${data.meta.totalUnfilteredItems} сигнала`
-            : `${data.meta.totalItems} сигнала`}
+          {`${data.meta.totalItems} сигнала`}
         </div>
       </PaginationLinks>
     )
