@@ -4,6 +4,7 @@ import { Link } from 'react-router-dom'
 
 import { AuthContext } from '../../App'
 
+import Assignees from '../filter_components/Assignees'
 import Statuses from '../filter_components/Statuses'
 import TextInput from '../filter_components/TextInput'
 import Published from '../filter_components/Published'
@@ -82,6 +83,9 @@ export default function ViolationFilter(props) {
   const [statuses, setStatuses] = useState([])
   const [status, setStatus] = useState('')
 
+  const [assigneeUsers, setAssigneeUsers] = useState([])
+  const [assignee, setAssignee] = useState('')
+
   let url = ''
 
   let params = {
@@ -93,6 +97,7 @@ export default function ViolationFilter(props) {
     cityRegion: cityRegion,
     status: status,
     published: published,
+    assignee: assignee,
   }
 
   for (const [key, value] of Object.entries(params)) {
@@ -109,6 +114,11 @@ export default function ViolationFilter(props) {
 
     const resStatuses = await authGet('/violations/statuses')
     setStatuses(resStatuses.data)
+
+    const resUsers = await authGet('/users')
+    if (resUsers.data && resUsers.data.items) {
+      setAssigneeUsers(resUsers.data.items)
+    }
 
     //if country is NOT Bulgaria: gets all the cities in the foreign country
     if (country !== '000') {
@@ -144,6 +154,7 @@ export default function ViolationFilter(props) {
     setTown('')
     setSection('')
     setPublished('')
+    setAssignee('')
   }
 
   return (
@@ -166,7 +177,14 @@ export default function ViolationFilter(props) {
               setStatus={setStatus}
             />
           </td>
-          <td></td>
+          <td>
+            Назначен:<br></br>
+            <Assignees
+              assignee={assignee}
+              setAssignee={setAssignee}
+              assignees={assigneeUsers}
+            />
+          </td>
         </tr>
         <tr>
           <td>

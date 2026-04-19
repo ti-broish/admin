@@ -255,7 +255,7 @@ export default (props) => {
           <ViolationTable>
             <thead>
               <tr>
-                {/* <th>Назначен</th> */}
+                <th>Назначен</th>
                 <th>№ на секция</th>
                 <th>Град</th>
                 <th>Автор</th>
@@ -267,7 +267,7 @@ export default (props) => {
             <tbody>
               {loading ? (
                 <tr key="loading">
-                  <td colSpan="6">
+                  <td colSpan="7">
                     <Loading />
                   </td>
                 </tr>
@@ -277,13 +277,13 @@ export default (props) => {
                     key={violation.id}
                     onClick={() => openViolation(violation.id)}
                   >
-                    {/* <td
+                    <td
                       style={
                         violation.assignees.length === 0 ? {} : { padding: 0 }
                       }
                     >
                       {assignees(violation.assignees)}
-                    </td> */}
+                    </td>
                     <td>
                       {!violation.section ? (
                         <i>Не е посочена секция</i>
