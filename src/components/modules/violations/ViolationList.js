@@ -291,7 +291,11 @@ export default (props) => {
                         violation.section.id
                       )}
                     </td>
-                    <td>{violation.town.name}</td>
+                    <td>
+                      {violation.town.name}
+                      {violation.section?.cityRegion?.name &&
+                        `, ${violation.section.cityRegion.name}`}
+                    </td>
                     <td>
                       {violation?.author?.firstName
                         ? `${violation.author.firstName} ${violation.author.lastName}`
