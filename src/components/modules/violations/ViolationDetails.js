@@ -214,7 +214,12 @@ const noSectionLabel = (data, place, lookup) => {
 
 const updateLabel = (update) => {
   if (update.type === 'section' && update.payload) {
-    return `секция: ${update.payload.from || 'няма'} → ${update.payload.to}`
+    const { from, to, fromTown, toTown } = update.payload
+    const townChange =
+      fromTown && toTown && fromTown.code !== toTown.code
+        ? ` (${fromTown.name} → ${toTown.name})`
+        : ''
+    return `секция: ${from || 'няма'} → ${to}${townChange}`
   }
   return update.type
 }
@@ -295,10 +300,13 @@ const SectionEditor = ({ data, lookup, token, onSaved }) => {
           <div style={{ fontSize: '12px', color: '#888', marginTop: '4px' }}>
             9 цифри
             {prefixes.length
-              ? `, започва с ${prefixes.join(' / ')} (МИР ${[
+              ? `; за този град обикновено започва с ${prefixes.join(
+                  ' / '
+                )} (МИР ${[
                   ...new Set(prefixes.map((prefix) => prefix.slice(0, 2))),
                 ].join('/')})`
               : ''}
+            ; може и секция в друго населено място (сигналът се премества там)
           </div>
           {candidates.length > 0 && (
             <div style={{ marginTop: '6px', fontSize: '14px' }}>
