@@ -275,10 +275,15 @@ export default (props) => {
 
   const assignPossible = () =>
     (data.assignees.length === 0 || iAmAssignee) && !buttonLoading.assign
+  // Processed and rejected can be swapped to correct a status set by mistake
   const processPossible = () =>
-    iAmAssignee && data.status === 'processing' && !buttonLoading.process
+    iAmAssignee &&
+    ['processing', 'rejected'].includes(data.status) &&
+    !buttonLoading.process
   const rejectPossible = () =>
-    iAmAssignee && data.status === 'processing' && !buttonLoading.reject
+    iAmAssignee &&
+    ['processing', 'processed'].includes(data.status) &&
+    !buttonLoading.reject
   const publishPossible = () => !buttonLoading.publish
 
   return (
