@@ -286,7 +286,10 @@ const SectionEditor = ({ data, lookup, token, onSaved }) => {
             }
             style={{ fontSize: '16px', padding: '4px', width: '120px' }}
           />{' '}
-          <FancyButtonBlue type="submit" disabled={saving || !value}>
+          <FancyButtonBlue
+            type="submit"
+            disabled={saving || !/^\d{9}$/.test(value)}
+          >
             {saving ? 'Момент...' : 'Запази'}
           </FancyButtonBlue>
           <div style={{ fontSize: '12px', color: '#888', marginTop: '4px' }}>
