@@ -32,7 +32,7 @@ jobs:
           FIREBASE_PROJECT_ID: ${{ secrets.FIREBASE_PROJECT_ID }}
 
       - name: Minio Deploy
-        uses: hkdobrev/minio-deploy-action@v1
+        uses: hkdobrev/minio-deploy-action@1.1.1
         with:
           endpoint: ${{ secrets.MINIO_PRODUCTION_ENDPOINT }}
           access_key: ${{ secrets.MINIO_PRODUCTION_ACCESS_KEY }}
