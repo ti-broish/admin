@@ -1,4 +1,7 @@
-import React, { useState, useEffect, useContext } from 'react'
+import React, { useState, useEffect, useContext, useMemo } from 'react'
+import axios from 'axios'
+import firebase from 'firebase/app'
+import 'firebase/auth'
 
 import { useHistory, useParams } from 'react-router-dom'
 
@@ -30,6 +33,14 @@ import {
   formatTextWithLinks,
 } from '../../utils/Util'
 import PublishModal from './PublishModal'
+import { apiHost } from '../../../config'
+import {
+  parsePlaceLine,
+  findCityRegion,
+  sectionsAtAddress,
+  commonElectionRegionCode,
+  expectedSectionPrefixes,
+} from './violationPlace'
 
 const UpdatesTable = styled(TableStyle)`
   td,
@@ -180,8 +191,140 @@ const electionRegionLabel = (data) => {
   return regions[0]?.name || ''
 }
 
+const townLine = (data) =>
+  `${data.town.name}, ${
+    data.town.municipality
+      ? `община ${data.town.municipality.name}`
+      : `${data.town.country.name}`
+  }`
+
+// "гр.София, р-н Средец, <address>, без секция (МИР 24)" when the address from
+// the description maps to sections in one election region.
+const noSectionLabel = (data, place, lookup) => {
+  if (!lookup?.electionRegionCode) return electionRegionLabel(data)
+  return [
+    data.town.name,
+    place?.district ? `р-н ${place.district}` : null,
+    place?.address,
+    `без секция (МИР ${lookup.electionRegionCode})`,
+  ]
+    .filter(Boolean)
+    .join(', ')
+}
+
+const updateLabel = (update) => {
+  if (update.type === 'section' && update.payload) {
+    return `секция: ${update.payload.from || 'няма'} → ${update.payload.to}`
+  }
+  return update.type
+}
+
+const apiErrorMessage = (err) => {
+  const message = err?.response?.data?.message
+  if (Array.isArray(message)) return message.join('; ')
+  if (message) return message
+  return err?.message || 'Грешка при запис'
+}
+
+const SectionEditor = ({ data, lookup, token, onSaved }) => {
+  const [value, setValue] = useState('')
+  const [saving, setSaving] = useState(false)
+  const [error, setError] = useState(null)
+  const prefixes = expectedSectionPrefixes(data, lookup)
+  const candidates = (lookup?.candidates || []).filter(
+    (section) => section.id !== data.section?.id
+  )
+
+  const save = (sectionId) => {
+    const section = (sectionId || value).trim()
+    if (!/^\d{9}$/.test(section)) {
+      setError('Номерът на секцията трябва да е 9 цифри')
+      return
+    }
+    setSaving(true)
+    setError(null)
+    const currentUser = firebase.auth().currentUser
+    Promise.resolve(currentUser ? currentUser.getIdToken() : token)
+      .then((idToken) =>
+        axios.put(
+          `${apiHost}/violations/${data.id}/section`,
+          { section },
+          {
+            headers: {
+              Authorization: `Bearer ${idToken}`,
+              'Accept-Language': 'bg-BG',
+            },
+          }
+        )
+      )
+      .then(() => {
+        setValue('')
+        return onSaved()
+      })
+      .catch((err) => setError(apiErrorMessage(err)))
+      .finally(() => setSaving(false))
+  }
+
+  return (
+    <tr>
+      <td>{data.section ? 'Смени секция' : 'Задай секция'}</td>
+      <td>
+        <form
+          onSubmit={(event) => {
+            event.preventDefault()
+            save()
+          }}
+        >
+          <input
+            type="text"
+            inputMode="numeric"
+            maxLength={9}
+            value={value}
+            placeholder={prefixes.length ? `${prefixes[0]}…` : '9 цифри'}
+            onChange={(event) =>
+              setValue(event.target.value.replace(/\D/g, ''))
+            }
+            style={{ fontSize: '16px', padding: '4px', width: '120px' }}
+          />{' '}
+          <FancyButtonBlue type="submit" disabled={saving || !value}>
+            {saving ? 'Момент...' : 'Запази'}
+          </FancyButtonBlue>
+          <div style={{ fontSize: '12px', color: '#888', marginTop: '4px' }}>
+            9 цифри
+            {prefixes.length
+              ? `, започва с ${prefixes.join(' / ')} (МИР ${[
+                  ...new Set(prefixes.map((prefix) => prefix.slice(0, 2))),
+                ].join('/')})`
+              : ''}
+          </div>
+          {candidates.length > 0 && (
+            <div style={{ marginTop: '6px', fontSize: '14px' }}>
+              Секции на адреса:{' '}
+              {candidates.map((section) => (
+                <button
+                  key={section.id}
+                  type="button"
+                  disabled={saving}
+                  onClick={() => save(section.id)}
+                  style={{ margin: '2px', cursor: 'pointer' }}
+                  title={`Задай секция ${section.id}`}
+                >
+                  {section.id}
+                </button>
+              ))}
+            </div>
+          )}
+          {error && (
+            <div style={{ color: '#e44', marginTop: '4px' }}>{error}</div>
+          )}
+        </form>
+      </td>
+    </tr>
+  )
+}
+
 export default (props) => {
-  const { authGet, authPost, user, authPatch, authDelete } =
+  const { authGet, authPost, user, authPatch, authDelete, token } =
     useContext(AuthContext)
   const { violation } = useParams()
   const history = useHistory()
@@ -194,11 +337,64 @@ export default (props) => {
 
   const [modalState, setModalState] = useState({ isOpen: false })
 
-  useEffect(() => {
+  const [lookup, setLookup] = useState(null)
+
+  const loadViolation = () =>
     authGet(`/violations/${violation}`).then((res) => {
       setData(res.data)
     })
+
+  useEffect(() => {
+    loadViolation()
   }, [])
+
+  const place = useMemo(
+    () => parsePlaceLine(data?.description),
+    [data?.description]
+  )
+
+  // Sections at the address from the description (same API as the web form)
+  useEffect(() => {
+    setLookup(null)
+    if (!data?.town || !place) return
+    const cityRegion = findCityRegion(data.town, place.district)
+    if (!place.address && !cityRegion) return
+    let cancelled = false
+    const query = cityRegion
+      ? `town=${data.town.id}&city_region=${encodeURIComponent(
+          cityRegion.code
+        )}`
+      : `town=${data.town.id}`
+    axios
+      .get(`${apiHost}/sections?${query}`, {
+        headers: { 'Accept-Language': 'bg-BG' },
+      })
+      .then((res) => {
+        if (cancelled) return
+        const sections = Array.isArray(res.data) ? res.data : []
+        const candidates = place.address
+          ? sectionsAtAddress(sections, place.address)
+          : []
+        const scope = candidates.length
+          ? candidates
+          : cityRegion
+          ? sections
+          : []
+        setLookup({
+          cityRegion,
+          candidates,
+          electionRegionCode: scope.length
+            ? commonElectionRegionCode(scope)
+            : null,
+        })
+      })
+      .catch(() => {
+        if (!cancelled) setLookup(null)
+      })
+    return () => {
+      cancelled = true
+    }
+  }, [data?.id, data?.town?.id, place?.address, place?.district])
 
   const assignYourself = () => {
     if (iAmAssignee) {
@@ -471,12 +667,7 @@ export default (props) => {
                   </tr>
                   <tr>
                     <td>Град</td>
-                    <td>
-                      {data.town.name},{' '}
-                      {data.town.municipality
-                        ? `община ${data.town.municipality.name}`
-                        : `${data.town.country.name}`}
-                    </td>
+                    <td>{townLine(data)}</td>
                   </tr>
                   <tr>
                     <td>MИР</td>
@@ -486,6 +677,12 @@ export default (props) => {
                     <td>Локация</td>
                     <td>{data.section.place}</td>
                   </tr>
+                  <SectionEditor
+                    data={data}
+                    lookup={lookup}
+                    token={token}
+                    onSaved={loadViolation}
+                  />
                 </tbody>
               </TableStyle>
               <hr />
@@ -497,17 +694,30 @@ export default (props) => {
                 <tbody>
                   <tr>
                     <td>Град</td>
-                    <td>
-                      {data.town.name},{' '}
-                      {data.town.municipality
-                        ? `община ${data.town.municipality.name}`
-                        : `${data.town.country.name}`}
-                    </td>
+                    <td>{townLine(data)}</td>
                   </tr>
+                  {place?.district && (
+                    <tr>
+                      <td>Район</td>
+                      <td>{place.district}</td>
+                    </tr>
+                  )}
+                  {place?.address && (
+                    <tr>
+                      <td>Адрес</td>
+                      <td>{place.address}</td>
+                    </tr>
+                  )}
                   <tr>
                     <td>MИР</td>
-                    <td>{electionRegionLabel(data)}</td>
+                    <td>{noSectionLabel(data, place, lookup)}</td>
                   </tr>
+                  <SectionEditor
+                    data={data}
+                    lookup={lookup}
+                    token={token}
+                    onSaved={loadViolation}
+                  />
                 </tbody>
               </TableStyle>
               <hr />
@@ -540,7 +750,7 @@ export default (props) => {
                       <td>
                         {update.actor?.firstName} {update.actor?.lastName}
                       </td>
-                      <td>{update.type}</td>
+                      <td>{updateLabel(update)}</td>
                     </tr>
                   ))}
               </tbody>
