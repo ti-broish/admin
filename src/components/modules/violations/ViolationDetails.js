@@ -164,6 +164,22 @@ const TextAreaFormStyle = styled.form`
   }
 `
 
+// Without a section, a town in several election regions (София: МИР 23, 24, 25) has no single region.
+// Showing the first one made every such signal look like МИР 23.
+const electionRegionLabel = (data) => {
+  if (data.section?.electionRegion?.name)
+    return data.section.electionRegion.name
+  const regions = data.town?.municipality?.electionRegions || []
+  if (regions.length > 1) {
+    const codes = regions
+      .map((region) => region.code || region.name)
+      .filter(Boolean)
+      .sort()
+    return `${data.town.name}, без секция (МИР ${codes.join('/')})`
+  }
+  return regions[0]?.name || ''
+}
+
 export default (props) => {
   const { authGet, authPost, user, authPatch, authDelete } =
     useContext(AuthContext)
@@ -464,10 +480,7 @@ export default (props) => {
                   </tr>
                   <tr>
                     <td>MИР</td>
-                    <td>
-                      {data.section?.electionRegion?.name ||
-                        data.town.municipality?.electionRegions[0].name}
-                    </td>
+                    <td>{electionRegionLabel(data)}</td>
                   </tr>
                   <tr>
                     <td>Локация</td>
@@ -493,10 +506,7 @@ export default (props) => {
                   </tr>
                   <tr>
                     <td>MИР</td>
-                    <td>
-                      {data.section?.electionRegion?.name ||
-                        data.town.municipality?.electionRegions[0].name}
-                    </td>
+                    <td>{electionRegionLabel(data)}</td>
                   </tr>
                 </tbody>
               </TableStyle>
